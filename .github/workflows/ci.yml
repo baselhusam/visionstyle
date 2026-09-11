@@ -35,6 +35,8 @@ jobs:
           uv run ruff check src tests
           uv run ruff format --check src tests
       - name: Type-check
+        # numpy's stubs use PEP 695 `type` aliases, which mypy only parses when running on 3.12+
+        if: matrix.python != '3.10' && matrix.python != '3.11'
         run: uv run mypy src
       - name: Test
         run: uv run pytest -q -p no:warnings --cov=visionstyle --cov-report=term-missing:skip-covered
