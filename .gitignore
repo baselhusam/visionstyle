@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Frontend
+studio/node_modules/
+studio/dist/
+src/visionstyle/studio/static/*
+!src/visionstyle/studio/static/.gitkeep
+
+# Models / outputs
+*.pt
+*.onnx
+*.engine
+runs/
+out/
+*.mp4
+!src/visionstyle/assets/samples/*.mp4
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

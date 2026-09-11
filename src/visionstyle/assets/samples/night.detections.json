@@ -1,0 +1,186 @@
+{
+ "image": "night.jpg",
+ "model": "yolo11n.pt",
+ "detections": [
+  {
+   "xyxy": [
+    1505.99,
+    538.37,
+    1596.3,
+    789.47
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8783,
+   "track_id": 1
+  },
+  {
+   "xyxy": [
+    872.95,
+    545.82,
+    934.32,
+    739.8
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8638,
+   "track_id": 2
+  },
+  {
+   "xyxy": [
+    802.71,
+    559.11,
+    859.86,
+    750.91
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8401,
+   "track_id": 3
+  },
+  {
+   "xyxy": [
+    356.16,
+    550.96,
+    409.05,
+    727.14
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8364,
+   "track_id": 4
+  },
+  {
+   "xyxy": [
+    726.26,
+    558.72,
+    783.01,
+    735.28
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8236,
+   "track_id": 5
+  },
+  {
+   "xyxy": [
+    1225.88,
+    556.66,
+    1296.82,
+    769.41
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8183,
+   "track_id": 6
+  },
+  {
+   "xyxy": [
+    669.68,
+    558.4,
+    726.83,
+    737.39
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.7909,
+   "track_id": 7
+  },
+  {
+   "xyxy": [
+    594.84,
+    555.51,
+    676.07,
+    744.79
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.7766,
+   "track_id": 8
+  },
+  {
+   "xyxy": [
+    1074.97,
+    545.9,
+    1135.47,
+    764.21
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.7724,
+   "track_id": 9
+  },
+  {
+   "xyxy": [
+    1147.71,
+    560.19,
+    1213.3,
+    753.9
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.7529,
+   "track_id": 10
+  },
+  {
+   "xyxy": [
+    1023.58,
+    546.65,
+    1085.03,
+    759.14
+   ],
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.719,
+   "track_id": 11
+  },
+  {
+   "xyxy": [
+    1279.56,
+    627.41,
+    1313.63,
+    691.2
+   ],
+   "class_id": 26,
+   "class_name": "handbag",
+   "confidence": 0.4487,
+   "track_id": 12
+  },
+  {
+   "xyxy": [
+    570.65,
+    653.27,
+    712.93,
+    728.24
+   ],
+   "class_id": 1,
+   "class_name": "bicycle",
+   "confidence": 0.4403,
+   "track_id": 13
+  },
+  {
+   "xyxy": [
+    1020.29,
+    627.99,
+    1070.45,
+    678.9
+   ],
+   "class_id": 26,
+   "class_name": "handbag",
+   "confidence": 0.3916,
+   "track_id": 14
+  },
+  {
+   "xyxy": [
+    569.2,
+    654.77,
+    633.68,
+    728.99
+   ],
+   "class_id": 1,
+   "class_name": "bicycle",
+   "confidence": 0.3567,
+   "track_id": 15
+  }
+ ]
+}
