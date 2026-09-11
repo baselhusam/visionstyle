@@ -122,10 +122,14 @@ class Annotator:
         for i, det in enumerate(dets):
             self._draw_detection(layer, base, det, i, s, time)
 
-        out = layer.composite(base) if not layer.is_empty() else base
+        in_place = not copy and not rgb and image.dtype == np.uint8 and image.ndim == 3
+        out = base if layer.is_empty() else layer.composite(base, out=image if in_place else None)
         if style.effects.grain.enabled:
             out = apply_grain(out, style.effects.grain, self.frame_index)
         self.frame_index += 1
+        if in_place and out is not image:
+            image[...] = out
+            out = image
         return np.ascontiguousarray(out[..., ::-1]) if rgb else out
 
     __call__ = annotate

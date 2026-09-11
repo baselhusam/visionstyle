@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: check-added-large-files
+        args: [--maxkb=1500]
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: uv run mypy src
+        language: system
+        pass_filenames: false
+        files: ^src/
+      - id: studio-schema
+        name: studio schema is current
+        entry: bash -c 'uv run visionstyle schema -o studio/schema.json && git diff --quiet studio/schema.json || (echo "studio/schema.json updated - run npm run gen:types in studio/ and re-stage"; exit 1)'
+        language: system
+        pass_filenames: false
+        files: ^src/visionstyle/style/schema\.py$

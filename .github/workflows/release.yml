@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write  # PyPI trusted publishing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Check tag matches package version
+        run: |
+          version=$(grep -E '^__version__' src/visionstyle/__init__.py | cut -d'"' -f2)
+          [ "v$version" = "${GITHUB_REF_NAME}" ] || (echo "::error::tag ${GITHUB_REF_NAME} != v$version"; exit 1)
+      - run: npm ci && npm run build
+        working-directory: studio
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=$(awk '/^## /{n++} n==1' CHANGELOG.md | tail -n +2)
+          gh release create "${GITHUB_REF_NAME}" dist/* --title "visionstyle ${GITHUB_REF_NAME}" --notes "${notes:-See CHANGELOG.md}"

@@ -132,12 +132,17 @@ class Layer:
         self.alpha[roi.y0 : roi.y1, roi.x0 : roi.x1] *= keep
 
     # ------------------------------------------------------------------ output
-    def composite(self, frame_bgr: U8) -> U8:
-        """Blend the layer onto ``frame_bgr`` (uint8) and return a new uint8 frame."""
+    def composite(self, frame_bgr: U8, out: U8 | None = None) -> U8:
+        """Blend the layer onto ``frame_bgr`` (uint8). Writes into ``out`` when given."""
         base = frame_bgr.astype(np.float32)
         base *= (1.0 - self.alpha)[..., None]
         base += self.rgb
-        return np.clip(base, 0, 255).astype(np.uint8)  # type: ignore[no-any-return]
+        base += 0.5  # round instead of truncate
+        np.clip(base, 0, 255, out=base)
+        if out is not None:
+            out[...] = base
+            return out
+        return np.asarray(base, np.uint8)
 
     def is_empty(self) -> bool:
         return not bool(self.alpha.any())

@@ -399,6 +399,10 @@
           "type": "boolean"
         },
         "components": {
+          "default": [
+            "text",
+            "confidence"
+          ],
           "description": "Ordered parts of the label. Add/remove/reorder freely.",
           "items": {
             "enum": [
@@ -668,6 +672,11 @@
           "type": "string"
         },
         "segment_colors": {
+          "default": [
+            "#ff5c35",
+            "#54dff4",
+            "#d8ff3e"
+          ],
           "description": "Colors used by `multicolor`.",
           "items": {
             "type": "string"

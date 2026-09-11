@@ -129,7 +129,7 @@ class LinePattern(_Model):
         description="`segments` alternates `segment_colors`; `gradient` sweeps the perimeter.",
     )
     segment_colors: list[str] = Field(
-        default_factory=lambda: ["#ff5c35", "#54dff4", "#d8ff3e"],
+        ["#ff5c35", "#54dff4", "#d8ff3e"],
         description="Colors used by `multicolor`.",
     )
     animation: Literal["none", "march", "hue_cycle", "pulse"] = Field(
@@ -162,16 +162,12 @@ LabelAnchor = Literal[
 ]
 
 
-def _default_components() -> list[LabelComponent]:
-    return ["text", "confidence"]
-
-
 class LabelStyle(_Model):
     """Text tag with class name / confidence / tracking id."""
 
     enabled: bool = True
     components: list[LabelComponent] = Field(
-        default_factory=lambda: _default_components(),
+        ["text", "confidence"],
         description="Ordered parts of the label. Add/remove/reorder freely.",
     )
     anchor: LabelAnchor = Field("top_left", description="Where the tag sits relative to the box.")

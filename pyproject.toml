@@ -75,7 +75,7 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "N", "C4", "PIE", "T20"]
 ignore = ["RUF012", "B008"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["T20"]
+"tests/*" = ["T20", "E501"]
 "examples/*" = ["T20"]
 "src/visionstyle/cli.py" = ["T20"]
 
