@@ -10,6 +10,7 @@ export function Preview() {
   const detections = useStore((s) => s.detections);
   const hidden = useStore((s) => s.hidden);
   const selected = useStore((s) => s.selected);
+  const selectedClass = useStore((s) => s.selectedClass);
   const syntheticTrails = useStore((s) => s.syntheticTrails);
   const playing = useStore((s) => s.playing);
   const setRenderMs = useStore((s) => s.setRenderMs);
@@ -22,7 +23,11 @@ export function Preview() {
   const timer = useRef<number | undefined>(undefined);
   const animated = style.line?.animation !== 'none' && (style.line?.speed ?? 0) > 0;
 
-  const dets = selected !== null ? detections.filter((_, i) => i === selected) : visibleDetections(detections, hidden);
+  const dets = selected !== null
+    ? detections.filter((_, i) => i === selected)
+    : selectedClass
+      ? detections.filter((detection, i) => !hidden.has(i) && (detection.class_name ?? `class ${detection.class_id ?? '—'}`) === selectedClass)
+      : visibleDetections(detections, hidden);
   const key = JSON.stringify({ style, imageId, dets, syntheticTrails });
 
   useEffect(() => {

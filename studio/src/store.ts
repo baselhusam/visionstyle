@@ -21,6 +21,7 @@ interface State {
   detections: DetectionItem[];
   hidden: Set<number>;
   selected: number | null;
+  selectedClass: string | null;
   detecting: boolean;
   syntheticTrails: boolean;
   playing: boolean;
@@ -45,6 +46,7 @@ interface State {
   detect: () => Promise<void>;
   toggleHidden: (i: number) => void;
   select: (i: number | null) => void;
+  selectClass: (className: string | null) => void;
   setSyntheticTrails: (v: boolean) => void;
   setPlaying: (v: boolean) => void;
   togglePanel: (id: PanelId) => void;
@@ -86,6 +88,7 @@ export const useStore = create<State>((set, get) => ({
   detections: [],
   hidden: new Set(),
   selected: null,
+  selectedClass: null,
   detecting: false,
   syntheticTrails: true,
   playing: false,
@@ -149,7 +152,7 @@ export const useStore = create<State>((set, get) => ({
   },
 
   selectImage: async (id) => {
-    set({ imageId: id, detections: [], hidden: new Set(), selected: null });
+    set({ imageId: id, detections: [], hidden: new Set(), selected: null, selectedClass: null });
     const img = get().images.find((i) => i.id === id);
     if (img?.has_detections && !get().modelId) {
       await get().detect();
@@ -184,7 +187,7 @@ export const useStore = create<State>((set, get) => ({
     set({ detecting: true, error: null });
     try {
       const res = await api.detect(imageId, model, conf);
-      set({ detections: res.detections, hidden: new Set(), selected: null, detecting: false });
+      set({ detections: res.detections, hidden: new Set(), selected: null, selectedClass: null, detecting: false });
       if (res.ms !== undefined) get().notify(`${res.detections.length} objects · ${res.ms.toFixed(0)} ms`);
     } catch (e) {
       set({ detecting: false, error: (e as Error).message });
@@ -196,7 +199,8 @@ export const useStore = create<State>((set, get) => ({
     else hidden.add(i);
     set({ hidden });
   },
-  select: (i) => set({ selected: get().selected === i ? null : i }),
+  select: (i) => set({ selected: get().selected === i ? null : i, selectedClass: null }),
+  selectClass: (className) => set({ selectedClass: get().selectedClass === className ? null : className, selected: null }),
   setSyntheticTrails: (v) => set({ syntheticTrails: v }),
   setPlaying: (v) => set({ playing: v }),
   togglePanel: (id) => {

@@ -1,9 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Detections } from './components/Detections';
+import { DetectionShelf } from './components/DetectionShelf';
 import { Export } from './components/Export';
+import { MediaSetup } from './components/MediaSetup';
 import { Preview } from './components/Preview';
 import { Sidebar } from './components/Sidebar';
-import { TopBar } from './components/TopBar';
+import { StyleHero } from './components/StyleHero';
+import { TopBar, type StudioPanel } from './components/TopBar';
 import { useStore } from './store';
 
 export default function App() {
@@ -20,9 +23,9 @@ export default function App() {
   const setSynthetic = useStore((s) => s.setSyntheticTrails);
   const images = useStore((s) => s.images);
   const imageId = useStore((s) => s.imageId);
-  const detections = useStore((s) => s.detections);
-  const hidden = useStore((s) => s.hidden);
   const animated = style.line?.animation !== 'none' && (style.line?.speed ?? 0) > 0;
+  const [panel, setPanel] = useState<StudioPanel>(null);
+  const [detectionsOpen, setDetectionsOpen] = useState(false);
 
   useEffect(() => {
     boot();
@@ -45,45 +48,34 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar />
-      <main className="layout">
-        <Sidebar />
-        <section className="workspace" aria-label="Live preview">
-          <header className="workspace-head">
-            <div className="file-name mono">
-              <span>{img?.name ?? '—'}</span>
-              <span className="dim">
-                · {detections.length - hidden.size} objects · {renderMs ? `${renderMs.toFixed(0)} ms` : ''}
-              </span>
-            </div>
-            <div className="workspace-actions">
-              <label className={`pill-toggle ${synthetic ? 'on' : ''}`} title="Preview trails on a still image">
-                <input type="checkbox" checked={synthetic} onChange={(e) => setSynthetic(e.target.checked)} />
-                trail preview
-              </label>
-              <button type="button" className={`icon-button ${playing ? 'active' : ''}`} onClick={() => setPlaying(!playing)} disabled={!animated} title={animated ? 'Play / pause animation (Space)' : 'Enable a line animation to play'}>
-                {playing ? '❚❚' : '▶'}
-              </button>
-              <button type="button" className="icon-button" onClick={resetStyle} title="Reset to preset (R)">
-                ↺
-              </button>
-            </div>
-          </header>
-          <div className="canvas-wrap">
-            <Preview />
+      <TopBar panel={panel} onPanelChange={(next) => { setPanel(next); setDetectionsOpen(false); }} onOpenDetections={() => { setPanel(null); setDetectionsOpen(true); }} />
+      <main className="studio-stage" aria-label="visionstyle live preview">
+        <StyleHero onFineTune={() => { setPanel('style'); setDetectionsOpen(false); }} />
+        <section className="cinema" aria-label="Live preview">
+          <div className="cinema-meta mono"><span>Live scene</span><span>{img?.name ?? 'Choose a source'} {renderMs ? `· ${renderMs.toFixed(0)} ms` : ''}</span></div>
+          <div className="cinema-canvas"><Preview /></div>
+          <DetectionShelf />
+          <div className="cinema-controls">
+            <label className={`stage-toggle ${synthetic ? 'on' : ''}`} title="Preview trails on a still image"><input type="checkbox" checked={synthetic} onChange={(event) => setSynthetic(event.target.checked)} /><span /> trails</label>
+            <button type="button" className={`playback ${playing ? 'active' : ''}`} onClick={() => setPlaying(!playing)} disabled={!animated} title={animated ? 'Play or pause animated overlay (Space)' : 'Enable line animation in Style to play'}><b>{playing ? 'Ⅱ' : '▶'}</b> {playing ? 'Playing' : 'Preview motion'}</button>
+            <button type="button" className="reset-stage" onClick={resetStyle} title="Reset to preset (R)">Reset style</button>
+            <span className="stage-hint">{animated ? 'Space to play · double-click for 1:1' : 'Turn on motion in Style to play'}</span>
           </div>
-          <footer className="workspace-foot mono">
-            <span>preview renders with the python package · what you see is what you ship</span>
-            <span className="shortcut">
-              <kbd>Space</kbd> play <kbd>R</kbd> reset <kbd>dbl-click</kbd> 1:1
-            </span>
-          </footer>
         </section>
-        <aside className="rail">
-          <Detections />
-          <Export />
-        </aside>
       </main>
+
+      <div className={`drawer-scrim ${panel || detectionsOpen ? 'visible' : ''}`} onClick={() => { setPanel(null); setDetectionsOpen(false); }} />
+      <aside className={`studio-drawer ${panel ? 'open' : ''}`} aria-hidden={!panel}>
+        <div className="drawer-bar"><span className="mono">{panel === 'style' ? 'Style controls' : panel === 'media' ? 'Media setup' : 'Export settings'}</span><button type="button" onClick={() => setPanel(null)} aria-label="Close panel">×</button></div>
+        {panel === 'media' && <MediaSetup />}
+        {panel === 'style' && <Sidebar />}
+        {panel === 'export' && <Export />}
+      </aside>
+      <aside className={`detections-drawer ${detectionsOpen ? 'open' : ''}`} aria-hidden={!detectionsOpen}>
+        <div className="drawer-bar"><span className="mono">Scene detections</span><button type="button" onClick={() => setDetectionsOpen(false)} aria-label="Close detections">×</button></div>
+        <p className="detection-intro">Open only when you need to isolate or suppress an object. The scene stays clean by default.</p>
+        <Detections />
+      </aside>
       <div className={`toast ${toast ? 'show' : ''}`} role="status">
         {toast}
       </div>
