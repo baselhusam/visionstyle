@@ -1,0 +1,1064 @@
+{
+  "$defs": {
+    "BoxStyle": {
+      "additionalProperties": false,
+      "description": "Geometry of the box outline.",
+      "properties": {
+        "shape": {
+          "default": "rectangle",
+          "description": "Outline construction.",
+          "enum": [
+            "rectangle",
+            "rounded",
+            "corners",
+            "reticle",
+            "none"
+          ],
+          "title": "Shape",
+          "type": "string"
+        },
+        "corner_radius": {
+          "default": 10,
+          "description": "Radius for `rounded` (ref px).",
+          "maximum": 200,
+          "minimum": 0,
+          "title": "Corner Radius",
+          "type": "number"
+        },
+        "corner_length": {
+          "default": 0.22,
+          "description": "Bracket length for `corners`: <=1 is a fraction of the short side, else px.",
+          "maximum": 400,
+          "minimum": 0,
+          "title": "Corner Length",
+          "type": "number"
+        },
+        "corner_curve": {
+          "default": false,
+          "description": "Round the elbow of corner brackets.",
+          "title": "Corner Curve",
+          "type": "boolean"
+        },
+        "double_line": {
+          "default": false,
+          "description": "Draw a second, thinner outline inside the first.",
+          "title": "Double Line",
+          "type": "boolean"
+        },
+        "double_gap": {
+          "default": 4,
+          "description": "Gap between the two lines (ref px).",
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Double Gap",
+          "type": "number"
+        },
+        "double_opacity": {
+          "default": 0.45,
+          "description": "Opacity of the inner line.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Double Opacity",
+          "type": "number"
+        },
+        "reticle_length": {
+          "default": 14,
+          "description": "Tick length for `reticle` (ref px).",
+          "maximum": 200,
+          "minimum": 2,
+          "title": "Reticle Length",
+          "type": "number"
+        },
+        "center_mark": {
+          "default": false,
+          "description": "Draw a small cross at the box center.",
+          "title": "Center Mark",
+          "type": "boolean"
+        }
+      },
+      "title": "BoxStyle",
+      "type": "object"
+    },
+    "ColorGrade": {
+      "additionalProperties": false,
+      "description": "Whole-frame color treatment, for cinematic presets.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "contrast": {
+          "default": 1.05,
+          "maximum": 2,
+          "minimum": 0.5,
+          "title": "Contrast",
+          "type": "number"
+        },
+        "saturation": {
+          "default": 1.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Saturation",
+          "type": "number"
+        },
+        "temperature": {
+          "default": 0.0,
+          "description": "<0 cools, >0 warms.",
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "lift": {
+          "default": 0.0,
+          "description": "Black-level offset.",
+          "maximum": 0.3,
+          "minimum": -0.3,
+          "title": "Lift",
+          "type": "number"
+        },
+        "monochrome": {
+          "default": false,
+          "title": "Monochrome",
+          "type": "boolean"
+        }
+      },
+      "title": "ColorGrade",
+      "type": "object"
+    },
+    "EffectsStyle": {
+      "additionalProperties": false,
+      "properties": {
+        "glow": {
+          "$ref": "#/$defs/GlowEffect"
+        },
+        "shadow": {
+          "$ref": "#/$defs/ShadowEffect"
+        },
+        "glass": {
+          "$ref": "#/$defs/GlassEffect"
+        },
+        "grain": {
+          "$ref": "#/$defs/GrainEffect"
+        },
+        "vignette": {
+          "$ref": "#/$defs/VignetteEffect"
+        },
+        "grade": {
+          "$ref": "#/$defs/ColorGrade"
+        },
+        "dim_outside": {
+          "default": 0.0,
+          "description": "Darken everything outside the boxes (spotlight effect).",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Dim Outside",
+          "type": "number"
+        }
+      },
+      "title": "EffectsStyle",
+      "type": "object"
+    },
+    "FillStyle": {
+      "additionalProperties": false,
+      "description": "Interior fill of the box.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "opacity": {
+          "default": 0.15,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "color": {
+          "default": "inherit",
+          "description": "`inherit` follows the stroke color.",
+          "format": "color",
+          "specials": [
+            "confidence",
+            "inherit",
+            "palette"
+          ],
+          "title": "Color",
+          "type": "string"
+        },
+        "mode": {
+          "default": "solid",
+          "enum": [
+            "solid",
+            "gradient",
+            "hatch"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "gradient_direction": {
+          "default": "down",
+          "enum": [
+            "down",
+            "up",
+            "left",
+            "right",
+            "radial"
+          ],
+          "title": "Gradient Direction",
+          "type": "string"
+        },
+        "gradient_start": {
+          "default": 1.0,
+          "description": "Opacity multiplier at the start.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Gradient Start",
+          "type": "number"
+        },
+        "gradient_end": {
+          "default": 0.0,
+          "description": "Opacity multiplier at the end.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Gradient End",
+          "type": "number"
+        },
+        "hatch_spacing": {
+          "default": 8,
+          "description": "Distance between hatch lines (ref px).",
+          "maximum": 100,
+          "minimum": 2,
+          "title": "Hatch Spacing",
+          "type": "number"
+        },
+        "hatch_angle": {
+          "default": 45,
+          "description": "Hatch angle in degrees.",
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Hatch Angle",
+          "type": "number"
+        },
+        "hatch_thickness": {
+          "default": 1.0,
+          "maximum": 10,
+          "minimum": 0.5,
+          "title": "Hatch Thickness",
+          "type": "number"
+        }
+      },
+      "title": "FillStyle",
+      "type": "object"
+    },
+    "GlassEffect": {
+      "additionalProperties": false,
+      "description": "Frosted-glass blur behind the fill and/or the label.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "blur": {
+          "default": 10,
+          "description": "Blur radius (ref px).",
+          "maximum": 80,
+          "minimum": 1,
+          "title": "Blur",
+          "type": "number"
+        },
+        "opacity": {
+          "default": 0.75,
+          "description": "How much the blur replaces the original.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "tint": {
+          "default": "#ffffff",
+          "description": "",
+          "format": "color",
+          "specials": [
+            "inherit"
+          ],
+          "title": "Tint",
+          "type": "string"
+        },
+        "tint_opacity": {
+          "default": 0.18,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Tint Opacity",
+          "type": "number"
+        },
+        "apply_to": {
+          "default": "both",
+          "enum": [
+            "fill",
+            "label",
+            "both"
+          ],
+          "title": "Apply To",
+          "type": "string"
+        },
+        "brighten": {
+          "default": 0.08,
+          "description": "Lift/darken the blurred region.",
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "Brighten",
+          "type": "number"
+        }
+      },
+      "title": "GlassEffect",
+      "type": "object"
+    },
+    "GlowEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "radius": {
+          "default": 12,
+          "description": "Blur radius (ref px).",
+          "maximum": 120,
+          "minimum": 1,
+          "title": "Radius",
+          "type": "number"
+        },
+        "intensity": {
+          "default": 0.8,
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        },
+        "color": {
+          "default": "inherit",
+          "description": "",
+          "format": "color",
+          "specials": [
+            "inherit"
+          ],
+          "title": "Color",
+          "type": "string"
+        },
+        "apply_to": {
+          "default": "stroke",
+          "enum": [
+            "stroke",
+            "label",
+            "both"
+          ],
+          "title": "Apply To",
+          "type": "string"
+        }
+      },
+      "title": "GlowEffect",
+      "type": "object"
+    },
+    "GrainEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "amount": {
+          "default": 0.08,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "seed": {
+          "default": 7,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "title": "GrainEffect",
+      "type": "object"
+    },
+    "LabelStyle": {
+      "additionalProperties": false,
+      "description": "Text tag with class name / confidence / tracking id.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "components": {
+          "description": "Ordered parts of the label. Add/remove/reorder freely.",
+          "items": {
+            "enum": [
+              "text",
+              "confidence",
+              "track_id",
+              "class_id",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "title": "Components",
+          "type": "array"
+        },
+        "anchor": {
+          "default": "top_left",
+          "description": "Where the tag sits relative to the box.",
+          "enum": [
+            "top_left",
+            "top_center",
+            "top_right",
+            "bottom_left",
+            "bottom_center",
+            "bottom_right",
+            "left",
+            "right",
+            "center"
+          ],
+          "title": "Anchor",
+          "type": "string"
+        },
+        "placement": {
+          "default": "outside",
+          "enum": [
+            "outside",
+            "inside"
+          ],
+          "title": "Placement",
+          "type": "string"
+        },
+        "orientation": {
+          "default": "auto",
+          "description": "`auto` rotates the tag for `left`/`right` anchors.",
+          "enum": [
+            "auto",
+            "horizontal",
+            "vertical"
+          ],
+          "title": "Orientation",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "description": "Extra distance from the box edge (ref px).",
+          "maximum": 100,
+          "minimum": -100,
+          "title": "Offset",
+          "type": "number"
+        },
+        "attached": {
+          "default": true,
+          "description": "Flush with the outline (True) or floating (False).",
+          "title": "Attached",
+          "type": "boolean"
+        },
+        "font": {
+          "default": "inter",
+          "description": "`inter`, `mono`, or a path to a .ttf/.otf file.",
+          "title": "Font",
+          "type": "string"
+        },
+        "font_size": {
+          "default": 14,
+          "description": "Font size (ref px).",
+          "maximum": 120,
+          "minimum": 4,
+          "title": "Font Size",
+          "type": "number"
+        },
+        "font_weight": {
+          "default": 600,
+          "description": "Weight for variable fonts.",
+          "maximum": 900,
+          "minimum": 100,
+          "title": "Font Weight",
+          "type": "integer"
+        },
+        "uppercase": {
+          "default": false,
+          "title": "Uppercase",
+          "type": "boolean"
+        },
+        "text_color": {
+          "default": "auto",
+          "description": "`auto` picks black/white for contrast; `inherit` uses the box color.",
+          "format": "color",
+          "specials": [
+            "auto",
+            "inherit"
+          ],
+          "title": "Text Color",
+          "type": "string"
+        },
+        "background": {
+          "default": "solid",
+          "enum": [
+            "none",
+            "solid",
+            "pill",
+            "glass",
+            "underline"
+          ],
+          "title": "Background",
+          "type": "string"
+        },
+        "background_color": {
+          "default": "inherit",
+          "description": "",
+          "format": "color",
+          "specials": [
+            "confidence",
+            "inherit",
+            "palette"
+          ],
+          "title": "Background Color",
+          "type": "string"
+        },
+        "background_opacity": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Background Opacity",
+          "type": "number"
+        },
+        "padding_x": {
+          "default": 7,
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Padding X",
+          "type": "number"
+        },
+        "padding_y": {
+          "default": 4,
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Padding Y",
+          "type": "number"
+        },
+        "radius": {
+          "default": 3,
+          "description": "Corner radius of `solid` backgrounds.",
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Radius",
+          "type": "number"
+        },
+        "border": {
+          "default": false,
+          "description": "Thin outline around the tag.",
+          "title": "Border",
+          "type": "boolean"
+        },
+        "separator": {
+          "default": "  ",
+          "description": "Text between components.",
+          "maxLength": 8,
+          "title": "Separator",
+          "type": "string"
+        },
+        "confidence_format": {
+          "default": "0.92",
+          "enum": [
+            "0.92",
+            "92%",
+            "92",
+            ".92"
+          ],
+          "title": "Confidence Format",
+          "type": "string"
+        },
+        "track_id_format": {
+          "default": "#{id}",
+          "maxLength": 24,
+          "title": "Track Id Format",
+          "type": "string"
+        },
+        "class_id_format": {
+          "default": "[{id}]",
+          "maxLength": 24,
+          "title": "Class Id Format",
+          "type": "string"
+        },
+        "custom_template": {
+          "default": "",
+          "description": "Python format string for the `custom` component, e.g. `{name} \u00b7 {conf:.0%}`. Fields: name, conf, id, class_id, data.",
+          "maxLength": 200,
+          "title": "Custom Template",
+          "type": "string"
+        },
+        "min_confidence": {
+          "default": 0.0,
+          "description": "Hide the label below this confidence.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Min Confidence",
+          "type": "number"
+        },
+        "max_width_fraction": {
+          "default": 0.0,
+          "description": "If > 0, truncate labels wider than this fraction of the image.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Max Width Fraction",
+          "type": "number"
+        }
+      },
+      "title": "LabelStyle",
+      "type": "object"
+    },
+    "LinePattern": {
+      "additionalProperties": false,
+      "description": "How the outline stroke is patterned and animated.",
+      "properties": {
+        "pattern": {
+          "default": "solid",
+          "enum": [
+            "solid",
+            "dashed",
+            "dotted"
+          ],
+          "title": "Pattern",
+          "type": "string"
+        },
+        "dash_length": {
+          "default": 12,
+          "description": "Dash length (ref px).",
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Dash Length",
+          "type": "number"
+        },
+        "gap_length": {
+          "default": 8,
+          "description": "Gap between dashes/dots (ref px).",
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Gap Length",
+          "type": "number"
+        },
+        "dot_radius": {
+          "default": 1.5,
+          "description": "Dot radius for `dotted` (ref px).",
+          "maximum": 20,
+          "minimum": 0.5,
+          "title": "Dot Radius",
+          "type": "number"
+        },
+        "multicolor": {
+          "default": "none",
+          "description": "`segments` alternates `segment_colors`; `gradient` sweeps the perimeter.",
+          "enum": [
+            "none",
+            "segments",
+            "gradient"
+          ],
+          "title": "Multicolor",
+          "type": "string"
+        },
+        "segment_colors": {
+          "description": "Colors used by `multicolor`.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Segment Colors",
+          "type": "array"
+        },
+        "animation": {
+          "default": "none",
+          "description": "`march` moves dashes along the outline, `hue_cycle` rotates hue, `pulse` breathes opacity.",
+          "enum": [
+            "none",
+            "march",
+            "hue_cycle",
+            "pulse"
+          ],
+          "title": "Animation",
+          "type": "string"
+        },
+        "speed": {
+          "default": 1.0,
+          "description": "Animation speed multiplier.",
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Speed",
+          "type": "number"
+        }
+      },
+      "title": "LinePattern",
+      "type": "object"
+    },
+    "PaletteSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "colors": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "default",
+          "description": "Built-in palette name or explicit list of colors.",
+          "title": "Colors"
+        },
+        "by": {
+          "default": "class",
+          "description": "What `palette` colors are keyed on.",
+          "enum": [
+            "class",
+            "track",
+            "single"
+          ],
+          "title": "By",
+          "type": "string"
+        },
+        "class_colors": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Per-class overrides, keyed by class name or id.",
+          "title": "Class Colors",
+          "type": "object"
+        }
+      },
+      "title": "PaletteSpec",
+      "type": "object"
+    },
+    "ShadowEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "offset_x": {
+          "default": 2,
+          "maximum": 60,
+          "minimum": -60,
+          "title": "Offset X",
+          "type": "number"
+        },
+        "offset_y": {
+          "default": 3,
+          "maximum": 60,
+          "minimum": -60,
+          "title": "Offset Y",
+          "type": "number"
+        },
+        "blur": {
+          "default": 6,
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Blur",
+          "type": "number"
+        },
+        "opacity": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "color": {
+          "default": "#000000",
+          "description": "",
+          "format": "color",
+          "specials": [],
+          "title": "Color",
+          "type": "string"
+        }
+      },
+      "title": "ShadowEffect",
+      "type": "object"
+    },
+    "StrokeStyle": {
+      "additionalProperties": false,
+      "description": "The main outline stroke.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "thickness": {
+          "default": 2.0,
+          "description": "Line weight (ref px).",
+          "maximum": 40,
+          "minimum": 0.5,
+          "title": "Thickness",
+          "type": "number"
+        },
+        "opacity": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "color": {
+          "default": "palette",
+          "description": "Hex / rgb() / name, or `palette` (per class/track) or `confidence` (red\u2192green ramp).",
+          "format": "color",
+          "specials": [
+            "confidence",
+            "palette"
+          ],
+          "title": "Color",
+          "type": "string"
+        }
+      },
+      "title": "StrokeStyle",
+      "type": "object"
+    },
+    "TrailStyle": {
+      "additionalProperties": false,
+      "description": "Motion trail drawn from the tracking history of each `track_id`.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "length": {
+          "default": 30,
+          "description": "Number of past positions to keep.",
+          "maximum": 600,
+          "minimum": 2,
+          "title": "Length",
+          "type": "integer"
+        },
+        "anchor": {
+          "default": "bottom_center",
+          "enum": [
+            "center",
+            "bottom_center",
+            "top_center"
+          ],
+          "title": "Anchor",
+          "type": "string"
+        },
+        "line": {
+          "default": "solid",
+          "enum": [
+            "solid",
+            "dotted",
+            "dashed",
+            "ribbon"
+          ],
+          "title": "Line",
+          "type": "string"
+        },
+        "thickness": {
+          "default": 3,
+          "maximum": 40,
+          "minimum": 0.5,
+          "title": "Thickness",
+          "type": "number"
+        },
+        "color": {
+          "default": "inherit",
+          "description": "",
+          "format": "color",
+          "specials": [
+            "inherit",
+            "palette"
+          ],
+          "title": "Color",
+          "type": "string"
+        },
+        "opacity": {
+          "default": 0.9,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Opacity",
+          "type": "number"
+        },
+        "fade_opacity": {
+          "default": true,
+          "description": "Older segments become transparent.",
+          "title": "Fade Opacity",
+          "type": "boolean"
+        },
+        "fade_thickness": {
+          "default": true,
+          "description": "Older segments become thinner.",
+          "title": "Fade Thickness",
+          "type": "boolean"
+        },
+        "smoothing": {
+          "default": 3,
+          "description": "Moving-average window over positions.",
+          "maximum": 15,
+          "minimum": 1,
+          "title": "Smoothing",
+          "type": "integer"
+        },
+        "max_age": {
+          "default": 30,
+          "description": "Frames a lost track is kept before dropping.",
+          "maximum": 600,
+          "minimum": 1,
+          "title": "Max Age",
+          "type": "integer"
+        },
+        "show_points": {
+          "default": false,
+          "title": "Show Points",
+          "type": "boolean"
+        },
+        "point_radius": {
+          "default": 3,
+          "maximum": 30,
+          "minimum": 0.5,
+          "title": "Point Radius",
+          "type": "number"
+        },
+        "glow": {
+          "default": false,
+          "description": "Soft glow under the trail.",
+          "title": "Glow",
+          "type": "boolean"
+        },
+        "dash_length": {
+          "default": 10,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Dash Length",
+          "type": "number"
+        },
+        "gap_length": {
+          "default": 8,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Gap Length",
+          "type": "number"
+        }
+      },
+      "title": "TrailStyle",
+      "type": "object"
+    },
+    "VignetteEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "strength": {
+          "default": 0.45,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Strength",
+          "type": "number"
+        },
+        "radius": {
+          "default": 0.85,
+          "description": "Clear-area radius as a fraction.",
+          "maximum": 2.0,
+          "minimum": 0.2,
+          "title": "Radius",
+          "type": "number"
+        }
+      },
+      "title": "VignetteEffect",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A complete visual style. Load with :meth:`Style.preset` / :meth:`Style.load`.",
+  "properties": {
+    "schema_version": {
+      "default": 1,
+      "description": "Written on save; used for migrations.",
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "name": {
+      "default": "custom",
+      "maxLength": 64,
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "maxLength": 300,
+      "title": "Description",
+      "type": "string"
+    },
+    "palette": {
+      "$ref": "#/$defs/PaletteSpec"
+    },
+    "confidence_threshold": {
+      "default": 0.0,
+      "description": "Hide detections below this.",
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence Threshold",
+      "type": "number"
+    },
+    "scale": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "const": "auto",
+          "type": "string"
+        }
+      ],
+      "default": "auto",
+      "description": "`auto` scales sizes with image resolution (1080p \u2248 1.0).",
+      "title": "Scale"
+    },
+    "fps": {
+      "default": 30,
+      "description": "Frame rate assumed for animations.",
+      "exclusiveMinimum": 0,
+      "maximum": 240,
+      "title": "Fps",
+      "type": "number"
+    },
+    "box": {
+      "$ref": "#/$defs/BoxStyle"
+    },
+    "stroke": {
+      "$ref": "#/$defs/StrokeStyle"
+    },
+    "fill": {
+      "$ref": "#/$defs/FillStyle"
+    },
+    "line": {
+      "$ref": "#/$defs/LinePattern"
+    },
+    "label": {
+      "$ref": "#/$defs/LabelStyle"
+    },
+    "effects": {
+      "$ref": "#/$defs/EffectsStyle"
+    },
+    "trail": {
+      "$ref": "#/$defs/TrailStyle"
+    }
+  },
+  "title": "Style",
+  "type": "object"
+}
