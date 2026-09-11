@@ -84,18 +84,33 @@ class Layer:
         """Alpha-composite a solid ``color`` through ``mask`` (uint8 0-255 or float 0-1)."""
         if roi.empty or opacity <= 0:
             return
-        a: F32 = (
-            mask.astype(np.float32) / 255.0 if mask.dtype == np.uint8 else mask.astype(np.float32)
-        )
+        tight = _tight_bbox(mask)
+        if tight is None:
+            return
+        x0, y0, x1, y1 = tight
+        sub = mask[y0:y1, x0:x1]
+        a: F32 = sub.astype(np.float32) / 255.0 if sub.dtype == np.uint8 else sub.astype(np.float32)
         if opacity != 1.0:
             a = (a * np.float32(opacity)).astype(np.float32)
-        self._over(a, np.array((color[2], color[1], color[0]), np.float32), roi)
+        self._over(
+            a,
+            np.array((color[2], color[1], color[0]), np.float32),
+            ROI(roi.x0 + x0, roi.y0 + y0, roi.x0 + x1, roi.y0 + y1),
+        )
 
     def paint_rgb(self, bgr: F32, alpha: F32, roi: ROI) -> None:
         """Composite an arbitrary colored patch (``bgr`` float32 0-255, ``alpha`` float32 0-1)."""
         if roi.empty:
             return
-        self._over(alpha, bgr, roi)
+        tight = _tight_bbox(alpha)
+        if tight is None:
+            return
+        x0, y0, x1, y1 = tight
+        self._over(
+            alpha[y0:y1, x0:x1],
+            bgr[y0:y1, x0:x1],
+            ROI(roi.x0 + x0, roi.y0 + y0, roi.x0 + x1, roi.y0 + y1),
+        )
 
     def _over(self, a: F32, src: F32, roi: ROI) -> None:
         ys, xs = slice(roi.y0, roi.y1), slice(roi.x0, roi.x1)
@@ -126,6 +141,17 @@ class Layer:
 
     def is_empty(self) -> bool:
         return not bool(self.alpha.any())
+
+
+def _tight_bbox(mask: U8 | F32) -> tuple[int, int, int, int] | None:
+    """Bounding box (x0, y0, x1, y1) of the non-zero area of ``mask``, or None if empty."""
+    if mask.size == 0:
+        return None
+    nz = mask if mask.dtype == np.uint8 else (mask > 1e-4).astype(np.uint8)
+    x, y, w, h = cv2.boundingRect(nz)
+    if w == 0 or h == 0:
+        return None
+    return x, y, x + w, y + h
 
 
 def gaussian(mask: F32 | U8, radius: float) -> F32:

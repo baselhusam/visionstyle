@@ -413,9 +413,9 @@ class Annotator:
         peak = float(soft.max()) if soft.size else 0.0
         if peak > 0:
             soft = soft / peak
-        layer.paint(np.clip(soft * g.intensity * 0.9, 0, 1).astype(np.float32), color, 1.0, roi)
         tight = gaussian(mask, radius / 3) / 255.0
-        layer.paint(np.clip(tight * g.intensity * 0.5, 0, 1).astype(np.float32), color, 1.0, roi)
+        halo = np.clip(soft * (g.intensity * 0.9) + tight * (g.intensity * 0.5), 0, 1)
+        layer.paint(halo.astype(np.float32), color, 1.0, roi)
 
     def _draw_shadow(
         self, layer: Layer, paths: list[shapes.Path], thickness: float, s: float, roi: ROI
@@ -687,6 +687,8 @@ class Annotator:
                 continue
             n = len(pts) - 1
             union = layer.blank_mask(roi)
+            # accumulate each segment's faded alpha into one float mask, then paint once
+            acc = np.zeros((roi.height, roi.width), np.float32)
             if ts.line == "dotted":
                 for i, p in enumerate(pts):
                     age = 1 - i / max(1, n)
@@ -696,7 +698,7 @@ class Annotator:
                     )
                     m = layer.blank_mask(roi)
                     shapes.draw_dot(m, p, r, roi.x0, roi.y0)
-                    layer.paint(m, color, a, roi)
+                    np.maximum(acc, m.astype(np.float32) * np.float32(a / 255.0), out=acc)
                     np.maximum(union, m, out=union)
             else:
                 buckets = 12 if ts.fade_opacity or ts.fade_thickness else 1
@@ -715,8 +717,9 @@ class Annotator:
                             shapes.draw_polyline(m, d, t_px, roi.x0, roi.y0)
                     else:
                         shapes.draw_polyline(m, seg, t_px, roi.x0, roi.y0)
-                    layer.paint(m, color, a, roi)
+                    np.maximum(acc, m.astype(np.float32) * np.float32(a / 255.0), out=acc)
                     np.maximum(union, m, out=union)
+            layer.paint(acc, color, 1.0, roi)
             if ts.show_points and ts.line != "dotted":
                 m = layer.blank_mask(roi)
                 for p in pts:
