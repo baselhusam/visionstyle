@@ -1,0 +1,14 @@
+schema_version: 1
+name: dashed
+description: Dashed perimeter with marching ants when animated.
+palette: {colors: default, by: class}
+box: {shape: rectangle}
+stroke: {thickness: 2}
+line: {pattern: dashed, dash_length: 10, gap_length: 7, animation: march, speed: 1}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 0
+  font_size: 13

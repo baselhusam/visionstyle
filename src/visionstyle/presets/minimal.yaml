@@ -1,0 +1,17 @@
+schema_version: 1
+name: minimal
+description: Hairline outline and bare text. Just the essentials.
+palette: {colors: mono, by: single}
+box: {shape: rectangle}
+stroke: {thickness: 1, opacity: 0.9}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  background: none
+  text_color: inherit
+  font_size: 13
+  font_weight: 500
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 1, blur: 3, opacity: 0.6}

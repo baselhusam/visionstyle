@@ -1,0 +1,22 @@
+schema_version: 1
+name: glass
+description: Frosted-glass fill and label with a bright hairline edge.
+palette: {colors: mono, by: single}
+box: {shape: rounded, corner_radius: 12}
+stroke: {thickness: 1.5, opacity: 0.85}
+fill: {enabled: false}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 5
+  background: glass
+  border: true
+  padding_x: 10
+  padding_y: 5
+  font_size: 13
+  radius: 8
+effects:
+  glass: {enabled: true, blur: 7, opacity: 0.55, tint: '#ffffff', tint_opacity: 0.12, apply_to: both, brighten: 0.04}
+  shadow: {enabled: true, offset_x: 0, offset_y: 4, blur: 10, opacity: 0.35}

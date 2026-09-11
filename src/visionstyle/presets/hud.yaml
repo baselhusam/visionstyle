@@ -1,0 +1,32 @@
+schema_version: 1
+name: hud
+description: Dense tactical overlay - double frame, reticle marks, inside mono labels, dotted trails.
+palette: {colors: warm, by: single}
+box: {shape: corners, corner_length: 0.3, double_line: true, double_gap: 5, double_opacity: 0.4, center_mark: true}
+stroke: {thickness: 1.5}
+fill: {enabled: true, opacity: 0.08, mode: hatch, hatch_spacing: 9, hatch_angle: -45, hatch_thickness: 0.8}
+label:
+  components: [track_id, text, confidence]
+  anchor: top_left
+  placement: inside
+  attached: true
+  offset: 4
+  background: none
+  text_color: inherit
+  font: mono
+  font_size: 12
+  uppercase: true
+  separator: ' · '
+  confidence_format: '92%'
+  track_id_format: 'ID {id}'
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 1, blur: 2, opacity: 0.7}
+  grade: {enabled: true, contrast: 1.08, saturation: 0.85, temperature: -0.25}
+  grain: {enabled: true, amount: 0.05}
+trail:
+  enabled: true
+  length: 40
+  line: dotted
+  point_radius: 2
+  fade_opacity: true
+  fade_thickness: true

@@ -1,0 +1,17 @@
+schema_version: 1
+name: rounded
+description: Soft rounded corners, a gentle tint fill and pill labels.
+palette: {colors: pastel, by: class}
+box: {shape: rounded, corner_radius: 14}
+stroke: {thickness: 2.5}
+fill: {enabled: true, opacity: 0.16, mode: gradient, gradient_direction: down, gradient_start: 1, gradient_end: 0.15}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 4
+  background: pill
+  padding_x: 10
+  padding_y: 4
+  font_size: 13

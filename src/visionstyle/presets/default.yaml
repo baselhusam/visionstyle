@@ -1,0 +1,16 @@
+schema_version: 1
+name: default
+description: Clean, legible boxes with a solid tag. A sensible starting point.
+palette:
+  colors: default
+  by: class
+box:
+  shape: rectangle
+stroke:
+  thickness: 2
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 2

@@ -1,0 +1,27 @@
+schema_version: 1
+name: neon
+description: Glowing gradient outlines that cycle hue over time.
+palette: {colors: neon, by: class}
+box: {shape: rounded, corner_radius: 8}
+stroke: {thickness: 2.5}
+line:
+  multicolor: gradient
+  segment_colors: ['#00f0ff', '#ff2bd6', '#c8ff00']
+  animation: hue_cycle
+  speed: 0.6
+label:
+  components: [text, confidence]
+  anchor: top_center
+  placement: outside
+  attached: false
+  offset: 6
+  background: pill
+  background_color: '#0b0d12'
+  background_opacity: 0.85
+  text_color: '#f4f4ff'
+  border: true
+  font_size: 13
+  padding_x: 10
+effects:
+  glow: {enabled: true, radius: 14, intensity: 1.0, apply_to: both}
+  vignette: {enabled: true, strength: 0.35}

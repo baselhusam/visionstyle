@@ -1,0 +1,20 @@
+schema_version: 1
+name: spotlight
+description: Dims everything outside the detections and labels from below.
+palette: {colors: mono, by: single}
+box: {shape: rounded, corner_radius: 6}
+stroke: {thickness: 1.5, opacity: 0.95}
+label:
+  components: [text, confidence]
+  anchor: bottom_center
+  placement: outside
+  attached: false
+  offset: 6
+  background: pill
+  background_color: '#111214'
+  background_opacity: 0.8
+  text_color: '#f5f2ea'
+  font_size: 13
+effects:
+  dim_outside: 0.55
+  glow: {enabled: true, radius: 8, intensity: 0.4}

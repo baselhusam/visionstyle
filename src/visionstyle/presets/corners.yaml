@@ -1,0 +1,19 @@
+schema_version: 1
+name: corners
+description: Thin L-brackets with a monospace tag. Technical and measured.
+palette: {colors: default, by: class}
+box: {shape: corners, corner_length: 0.25}
+stroke: {thickness: 2}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 2
+  background: none
+  text_color: inherit
+  font: mono
+  font_size: 13
+  uppercase: true
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 1, blur: 3, opacity: 0.55}

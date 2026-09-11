@@ -1,0 +1,33 @@
+schema_version: 1
+name: cinematic
+description: Rounded amber/teal frames, gradient fill, pill labels, soft glow and a filmic grade.
+palette: {colors: cinematic, by: class}
+box: {shape: rounded, corner_radius: 10}
+stroke: {thickness: 2}
+fill: {enabled: true, opacity: 0.1, mode: gradient, gradient_direction: up, gradient_start: 1, gradient_end: 0}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 6
+  background: pill
+  background_opacity: 0.92
+  padding_x: 10
+  padding_y: 4
+  font_size: 13
+  font_weight: 600
+  confidence_format: '0.92'
+effects:
+  glow: {enabled: true, radius: 10, intensity: 0.55, apply_to: stroke}
+  shadow: {enabled: true, offset_x: 0, offset_y: 3, blur: 8, opacity: 0.45}
+  vignette: {enabled: true, strength: 0.5, radius: 0.9}
+  grade: {enabled: true, contrast: 1.08, saturation: 0.92, temperature: 0.12, lift: -0.01}
+  grain: {enabled: true, amount: 0.04}
+trail:
+  enabled: true
+  length: 36
+  line: ribbon
+  thickness: 3
+  opacity: 0.85
+  glow: true

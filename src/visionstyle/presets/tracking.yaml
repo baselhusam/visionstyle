@@ -1,0 +1,25 @@
+schema_version: 1
+name: tracking
+description: Track-first - bold trails colored per track, id leads the label.
+palette: {colors: default, by: track}
+box: {shape: rectangle}
+stroke: {thickness: 2}
+label:
+  components: [track_id, text]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 2
+  font_size: 13
+  track_id_format: '#{id}'
+trail:
+  enabled: true
+  length: 60
+  anchor: bottom_center
+  line: solid
+  thickness: 4
+  opacity: 0.95
+  fade_opacity: true
+  fade_thickness: true
+  show_points: false
+  smoothing: 3

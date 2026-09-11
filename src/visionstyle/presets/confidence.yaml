@@ -1,0 +1,14 @@
+schema_version: 1
+name: confidence
+description: Stroke and tag color follow the confidence score (red → amber → green).
+box: {shape: rectangle}
+stroke: {thickness: 2.5, color: confidence}
+fill: {enabled: true, opacity: 0.1, color: confidence}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  background_color: confidence
+  confidence_format: '92%'
+  font_size: 13
