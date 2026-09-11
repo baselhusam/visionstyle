@@ -59,6 +59,10 @@ dev = [
 [tool.hatch.version]
 path = "src/visionstyle/__init__.py"
 
+[tool.hatch.build]
+# the studio bundle is gitignored (built by `npm run build`) but must ship in the wheel
+artifacts = ["src/visionstyle/studio/static/**"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/visionstyle"]
 
