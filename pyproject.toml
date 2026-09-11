@@ -64,7 +64,6 @@ packages = ["src/visionstyle"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/visionstyle", "README.md", "LICENSE", "CHANGELOG.md"]
-exclude = ["src/visionstyle/studio/static/.gitkeep"]
 
 [tool.ruff]
 line-length = 100

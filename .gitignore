@@ -15,7 +15,6 @@ htmlcov/
 studio/node_modules/
 studio/dist/
 src/visionstyle/studio/static/*
-!src/visionstyle/studio/static/.gitkeep
 
 # Models / outputs
 *.pt
