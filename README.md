@@ -23,6 +23,10 @@ frame = vs.annotate(frame, dets, style="cinematic")
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+**[Explore visionstyle on GitHub Pages →](https://baselhusam.github.io/visionstyle/)**
+
+The site deploys through GitHub Actions. Its static source and update notes live in [`site/README.md`](site/README.md).
+
 ---
 
 ## Install

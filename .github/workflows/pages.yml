@@ -1,0 +1,56 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble static site
+        run: |
+          set -euo pipefail
+          mkdir -p _site/images _site/fonts
+          cp -R site/. _site/
+
+          # Product imagery used by the landing page
+          cp docs/images/hero-cinematic.jpg docs/images/night-neon.jpg docs/images/gallery.jpg docs/images/studio.png _site/images/
+          cp docs/images/hero-chroma-press-light.png _site/images/og-banner.png
+
+          # Chroma Press lockups (light for paper surfaces, dark for the night preview boards)
+          cp assets/brand/chroma-press/chroma-press-light-lockup-transparent.png _site/images/visionstyle-lockup.png
+          cp assets/brand/chroma-press/chroma-press-dark-lockup-transparent.png _site/images/visionstyle-lockup-dark.png
+
+          # Package fonts (Inter + JetBrains Mono, SIL OFL)
+          cp src/visionstyle/assets/fonts/JetBrainsMono-Medium.ttf \
+             src/visionstyle/assets/fonts/JetBrainsMono-SemiBold.ttf \
+             src/visionstyle/assets/fonts/Inter-Variable.ttf _site/fonts/
+
+          # Brand guidelines + design system, published at /docs/ with their relative asset paths preserved
+          mkdir -p _site/docs/images _site/assets/brand _site/src/visionstyle/assets/fonts _site/src/visionstyle/assets/samples
+          cp docs/brand-guidelines.html docs/design-system.html _site/docs/
+          cp docs/images/hero-chroma-press-light.png docs/images/hero-chroma-press-dark.png _site/docs/images/
+          cp -R assets/brand/chroma-press _site/assets/brand/
+          cp src/visionstyle/assets/fonts/*.ttf _site/src/visionstyle/assets/fonts/
+          cp src/visionstyle/assets/samples/night.jpg _site/src/visionstyle/assets/samples/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

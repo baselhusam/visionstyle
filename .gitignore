@@ -29,3 +29,4 @@ out/
 .DS_Store
 .idea/
 .vscode/
+_site/
