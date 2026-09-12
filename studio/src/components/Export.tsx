@@ -93,13 +93,14 @@ export function Export() {
           <span>Save as preset</span>
         </div>
         <div className="save-row">
-          <input className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="preset name" spellCheck={false} />
+          <input aria-label="Preset name" className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="preset name" spellCheck={false} />
           <button type="button" className="btn primary" onClick={save} disabled={saving || !name.trim()}>
             {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
         <input
           className="text-input mono small"
+          aria-label="Preset directory"
           value={dir}
           onChange={(e) => setDir(e.target.value)}
           placeholder={info?.presets_dir ?? '~/.visionstyle/presets'}

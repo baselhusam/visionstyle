@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>visionstyle — Chroma Press Design System</title>
+  <style>
+    @font-face { font-family: VSMono; src: url("../src/visionstyle/assets/fonts/JetBrainsMono-Medium.ttf") format("truetype"); font-weight: 500; }
+    @font-face { font-family: VSMono; src: url("../src/visionstyle/assets/fonts/JetBrainsMono-SemiBold.ttf") format("truetype"); font-weight: 700; }
+    @font-face { font-family: VSSans; src: url("../src/visionstyle/assets/fonts/Inter-Variable.ttf") format("truetype"); font-weight: 100 900; }
+    :root {
+      --paper: #faf7f0; --paper-2: #f1ece2; --panel: #fffdf8; --ink: #111111; --ink-soft: #494740;
+      --muted: #767167; --line: #d2cbbf; --line-strong: #9f978a; --blue: #1558e8; --red: #ff382a;
+      --yellow: #ffd514; --pink: #f6a1c4; --green: #22b95a; --white: #fffdf7; --night: #121212;
+      --night-2: #1c1c1a; --night-3: #272723; --night-line: #45433e; --night-muted: #aaa499;
+      --danger: #e02d22; --warning: #d98800; --info: #1558e8; --focus: #1558e8;
+      --radius-1: 4px; --radius-2: 8px; --radius-pill: 999px; --shadow-1: 0 2px 0 rgb(17 17 17 / 16%);
+      --shadow-2: 10px 10px 0 var(--ink); --display: Georgia, "Times New Roman", serif; --sans: VSSans, sans-serif; --mono: VSMono, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { background:#d9d3c7; }
+    body { margin:0; color:var(--ink); background:#d9d3c7; font:13px/1.45 var(--sans); -webkit-font-smoothing:antialiased; }
+    img { display:block; max-width:100%; } button, input { font:inherit; }
+    .book { padding:44px 24px; }
+    .page { width:min(1160px,100%); min-height:1120px; margin:0 auto 42px; padding:46px 52px 54px; position:relative; overflow:hidden; background:var(--paper); box-shadow:0 18px 42px rgb(47 42 34 / 19%); }
+    .page::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; background-image:radial-gradient(#111 0.55px, transparent .7px); background-size:5px 5px; mix-blend-mode:multiply; }
+    .page > * { position:relative; z-index:1; }
+    .night-page { background:var(--night); color:var(--white); }
+    .night-page::after { mix-blend-mode:screen; opacity:.11; }
+    .meta, .eyebrow, .page-number, .caps, .token, .code { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+    .meta { display:flex; justify-content:space-between; gap:18px; color:var(--muted); }
+    .night-page .meta { color:var(--night-muted); } .eyebrow { margin:0 0 13px; color:var(--red); }
+    h1,h2,h3,p { margin-top:0; } h1 { max-width:960px; margin:0; font:400 clamp(70px,10vw,135px)/.8 var(--display); letter-spacing:-.085em; }
+    h2 { margin:0; font:400 62px/.89 var(--display); letter-spacing:-.067em; } h3 { margin:0 0 8px; font-size:15px; letter-spacing:-.025em; }
+    .lead { max-width:680px; margin:28px 0 0; font-size:20px; line-height:1.32; letter-spacing:-.025em; }
+    .body { color:var(--ink-soft); font-size:13px; line-height:1.55; } .night-page .body { color:#cec8bc; }
+    .page-number { position:absolute; right:52px; bottom:32px; color:var(--muted); } .night-page .page-number { color:var(--night-muted); }
+    .footer { position:absolute; left:52px; bottom:32px; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; } .night-page .footer { color:var(--night-muted); }
+    .section-heading { display:grid; grid-template-columns:146px 1fr; align-items:baseline; gap:24px; margin:58px 0 32px; }
+    .section-heading .eyebrow { margin:0; }.grid { display:grid; gap:20px; }.two { grid-template-columns:repeat(2,minmax(0,1fr)); }.three { grid-template-columns:repeat(3,minmax(0,1fr)); }.four { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .line { height:1px; margin:24px 0; background:var(--line); }.night-page .line { background:var(--night-line); }
+    .note { border-left:5px solid var(--red); padding:15px 18px; background:var(--paper-2); font-size:12px; line-height:1.47; }.night-page .note { background:var(--night-2); }
+    .card { min-width:0; border:1px solid var(--line); background:var(--panel); }.night-page .card { border-color:var(--night-line); background:var(--night-2); }
+    .card-copy { padding:15px; }.caption { margin:10px 0 0; color:var(--muted); font:10px/1.4 var(--mono); }.night-page .caption { color:var(--night-muted); }
+
+    /* cover */
+    .cover { min-height:1190px; display:flex; flex-direction:column; }.cover .meta { margin-bottom:90px; }.cover h1 em { color:var(--blue); font-style:normal; }.cover-sub { max-width:510px; margin-top:26px; font:12px/1.65 var(--mono); }.cover-logo { width:min(680px,78%); margin-top:auto; margin-bottom:116px; }.cover-rail { position:absolute; width:54%; height:31%; right:-5%; bottom:-6%; background:repeating-linear-gradient(135deg,var(--blue) 0 20px,var(--yellow) 20px 40px,var(--red) 40px 60px,var(--pink) 60px 80px,var(--ink) 80px 100px); clip-path:polygon(20% 0,100% 0,100% 100%,0 100%); transform:rotate(-5deg); }.corner-field { position:absolute; top:140px; right:58px; width:128px; height:128px; background:linear-gradient(var(--ink),var(--ink)) 0 0/45px 8px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 0/8px 45px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 0/45px 8px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 0/8px 45px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 100%/45px 8px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 100%/8px 45px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 100%/45px 8px no-repeat,linear-gradient(var(--ink),var(--ink)) 100% 100%/8px 45px no-repeat; }
+
+    /* token system */
+    .theme-board { overflow:hidden; border:1px solid var(--line); }.theme-head { display:flex; align-items:center; justify-content:space-between; min-height:42px; padding:0 14px; border-bottom:1px solid currentColor; font:10px var(--mono); letter-spacing:.1em; text-transform:uppercase; }.light-board { color:var(--ink); background:var(--paper); }.dark-board { color:var(--white); background:var(--night); border-color:var(--night-line); }.token-row { display:grid; grid-template-columns:32px 1fr auto; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid rgb(127 120 105 / 25%); }.dark-board .token-row { border-color:var(--night-line); }.token-row:last-child { border:0; }.dot { width:18px; height:18px; border-radius:50%; border:1px solid rgb(17 17 17 / 18%); }.token-row strong { font-size:11px; }.token-row code { color:var(--muted); font:10px var(--mono); }.dark-board code { color:var(--night-muted); }
+    .spacing { display:grid; grid-template-columns:repeat(8,1fr); align-items:end; gap:10px; padding:18px; background:var(--paper-2); }.spacing div { display:grid; gap:7px; justify-items:center; font:9px var(--mono); }.spacing i { display:block; width:16px; background:var(--blue); }.s4 {height:4px}.s8 {height:8px}.s12 {height:12px}.s16 {height:16px}.s24 {height:24px}.s32 {height:32px}.s40 {height:40px}.s48 {height:48px}
+
+    /* components */
+    .component-stage { padding:20px; border:1px solid var(--line); background:var(--paper-2); }.dark-stage { color:var(--white); border-color:var(--night-line); background:var(--night-2); }.component-label { display:block; margin-bottom:11px; color:var(--muted); font:10px var(--mono); letter-spacing:.1em; text-transform:uppercase; }.dark-stage .component-label { color:var(--night-muted); }
+    .row { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }.ui-btn { display:inline-flex; height:34px; align-items:center; justify-content:center; gap:7px; padding:0 13px; border:1px solid var(--ink); border-radius:var(--radius-1); color:var(--ink); background:transparent; font:700 10px var(--mono); letter-spacing:.05em; text-transform:uppercase; }.ui-btn.primary { border-color:var(--red); color:var(--white); background:var(--red); box-shadow:var(--shadow-1); }.ui-btn.secondary { color:var(--white); background:var(--ink); }.ui-btn.ghost { border-color:var(--line-strong); color:var(--ink-soft); }.ui-btn.icon { width:34px; padding:0; }.dark-stage .ui-btn { border-color:#8e897e; color:var(--white); }.dark-stage .ui-btn.primary { border-color:var(--red); }.dark-stage .ui-btn.secondary { color:var(--ink); background:var(--white); }.dark-stage .ui-btn.ghost { border-color:var(--night-line); color:#d8d2c7; }
+    .field { display:grid; gap:6px; width:100%; }.field label { font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; }.text-input, .select { height:35px; width:100%; border:1px solid var(--line-strong); border-radius:var(--radius-1); padding:0 10px; color:var(--ink); background:var(--panel); font:12px var(--mono); }.select { display:flex; justify-content:space-between; align-items:center; }.select::after { content:"⌄"; color:var(--red); font-size:16px; }.dark-stage .text-input,.dark-stage .select { color:var(--white); border-color:#66625b; background:var(--night-3); }.input-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+    .segment { display:inline-flex; overflow:hidden; border:1px solid var(--line-strong); border-radius:var(--radius-1); }.segment span { padding:8px 11px; border-right:1px solid var(--line-strong); color:var(--muted); font:10px var(--mono); }.segment span:last-child { border:0; }.segment .active { color:var(--white); background:var(--ink); }.dark-stage .segment { border-color:#66625b; }.dark-stage .segment span { border-color:#66625b; color:var(--night-muted); }.dark-stage .segment .active { color:var(--ink); background:var(--white); }
+    .switch { display:inline-flex; align-items:center; gap:9px; font:11px var(--mono); }.switch i { position:relative; width:34px; height:19px; border:1px solid var(--line-strong); border-radius:var(--radius-pill); }.switch i::after { content:""; position:absolute; width:11px; height:11px; left:3px; top:3px; border-radius:50%; background:var(--muted); }.switch.on i { border-color:var(--green); background:rgb(34 185 90 / 12%); }.switch.on i::after { left:18px; background:var(--green); }.dark-stage .switch i { border-color:#777168; }
+    .slider { display:grid; grid-template-columns:1fr 42px; gap:12px; align-items:center; }.track { position:relative; height:3px; background:var(--line-strong); }.track::before { content:""; position:absolute; top:0; left:0; width:68%; height:100%; background:var(--red); }.track::after { content:""; position:absolute; top:50%; left:68%; width:13px; height:13px; border:2px solid var(--red); border-radius:50%; background:var(--paper); transform:translate(-50%,-50%); }.dark-stage .track { background:#656058; }.dark-stage .track::after { background:var(--night-2); }.value { color:var(--red); font:700 10px var(--mono); text-align:right; }
+
+    /* navigation and modules */
+    .shell { overflow:hidden; border:1px solid var(--ink); box-shadow:7px 7px 0 var(--yellow); background:var(--paper); }.shell.dark-ui { color:var(--white); border-color:var(--night-line); background:var(--night); box-shadow:7px 7px 0 var(--blue); }.appbar { display:flex; align-items:center; min-height:48px; padding:0 13px; border-bottom:1px solid var(--ink); gap:14px; }.dark-ui .appbar { border-color:var(--night-line); }.app-logo { width:99px; }.appbar .crumb { margin-left:auto; color:var(--muted); font:9px var(--mono); letter-spacing:.08em; }.dark-ui .crumb { color:var(--night-muted); }.app-layout { display:grid; grid-template-columns:178px minmax(0,1fr) 150px; min-height:290px; }.nav-rail { border-right:1px solid var(--line); background:var(--paper-2); }.dark-ui .nav-rail { border-color:var(--night-line); background:var(--night-2); }.nav-item { display:flex; align-items:center; gap:8px; padding:11px 12px; border-bottom:1px solid rgb(127 120 105 / 18%); font:10px var(--mono); }.nav-item b { color:var(--red); font-size:9px; }.nav-item.active { color:var(--white); background:var(--ink); }.dark-ui .nav-item { border-color:var(--night-line); }.dark-ui .nav-item.active { color:var(--ink); background:var(--yellow); }.live-board { position:relative; min-width:0; overflow:hidden; background:#20221f url("../src/visionstyle/assets/samples/night.jpg") center/cover; }.live-board::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgb(17 17 17 / 28%),transparent 55%); }.frame { position:absolute; z-index:2; border:2px solid var(--yellow); }.frame.a { left:17%; top:29%; width:29%; height:37%; }.frame.b { right:14%; top:43%; width:25%; height:25%; border-color:var(--pink); }.tag { position:absolute; z-index:3; top:-22px; left:-2px; padding:4px 6px; color:var(--ink); background:var(--yellow); font:700 8px var(--mono); }.frame.b .tag { background:var(--pink); }.trail { position:absolute; z-index:2; left:8%; top:70%; width:42%; height:1px; border-top:2px dotted var(--green); transform:rotate(-16deg); }.inspector { border-left:1px solid var(--line); padding:11px; background:var(--panel); }.dark-ui .inspector { border-color:var(--night-line); background:var(--night-2); }.mini-field { margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }.dark-ui .mini-field { border-color:var(--night-line); }.mini-field span { display:flex; justify-content:space-between; color:var(--muted); font:9px var(--mono); }.dark-ui .mini-field span { color:var(--night-muted); }.mini-track { margin-top:8px; height:3px; background:var(--line-strong); }.mini-track i { display:block; width:61%; height:3px; background:var(--red); }
+    .preset-card { overflow:hidden; border:1px solid var(--line-strong); background:var(--panel); }.preset-preview { height:80px; position:relative; background:var(--ink); }.preset-preview::before { content:""; position:absolute; inset:14px 24px; border:2px solid var(--blue); }.preset-preview::after { content:""; position:absolute; left:18px; bottom:12px; width:60px; border-top:2px dotted var(--green); transform:rotate(-17deg); }.preset-card:nth-child(2) .preset-preview::before { border-color:var(--yellow); border-radius:9px; }.preset-info { padding:11px; }.preset-info strong { display:block; font-size:12px; }.preset-info small { color:var(--muted); font:9px/1.4 var(--mono); }.badge { display:inline-flex; align-items:center; min-height:20px; padding:0 7px; border-radius:var(--radius-pill); font:700 9px var(--mono); letter-spacing:.05em; text-transform:uppercase; }.badge.green { color:#0d4825; background:rgb(34 185 90 / 18%); }.badge.blue { color:#103f9d; background:rgb(21 88 232 / 14%); }.badge.yellow { color:#5f4900; background:rgb(255 213 20 / 34%); }
+    .menu { width:190px; padding:6px; border:1px solid var(--ink); background:var(--panel); box-shadow:6px 6px 0 var(--pink); }.menu div { display:flex; align-items:center; justify-content:space-between; padding:8px 9px; font:11px var(--mono); }.menu div.active { color:var(--white); background:var(--ink); }.menu kbd { color:var(--muted); font:9px var(--mono); }
+
+    /* icons */
+    .icon-grid { display:grid; grid-template-columns:repeat(6,1fr); border-left:1px solid var(--line); border-top:1px solid var(--line); }.icon-cell { display:grid; justify-items:center; gap:9px; padding:15px 8px 12px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--panel); }.icon-cell svg { width:23px; height:23px; fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:square; stroke-linejoin:miter; }.icon-cell small { color:var(--muted); font:9px var(--mono); text-align:center; }.icon-cell.accent svg { stroke:var(--red); }.icon-rule { display:grid; grid-template-columns:1fr 1fr; gap:16px; }.icon-rule .note { border-color:var(--blue); }.favicon-board { display:flex; align-items:flex-end; gap:16px; padding:19px; background:var(--night); }.fav { display:grid; gap:8px; justify-items:center; color:var(--night-muted); font:9px var(--mono); }.fav i { display:grid; place-items:center; background:var(--night-3); }.fav img { width:74%; height:74%; object-fit:contain; }.f16 i{width:32px;height:32px}.f32 i{width:46px;height:46px}.f48 i{width:64px;height:64px}.f180 i{width:104px;height:104px}
+
+    /* github */
+    .github { overflow:hidden; border:1px solid var(--line-strong); background:var(--panel); box-shadow:8px 8px 0 var(--green); }.github-top { display:flex; align-items:center; gap:11px; min-height:42px; padding:0 14px; border-bottom:1px solid var(--line); font:10px var(--mono); }.github-top span:first-child { display:grid; place-items:center; width:19px; height:19px; color:var(--white); background:var(--ink); border-radius:50%; font-weight:700; }.github-top .branch { margin-left:auto; color:var(--muted); }.github-hero { width:100%; }.github-body { padding:17px 20px 20px; }.github-body h3 { font-size:25px; letter-spacing:-.06em; }.github-body p { max-width:560px; color:var(--ink-soft); }.pill { display:inline-flex; padding:4px 7px; color:var(--ink); border:1px solid var(--line-strong); border-radius:var(--radius-pill); background:var(--paper); font:9px var(--mono); }.readme-pattern { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; }.codeblock { min-height:115px; padding:14px; color:#dbd5ca; background:var(--ink); font:10px/1.65 var(--mono); }.codeblock b { color:var(--yellow); }.checklist { display:grid; gap:9px; padding:14px; border:1px solid var(--line); font:11px var(--mono); }.checklist span::before { content:"✓"; margin-right:8px; color:var(--green); font-weight:700; }
+
+    @media (max-width:760px) { .book{padding:0}.page{min-height:auto;margin:0;padding:31px 24px 68px;box-shadow:none}.cover{min-height:850px}.cover .meta{margin-bottom:80px}h1{font-size:64px}h2{font-size:45px}.corner-field{right:24px;transform:scale(.7);transform-origin:top right}.section-heading{display:block;margin:45px 0 27px}.section-heading .eyebrow{margin-bottom:12px}.two,.three,.four{grid-template-columns:1fr}.app-layout{grid-template-columns:132px minmax(280px,1fr)}.inspector{display:none}.icon-grid{grid-template-columns:repeat(3,1fr)}.page-number{right:24px}.footer{left:24px}.readme-pattern{grid-template-columns:1fr} }
+    @media print { @page { size:A4; margin:0; } html,body{background:#fff}.book{padding:0}.page{width:210mm;height:297mm;min-height:297mm;margin:0;padding:13mm 14mm 12mm;box-shadow:none;break-after:page;page-break-after:always}.page:last-child{break-after:auto;page-break-after:auto}.cover{min-height:297mm}.page-number{right:14mm;bottom:10mm}.footer{left:14mm;bottom:10mm}.corner-field{right:14mm;top:34mm}h1{font-size:31mm}h2{font-size:17mm}.section-heading{margin-top:16mm}.cover-logo{margin-bottom:30mm} }
+    /* Chroma Press refinement — layered editorial forms, never a generic dashboard grid. */
+    :root { --radius-1: 12px; --radius-2: 22px; --shadow-1: 0 3px 0 rgb(17 17 17 / 14%); }
+    .page { border-radius: 28px; }
+    .card, .theme-board, .component-stage, .shell, .preset-card, .menu, .github, .note, .favicon-board { border-radius: var(--radius-2); }
+    .card, .theme-board, .component-stage, .preset-card, .github { overflow: hidden; }
+    .note { border-left-width: 5px; background: linear-gradient(100deg, var(--paper-2), #f8f3e9); }
+    .night-page .note { background: linear-gradient(100deg, var(--night-2), #23221f); }
+    .component-stage { border-color: transparent; box-shadow: 0 0 0 1px var(--line), 6px 7px 0 rgb(21 88 232 / 10%); }
+    .dark-stage { box-shadow: 0 0 0 1px var(--night-line), 6px 7px 0 rgb(246 161 196 / 12%); }
+    .theme-board { border-color: transparent; box-shadow: 0 0 0 1px var(--line), 8px 8px 0 rgb(255 56 42 / 10%); }
+    .dark-board { border-color: transparent; box-shadow: 0 0 0 1px var(--night-line), 8px 8px 0 rgb(255 213 20 / 12%); }
+    .ui-btn { border-radius: var(--radius-pill); padding-inline: 16px; transition: transform 160ms ease-out, box-shadow 160ms ease-out, background 160ms ease-out; }
+    .ui-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(17 17 17 / 17%); }
+    .ui-btn.primary { box-shadow: 3px 3px 0 rgb(17 17 17 / 20%); }
+    .segment { padding: 3px; border-radius: var(--radius-pill); background: var(--panel); }
+    .segment span { border:0; border-radius: var(--radius-pill); padding:7px 12px; cursor:pointer; }
+    .dark-stage .segment { background: var(--night-3); }
+    .text-input, .select { border-radius: 12px; }
+    .shell { border-color: transparent; box-shadow: 0 0 0 1px var(--ink), 10px 10px 0 var(--yellow); }
+    .shell.dark-ui { border-color: transparent; box-shadow: 0 0 0 1px var(--night-line), 10px 10px 0 var(--blue); }
+    .appbar { border-bottom-color: rgb(127 120 105 / 30%); }
+    .app-layout { min-height: 300px; }
+    .nav-rail { background: linear-gradient(180deg, var(--paper-2), #ece5d9); }
+    .dark-ui .nav-rail { background: linear-gradient(180deg, var(--night-2), #191917); }
+    .nav-item { margin: 5px 7px; border: 0; border-radius: var(--radius-pill); transition: transform 160ms ease-out, background 160ms ease-out; }
+    .nav-item:hover { transform: translateX(3px); }
+    .nav-item.active { box-shadow: 2px 2px 0 var(--red); }
+    .dark-ui .nav-item.active { box-shadow: 2px 2px 0 var(--pink); }
+    .live-board { border-radius: 18px; margin: 10px; }
+    .inspector { margin: 10px 10px 10px 0; border: 0; border-radius: 16px; }
+    .preset-card { border-color: transparent; box-shadow: 0 0 0 1px var(--line-strong); transition: transform 180ms ease-out, box-shadow 180ms ease-out; }
+    .preset-card:hover { transform: translateY(-4px) rotate(-.4deg); box-shadow: 0 0 0 1px var(--ink), 5px 6px 0 var(--pink); }
+    .preset-preview { background: radial-gradient(circle at 80% 20%, var(--blue) 0 10%, transparent 11%), var(--ink); }
+    .menu { border-color: transparent; box-shadow: 0 0 0 1px var(--ink), 7px 8px 0 var(--pink); }
+    .icon-grid { gap: 12px; border:0; }
+    .icon-cell { border:1px solid var(--line); border-radius:18px; transition:transform 160ms ease-out, background 160ms ease-out; }
+    .icon-cell:hover { background:var(--yellow); transform:rotate(-2deg) translateY(-3px); }
+    .github { border-color: transparent; box-shadow: 0 0 0 1px var(--line-strong), 9px 9px 0 var(--green); }
+
+    /* Live system playground */
+    .playground { background: #f1ebdf; }
+    .playground::before { content:""; position:absolute; width:58%; height:41%; right:-15%; top:13%; opacity:.9; background:repeating-linear-gradient(125deg,var(--blue) 0 17px,var(--yellow) 17px 34px,var(--red) 34px 51px,var(--pink) 51px 68px); clip-path:polygon(22% 0,100% 0,100% 100%,0 100%); transform:rotate(-8deg); }
+    .lab { --lab-bg: var(--night); --lab-panel: var(--night-2); --lab-text: var(--white); --lab-muted: var(--night-muted); --lab-line: var(--night-line); --lab-frame: var(--yellow); --lab-tag: var(--yellow); color:var(--lab-text); overflow:hidden; border-radius:28px; background:var(--lab-bg); box-shadow: 12px 13px 0 var(--ink); transition: background 220ms ease-out, color 220ms ease-out; }
+    .lab.is-light { --lab-bg: var(--paper); --lab-panel: var(--panel); --lab-text: var(--ink); --lab-muted: var(--muted); --lab-line: var(--line); --lab-frame: var(--blue); --lab-tag: var(--blue); box-shadow: 12px 13px 0 var(--red); }
+    .lab-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:53px; padding:0 17px; border-bottom:1px solid var(--lab-line); }
+    .lab-brand { display:flex; align-items:center; gap:10px; min-width:0; }.lab-brand img { width:104px; }.lab-brand .light-logo { display:none; }.lab.is-light .dark-logo { display:none; }.lab.is-light .light-logo { display:block; }
+    .lab-status { color:var(--lab-muted); font:9px var(--mono); letter-spacing:.08em; text-transform:uppercase; }.lab-status b { color:var(--green); }
+    .lab-content { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(260px,.7fr); min-height:430px; }.lab-canvas { position:relative; min-width:0; overflow:hidden; margin:14px 0 14px 14px; border-radius:22px; background:#171916 url("../src/visionstyle/assets/samples/night.jpg") center/cover; }.lab-canvas::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg,rgb(17 17 17 / 34%),transparent 50%,rgb(17 17 17 / 18%)); }
+    .lab-detection { --stroke:2px; position:absolute; z-index:2; display:block; border:var(--stroke) solid var(--lab-frame); outline:0; background:transparent; cursor:pointer; transition:border-color 180ms ease-out, transform 180ms ease-out, filter 180ms ease-out; }.lab-detection.person { left:23%; top:24%; width:25%; height:53%; }.lab-detection.car { right:14%; top:49%; width:31%; height:24%; border-color:var(--pink); }.lab-detection:hover,.lab-detection:focus-visible { transform:scale(1.025); filter:drop-shadow(0 0 7px var(--lab-frame)); }.lab-detection.is-selected { border-color:var(--pink); box-shadow:0 0 0 4px rgb(246 161 196 / 20%); }.lab-detection span { position:absolute; top:-27px; left:-2px; display:block; padding:6px 8px; color:var(--ink); background:var(--lab-tag); font:700 9px var(--mono); letter-spacing:.04em; white-space:nowrap; }.lab-detection.car span { background:var(--pink); }.lab.is-light .lab-detection.person span { color:var(--white); background:var(--blue); }
+    .lab-trail { position:absolute; z-index:2; left:7%; bottom:24%; width:51%; border-top:3px dotted var(--green); transform:rotate(-15deg); transform-origin:left center; transition:opacity 180ms ease-out; }.lab.no-trail .lab-trail { opacity:0; }.lab.glow .lab-detection { filter:drop-shadow(0 0 9px var(--lab-frame)); }.lab.glow .lab-detection.car { filter:drop-shadow(0 0 9px var(--pink)); }
+    .lab-controls { padding:17px; background:var(--lab-panel); }.lab-controls h3 { margin:0 0 2px; font-size:18px; }.lab-controls .body { color:var(--lab-muted); font-size:11px; }.lab-field { margin-top:19px; }.lab-field label { display:flex; justify-content:space-between; margin-bottom:8px; color:var(--lab-muted); font:10px var(--mono); letter-spacing:.08em; text-transform:uppercase; }.lab-field output { color:var(--red); font-weight:700; }.lab-segment { display:flex; gap:5px; padding:4px; border-radius:var(--radius-pill); background:rgb(127 120 105 / 15%); }.lab-segment button { flex:1; min-height:31px; border:0; border-radius:var(--radius-pill); color:var(--lab-muted); background:transparent; font:700 9px var(--mono); letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }.lab-segment button.active { color:var(--ink); background:var(--yellow); }.lab.is-light .lab-segment button.active { color:var(--white); background:var(--blue); }
+    .lab-range { width:100%; accent-color:var(--red); }.lab-switch { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0; border:0; color:var(--lab-text); background:transparent; font:11px var(--mono); text-align:left; cursor:pointer; }.lab-switch i { position:relative; width:37px; height:20px; border:1px solid var(--lab-line); border-radius:var(--radius-pill); }.lab-switch i::after { content:""; position:absolute; width:12px; height:12px; top:3px; left:3px; border-radius:50%; background:var(--lab-muted); transition:transform 160ms ease-out,background 160ms ease-out; }.lab-switch[aria-pressed="true"] i { border-color:var(--green); background:rgb(34 185 90 / 13%); }.lab-switch[aria-pressed="true"] i::after { background:var(--green); transform:translateX(16px); }.lab-readout { display:flex; justify-content:space-between; gap:14px; margin-top:22px; padding-top:15px; border-top:1px solid var(--lab-line); color:var(--lab-muted); font:9px var(--mono); }.lab-readout strong { color:var(--lab-text); }
+    .interaction-note { margin-top:26px; color:var(--ink-soft); font:12px/1.5 var(--mono); }.interaction-note b { color:var(--red); }
+    @media (max-width:760px) { .lab-content { grid-template-columns:1fr; }.lab-canvas { min-height:360px; margin:12px; }.lab-controls { padding:18px; }.playground::before { width:90%; }.lab-bar { padding-inline:13px; }.lab-status { display:none; } }
+    .lab-detection { --frame-color: var(--lab-frame); border-color: var(--frame-color); }
+    .lab-detection.car { --frame-color: var(--pink); border-color: var(--frame-color); }
+    .lab-detection.is-selected { --frame-color: var(--pink); }
+    .lab:not(.is-solid) .lab-detection { border:0; background: linear-gradient(var(--frame-color),var(--frame-color)) 0 0/26px var(--stroke) no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 0 0/var(--stroke) 26px no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 100% 0/26px var(--stroke) no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 100% 0/var(--stroke) 26px no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 0 100%/26px var(--stroke) no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 0 100%/var(--stroke) 26px no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 100% 100%/26px var(--stroke) no-repeat,linear-gradient(var(--frame-color),var(--frame-color)) 100% 100%/var(--stroke) 26px no-repeat; }
+    @media print { .page { border-radius:0; }.playground::before { display:none; }.lab { box-shadow:none; }.lab-detection:hover,.lab-detection:focus-visible { transform:none; } }
+  </style>
+</head>
+<body>
+  <main class="book">
+    <section class="page cover" aria-label="Design system cover">
+      <div class="meta"><span>visionstyle / System</span><span>Chroma Press / 01</span></div>
+      <div class="corner-field" aria-hidden="true"></div><div class="cover-rail" aria-hidden="true"></div>
+      <div><p class="eyebrow">Product design system</p><h1>Build the<br>frame. <em>Own</em><br>the signal.</h1><p class="cover-sub">A practical interface language for the visionstyle Studio, documentation, and GitHub presence.</p></div>
+      <img class="cover-logo" src="../assets/brand/chroma-press/chroma-press-light-lockup-transparent.png" alt="visionstyle logo">
+      <div class="footer">VERSION 1.0 &nbsp;·&nbsp; CHROMA PRESS</div><div class="page-number">01 / 09</div>
+    </section>
+
+    <section class="page" aria-label="Foundations">
+      <div class="meta"><span>visionstyle / System</span><span>Foundations</span></div>
+      <div class="section-heading"><p class="eyebrow">01 / Foundations</p><h2>One product.<br>Two intentional atmospheres.</h2></div>
+      <div class="grid two">
+        <div class="theme-board light-board"><div class="theme-head"><span>Light / paper instrument</span><span>Default docs</span></div>
+          <div class="token-row"><i class="dot" style="background:#faf7f0"></i><strong>surface.canvas</strong><code>#FAF7F0</code></div><div class="token-row"><i class="dot" style="background:#fffdf8"></i><strong>surface.panel</strong><code>#FFFDF8</code></div><div class="token-row"><i class="dot" style="background:#111"></i><strong>content.primary</strong><code>#111111</code></div><div class="token-row"><i class="dot" style="background:#d2cbbf"></i><strong>border.default</strong><code>#D2CBBF</code></div><div class="token-row"><i class="dot" style="background:#ff382a"></i><strong>action.primary</strong><code>#FF382A</code></div>
+        </div>
+        <div class="theme-board dark-board"><div class="theme-head"><span>Dark / night viewport</span><span>Studio default</span></div>
+          <div class="token-row"><i class="dot" style="background:#121212"></i><strong>surface.canvas</strong><code>#121212</code></div><div class="token-row"><i class="dot" style="background:#1c1c1a"></i><strong>surface.panel</strong><code>#1C1C1A</code></div><div class="token-row"><i class="dot" style="background:#fffdf7"></i><strong>content.primary</strong><code>#FFFDF7</code></div><div class="token-row"><i class="dot" style="background:#45433e"></i><strong>border.default</strong><code>#45433E</code></div><div class="token-row"><i class="dot" style="background:#ffd514"></i><strong>action.emphasis</strong><code>#FFD514</code></div>
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:28px"><div><p class="eyebrow">Spacing scale / 4 px base</p><div class="spacing"><div><i class="s4"></i><span>04</span></div><div><i class="s8"></i><span>08</span></div><div><i class="s12"></i><span>12</span></div><div><i class="s16"></i><span>16</span></div><div><i class="s24"></i><span>24</span></div><div><i class="s32"></i><span>32</span></div><div><i class="s40"></i><span>40</span></div><div><i class="s48"></i><span>48</span></div></div></div><div><p class="eyebrow">Product type</p><p class="body"><strong>VSSans</strong> handles UI, controls and readable values. <strong>VSMono</strong> handles metadata, code, measurement and control labels. The display serif is reserved for marketing and documentation headings—never dense Studio settings.</p><div class="note" style="margin-top:18px;border-color:var(--blue)"><strong>Motion.</strong> Default transition: 160 ms ease-out. Panels use 220 ms. Never animate a detection result or a numerical value in a way that obscures the result.</div></div></div>
+      <div class="page-number">02 / 09</div>
+    </section>
+
+    <section class="page night-page" aria-label="Application shell">
+      <div class="meta"><span>visionstyle / System</span><span>Application shell</span></div>
+      <div class="section-heading"><p class="eyebrow">02 / Shell</p><h2>Studio is a creative<br>instrument panel.</h2></div>
+      <div class="shell dark-ui">
+        <div class="appbar"><img class="app-logo" src="../assets/brand/chroma-press/chroma-press-dark-lockup-transparent.png" alt="visionstyle logo"><span class="crumb">night.jpg / yolo11n.pt / 0.50 confidence</span></div>
+        <div class="app-layout"><nav class="nav-rail"><div class="nav-item active"><b>01</b> Presets</div><div class="nav-item"><b>02</b> Box</div><div class="nav-item"><b>03</b> Label</div><div class="nav-item"><b>04</b> Effects</div><div class="nav-item"><b>05</b> Tracking</div><div class="nav-item"><b>06</b> Export</div></nav><div class="live-board"><div class="frame a"><span class="tag">PERSON 0.93 · ID 14</span></div><div class="frame b"><span class="tag">CAR 0.88</span></div><i class="trail"></i></div><aside class="inspector"><div class="mini-field"><span>STROKE <b>02 PX</b></span><div class="mini-track"><i></i></div></div><div class="mini-field"><span>FILL <b>18%</b></span><div class="mini-track"><i style="width:18%"></i></div></div><div class="mini-field"><span>GLOW <b>ON</b></span><div class="mini-track"><i style="width:78%"></i></div></div></aside></div>
+      </div>
+      <div class="grid three" style="margin-top:34px"><div class="card"><div class="card-copy"><span class="caps" style="color:var(--yellow)">Top bar / 56 px</span><p class="body" style="margin:9px 0 0">Source image, model, confidence, run state and the primary action live here. Keep it calm.</p></div></div><div class="card"><div class="card-copy"><span class="caps" style="color:var(--pink)">Left rail / 304 px</span><p class="body" style="margin:9px 0 0">Preset exploration and accordion controls. Numbers make a deep tool feel navigable.</p></div></div><div class="card"><div class="card-copy"><span class="caps" style="color:var(--green)">Inspector / 336 px</span><p class="body" style="margin:9px 0 0">Selection-specific edits and output. Collapse below 1180 px, do not squeeze the canvas.</p></div></div></div>
+      <div class="footer">LAYOUT: 56 / 304 / FLUID / 336</div><div class="page-number">03 / 09</div>
+    </section>
+
+    <section class="page" aria-label="Controls">
+      <div class="meta"><span>visionstyle / System</span><span>Controls</span></div>
+      <div class="section-heading"><p class="eyebrow">03 / Controls</p><h2>Every adjustment<br>has a clear state.</h2></div>
+      <div class="grid two"><div class="component-stage"><span class="component-label">Buttons / light</span><div class="row"><button class="ui-btn primary">Detect objects</button><button class="ui-btn secondary">Export YAML</button><button class="ui-btn ghost">Reset</button><button class="ui-btn icon" aria-label="Save">↓</button></div><div class="line"></div><span class="component-label">Input, select, segmented control</span><div class="input-grid"><div class="field"><label>Preset name</label><div class="text-input">Chroma Press</div></div><div class="field"><label>Palette</label><div class="select">Custom chroma</div></div></div><div class="row" style="margin-top:15px"><div class="segment"><span>Rectangle</span><span class="active">Corners</span><span>Rounded</span></div><span class="switch on"><i></i>Glow</span></div><div class="slider" style="margin-top:18px"><div class="track"></div><span class="value">72%</span></div></div>
+        <div class="component-stage dark-stage"><span class="component-label">Same components / dark</span><div class="row"><button class="ui-btn primary">Detect objects</button><button class="ui-btn secondary">Export YAML</button><button class="ui-btn ghost">Reset</button><button class="ui-btn icon" aria-label="Save">↓</button></div><div class="line"></div><span class="component-label">Default rules</span><div class="input-grid"><div class="field"><label>Label anchor</label><div class="text-input">Top left</div></div><div class="field"><label>Scale</label><div class="select">Auto</div></div></div><div class="row" style="margin-top:15px"><div class="segment"><span>Solid</span><span class="active">Dashed</span><span>Dotted</span></div><span class="switch on"><i></i>Trail</span></div><div class="slider" style="margin-top:18px"><div class="track"></div><span class="value">16 px</span></div></div></div>
+      <div class="grid three" style="margin-top:25px"><div class="note"><strong>Primary action.</strong> Tomato red means a committed production action: Detect, Export, Save preset. One primary action per view.</div><div class="note" style="border-color:var(--yellow)"><strong>Emphasis action.</strong> On a dark canvas, Saffron is allowed for a context-changing active state—never for destructive work.</div><div class="note" style="border-color:var(--blue)"><strong>Focus.</strong> Use a 2 px cobalt ring with 2 px offset. Focus is always visible, never color-only.</div></div>
+      <div class="page-number">04 / 09</div>
+    </section>
+
+    <section class="page" aria-label="Modules and menus">
+      <div class="meta"><span>visionstyle / System</span><span>Modules</span></div>
+      <div class="section-heading"><p class="eyebrow">04 / Modules</p><h2>Browse widely.<br>Adjust precisely.</h2></div>
+      <div class="grid two"><div><p class="eyebrow">Preset cards / visual choice</p><div class="grid two"><article class="preset-card"><div class="preset-preview"></div><div class="preset-info"><strong>Cinematic</strong><small>amber / teal · filmic grade</small><p style="margin:9px 0 0"><span class="badge yellow">Active</span></p></div></article><article class="preset-card"><div class="preset-preview"></div><div class="preset-info"><strong>Chroma Press</strong><small>bold rails · tracking path</small><p style="margin:9px 0 0"><span class="badge blue">New</span></p></div></article></div><p class="caption">Cards are visual shortcuts. Their descriptions must explain the result, not implementation details.</p></div><div><p class="eyebrow">Context menu / always anchored</p><div class="menu"><div class="active"><span>Duplicate preset</span><kbd>⌘D</kbd></div><div><span>Save as YAML</span><kbd>⌘S</kbd></div><div><span>Copy Python</span><kbd>⌘C</kbd></div><div style="color:var(--danger)"><span>Delete custom preset</span><kbd>⌫</kbd></div></div><p class="caption">Menus open from a clear trigger, align to that trigger, and close on Escape. Destructive options are last.</p></div></div>
+      <div class="line"></div><div class="grid three"><div class="card"><div class="card-copy"><p class="eyebrow">Accordion sections</p><h3><span style="color:var(--red)">03</span> Label <span style="float:right">⌃</span></h3><p class="body">Use sequential numbers and a one-line state summary. Only one panel should be open on compact screens.</p></div></div><div class="card"><div class="card-copy"><p class="eyebrow">Chips / components</p><div class="row"><span class="pill">Name ×</span><span class="pill">Confidence ×</span><span class="pill">+ Track ID</span></div><p class="body" style="margin:13px 0 0">Chips show composition and ordering. They are not used as generic tags.</p></div></div><div class="card"><div class="card-copy"><p class="eyebrow">Feedback</p><div class="row"><span class="badge green">Rendered / 84 ms</span><span class="badge blue">3 selected</span></div><p class="body" style="margin:13px 0 0">Use a small status token near the relevant control, not a disruptive global alert.</p></div></div></div>
+      <div class="page-number">05 / 09</div>
+    </section>
+
+    <section class="page night-page" aria-label="Preview and legends">
+      <div class="meta"><span>visionstyle / System</span><span>Preview and legend</span></div>
+      <div class="section-heading"><p class="eyebrow">05 / Canvas</p><h2>The preview is the<br>hero, not a widget.</h2></div>
+      <div class="grid two"><div class="shell dark-ui" style="box-shadow:8px 8px 0 var(--pink)"><div class="appbar"><span class="caps" style="color:var(--yellow)">Live preview</span><span class="crumb">1600 PX / FIT</span></div><div class="live-board" style="height:360px"><div class="frame a"><span class="tag">PERSON 0.93 · ID 14</span></div><div class="frame b"><span class="tag">CAR 0.88</span></div><i class="trail"></i></div></div><div><p class="lead" style="font-size:25px">Let users understand the style in context before they choose it.</p><p class="body">Previews are dark by default so detection color is stable. Image content fills the space; tool controls must never visually outweigh the scene.</p><div class="line"></div><p class="eyebrow">Legend system</p><div class="grid two"><div class="card"><div class="card-copy"><span class="badge yellow">Person</span><p class="body" style="margin:9px 0 0">Class color and label chip share a hue.</p></div></div><div class="card"><div class="card-copy"><span class="badge green">ID 14</span><p class="body" style="margin:9px 0 0">Tracking trail uses the identity’s green signal.</p></div></div><div class="card"><div class="card-copy"><span class="badge blue">0.93 confidence</span><p class="body" style="margin:9px 0 0">Confidence is supporting data, not the loudest color.</p></div></div><div class="card"><div class="card-copy"><span class="badge" style="color:#5b3c00;background:var(--pink)">Selected</span><p class="body" style="margin:9px 0 0">Pink is reserved for selection and direct manipulation.</p></div></div></div></div></div>
+      <div class="grid three" style="margin-top:29px"><div class="note"><strong>Canvas rules.</strong> Maintain 24 px outer padding. Use a maximum 2 px overlay stroke at 1080p reference size.</div><div class="note" style="border-color:var(--green)"><strong>Legends.</strong> Keep legends inside the preview’s safe zone, never cover an object tag, and allow collapse on mobile.</div><div class="note" style="border-color:var(--yellow)"><strong>Empty state.</strong> Use the transparent V mark, a single sentence, and one action: “Choose an image”.</div></div>
+      <div class="footer">PREVIEW SURFACE: #121212</div><div class="page-number">06 / 09</div>
+    </section>
+
+    <section class="page playground" aria-label="Interactive system playground">
+      <div class="meta"><span>visionstyle / System</span><span>Interactive playground</span></div>
+      <div class="section-heading"><p class="eyebrow">06 / Play</p><h2>Tune the signal.<br>Touch the scene.</h2></div>
+      <div class="lab" data-lab data-theme="dark">
+        <div class="lab-bar">
+          <div class="lab-brand"><img class="dark-logo" src="../assets/brand/chroma-press/chroma-press-dark-lockup-transparent.png" alt="visionstyle"><img class="light-logo" src="../assets/brand/chroma-press/chroma-press-light-lockup-transparent.png" alt="visionstyle"></div>
+          <div class="lab-status"><b>●</b> live preview · click the person to select</div>
+        </div>
+        <div class="lab-content">
+          <div class="lab-canvas" aria-label="Interactive object-detection preview">
+            <button class="lab-detection person is-selected" type="button" data-detection="person" aria-pressed="true"><span>PERSON · 0.93 · ID 14</span></button>
+            <button class="lab-detection car" type="button" data-detection="car" aria-pressed="false"><span>CAR · 0.88</span></button>
+            <i class="lab-trail" aria-hidden="true"></i>
+          </div>
+          <aside class="lab-controls">
+            <p class="eyebrow">Live playground</p><h3>Chroma Press</h3><p class="body" data-selection-copy>PERSON 14 is selected. The controls below alter its visual treatment.</p>
+            <div class="lab-field"><label>Theme <output data-theme-output>Night</output></label><div class="lab-segment"><button type="button" class="active" data-lab-theme="dark">Night</button><button type="button" data-lab-theme="light">Paper</button></div></div>
+            <div class="lab-field"><label>Overlay style <output data-style-output>Corners</output></label><div class="lab-segment"><button type="button" class="active" data-lab-style="corners">Corners</button><button type="button" data-lab-style="solid">Solid</button></div></div>
+            <div class="lab-field"><label for="stroke-control">Stroke <output data-stroke-output>2 px</output></label><input class="lab-range" id="stroke-control" data-stroke type="range" min="1" max="6" value="2"></div>
+            <div class="lab-field"><button class="lab-switch" type="button" data-switch="glow" aria-pressed="false"><span>Glow</span><i></i></button></div>
+            <div class="lab-field"><button class="lab-switch" type="button" data-switch="trail" aria-pressed="true"><span>Tracking trail</span><i></i></button></div>
+            <div class="lab-readout"><span>SELECTED <strong data-selected-name>PERSON 14</strong></span><span>RENDER <strong>84 MS</strong></span></div>
+          </aside>
+        </div>
+      </div>
+      <p class="interaction-note"><b>Try it:</b> click either detection frame, change the theme, alter the stroke, and switch the trail or glow on and off. This is the interaction model for the Studio: immediate, visible, and always tied to the image.</p>
+      <div class="footer">INTERACTION IS THE PROOF OF THE SYSTEM</div><div class="page-number">07 / 09</div>
+    </section>
+
+    <section class="page" aria-label="Icons and favicon">
+      <div class="meta"><span>visionstyle / System</span><span>Iconography</span></div>
+      <div class="section-heading"><p class="eyebrow">07 / Icons</p><h2>Drafted, not<br>decorated.</h2></div>
+      <div class="icon-grid">
+        <div class="icon-cell accent"><svg viewBox="0 0 24 24"><path d="M4 4h6M4 4v6M20 4h-6M20 4v6M4 20h6M4 20v-6M20 20h-6M20 20v-6"/></svg><small>detect</small></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24"><path d="M4 18 10 12l3 3 7-8"/><circle cx="4" cy="18" r="1"/><circle cx="20" cy="7" r="1"/></svg><small>track</small></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><path d="m15 4 3 3-3 3M8 9l-3 3 3 3"/></svg><small>layers</small></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5v14M5 12h14"/></svg><small>target</small></div>
+        <div class="icon-cell accent"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 20h14"/></svg><small>export</small></div>
+        <div class="icon-cell"><svg viewBox="0 0 24 24"><path d="M6 6h12v12H6zM9 3h6M9 18v3h6v-3"/></svg><small>save</small></div>
+      </div>
+      <div class="icon-rule" style="margin-top:24px"><div class="note"><strong>Construction.</strong> Draw at 24 × 24 with 1.75 px stroke, square caps and minimal rounded corners. The icon should feel like a detection overlay, not a generic app glyph.</div><div class="note" style="border-color:var(--blue)"><strong>Color.</strong> Default icons use current text color. Red marks direct action; green confirms success; never use more than one accent icon in a local control cluster.</div></div>
+      <div class="grid two" style="margin-top:34px"><div><p class="eyebrow">Favicon / app icon</p><div class="favicon-board"><div class="fav f16"><i><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="16 pixel favicon"></i><span>16</span></div><div class="fav f32"><i><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="32 pixel favicon"></i><span>32</span></div><div class="fav f48"><i><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="48 pixel favicon"></i><span>48</span></div><div class="fav f180"><i><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="180 pixel app icon"></i><span>180</span></div></div></div><div><p class="eyebrow">Brand asset placement</p><p class="body">Use transparent lockups in top bars and documentation. Use the full-color V for presets, onboarding and social cards. Use the simplified watermark V for favicon, app icon and video watermark. Do not place the raster logo on a second white rectangle.</p><img src="../assets/brand/chroma-press/chroma-press-light-symbol-transparent.png" alt="Chroma Press V" style="width:160px;margin:14px auto 0"></div></div>
+      <div class="page-number">08 / 09</div>
+    </section>
+
+    <section class="page" aria-label="GitHub system">
+      <div class="meta"><span>visionstyle / System</span><span>GitHub presentation</span></div>
+      <div class="section-heading"><p class="eyebrow">08 / GitHub</p><h2>The repository<br>is part of the product.</h2></div>
+      <div class="github"><div class="github-top"><span>⌘</span><strong>baselhusam / visionstyle</strong><span class="branch">main · README.md</span></div><img class="github-hero" src="images/hero-chroma-press-light.png" alt="visionstyle GitHub banner"><div class="github-body"><h3>Beautiful, fully configurable bounding boxes for object detection.</h3><p>Open-source documentation should have the same contrast, care and visual confidence as the Studio. Lead with the theme-aware banner, then make the first action obvious.</p><div class="row"><span class="pill">Python 3.10+</span><span class="pill">MIT</span><span class="pill">OpenCV</span><span class="pill">Pydantic</span></div><div class="readme-pattern"><div class="codeblock"><b>import</b> visionstyle <b>as</b> vs<br><br>out = vs.annotate(frame, dets,<br>&nbsp;&nbsp;style=<b>"cinematic"</b>)</div><div class="checklist"><span>Theme-aware light / dark banner</span><span>One-sentence value proposition</span><span>Fast copyable first example</span><span>Gallery before the full API matrix</span><span>Alt text for every image</span></div></div></div></div>
+      <div class="grid two" style="margin-top:30px"><div class="note"><strong>README hierarchy.</strong> Banner → one-line promise → installation → 10-line success case → preset gallery → Studio → API reference. Do not make users hunt for the first payoff.</div><div class="note" style="border-color:var(--blue)"><strong>Theme behavior.</strong> Use the existing <code>&lt;picture&gt;</code> pattern and GitHub’s <code>prefers-color-scheme</code> source rules. The dark banner is not optional decoration; it protects contrast in GitHub dark mode.</div></div>
+      <div class="line"></div><div class="grid three"><div><p class="eyebrow">Contrast</p><p class="body">Text: 4.5:1 minimum. Control labels: 4.5:1. Detection overlays may use color, but must include a label, stroke or pattern distinction.</p></div><div><p class="eyebrow">Keyboard</p><p class="body">Every input, accordion, menu and icon-only action is reachable in order. Escape closes menus. Enter triggers the visible primary action.</p></div><div><p class="eyebrow">Responsive</p><p class="body">Below 1180 px hide the inspector. Below 860 px transform the left rail into a drawer. The preview never becomes smaller than its controls.</p></div></div>
+      <div class="footer">VISIONSTYLE / CHROMA PRESS / DESIGN SYSTEM</div><div class="page-number">09 / 09</div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const lab = document.querySelector('[data-lab]');
+      if (!lab) return;
+      const selectionCopy = lab.querySelector('[data-selection-copy]');
+      const selectedName = lab.querySelector('[data-selected-name]');
+      const themeOutput = lab.querySelector('[data-theme-output]');
+      const styleOutput = lab.querySelector('[data-style-output]');
+      const strokeOutput = lab.querySelector('[data-stroke-output]');
+
+      const setTheme = (theme) => {
+        lab.dataset.theme = theme;
+        lab.classList.toggle('is-light', theme === 'light');
+        lab.querySelectorAll('[data-lab-theme]').forEach((button) => button.classList.toggle('active', button.dataset.labTheme === theme));
+        themeOutput.textContent = theme === 'light' ? 'Paper' : 'Night';
+      };
+
+      lab.querySelectorAll('[data-lab-theme]').forEach((button) => button.addEventListener('click', () => setTheme(button.dataset.labTheme)));
+      lab.querySelectorAll('[data-lab-style]').forEach((button) => button.addEventListener('click', () => {
+        const style = button.dataset.labStyle;
+        lab.classList.toggle('is-solid', style === 'solid');
+        lab.querySelectorAll('[data-lab-style]').forEach((item) => item.classList.toggle('active', item === button));
+        styleOutput.textContent = style === 'solid' ? 'Solid' : 'Corners';
+      }));
+
+      const stroke = lab.querySelector('[data-stroke]');
+      stroke.addEventListener('input', () => {
+        lab.style.setProperty('--stroke', `${stroke.value}px`);
+        strokeOutput.textContent = `${stroke.value} px`;
+      });
+
+      lab.querySelectorAll('[data-switch]').forEach((button) => button.addEventListener('click', () => {
+        const enabled = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(enabled));
+        lab.classList.toggle(button.dataset.switch === 'glow' ? 'glow' : 'no-trail', button.dataset.switch === 'glow' ? enabled : !enabled);
+      }));
+
+      lab.querySelectorAll('[data-detection]').forEach((detection) => detection.addEventListener('click', () => {
+        lab.querySelectorAll('[data-detection]').forEach((item) => {
+          const active = item === detection;
+          item.classList.toggle('is-selected', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+        const person = detection.dataset.detection === 'person';
+        selectedName.textContent = person ? 'PERSON 14' : 'CAR';
+        selectionCopy.textContent = person
+          ? 'PERSON 14 is selected. The controls below alter its visual treatment.'
+          : 'CAR is selected. The same visual controls update its detection frame in context.';
+      }));
+    })();
+  </script>
+</body>
+</html>

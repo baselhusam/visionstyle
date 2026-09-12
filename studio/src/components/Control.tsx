@@ -39,6 +39,7 @@ export function Control({ def }: { def: ControlDef }) {
           </div>
           <input
             type="range"
+            aria-label={def.label}
             min={def.min}
             max={def.max}
             step={def.step}
@@ -54,9 +55,9 @@ export function Control({ def }: { def: ControlDef }) {
           <label className="field-label" title={def.hint}>
             {def.label}
           </label>
-          <div className="segment" role="radiogroup">
+          <div className="segment" role="radiogroup" aria-label={def.label}>
             {def.options?.map((o) => (
-              <button key={o} type="button" className={value === o ? 'active' : ''} onClick={() => set(o)}>
+              <button key={o} type="button" role="radio" aria-checked={value === o} className={value === o ? 'active' : ''} onClick={() => set(o)}>
                 {def.optionLabels?.[o] ?? o.replace('_', ' ')}
               </button>
             ))}
@@ -70,7 +71,7 @@ export function Control({ def }: { def: ControlDef }) {
           <label className="field-label" title={def.hint}>
             {def.label}
           </label>
-          <select value={def.options?.includes(value) ? value : def.options?.[0]} onChange={(e) => set(e.target.value)}>
+          <select aria-label={def.label} value={def.options?.includes(value) ? value : def.options?.[0]} onChange={(e) => set(e.target.value)}>
             {def.options?.map((o) => (
               <option key={o} value={o}>
                 {def.optionLabels?.[o] ?? o.replace('_', ' ')}
@@ -138,7 +139,7 @@ export function Control({ def }: { def: ControlDef }) {
           <label className="field-label" title={def.hint}>
             {def.label}
           </label>
-          <input className="text-input mono" value={String(value ?? '')} onChange={(e) => set(e.target.value)} spellCheck={false} />
+          <input aria-label={def.label} className="text-input mono" value={String(value ?? '')} onChange={(e) => set(e.target.value)} spellCheck={false} />
         </div>
       );
   }

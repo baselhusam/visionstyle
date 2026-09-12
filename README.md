@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="docs/images/hero-cinematic.jpg" alt="visionstyle cinematic preset on a night street scene" width="100%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-chroma-press-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/images/hero-chroma-press-light.png">
+    <img src="docs/images/hero-chroma-press-light.png" alt="visionstyle — expressive computer-vision styling" width="100%">
+  </picture>
 </p>
 
 # visionstyle

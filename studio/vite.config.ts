@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 // The built app is served by the FastAPI server from src/visionstyle/studio/static.
 export default defineConfig({
   plugins: [react()],
+  // The application and the brand book share the approved Chroma Press assets.
+  publicDir: '../assets/brand/chroma-press',
   build: {
     outDir: '../src/visionstyle/studio/static',
     emptyOutDir: true,

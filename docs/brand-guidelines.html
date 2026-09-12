@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>visionstyle — Chroma Press Brand Guidelines</title>
+  <style>
+    @font-face {
+      font-family: "VS Mono";
+      src: url("../src/visionstyle/assets/fonts/JetBrainsMono-Medium.ttf") format("truetype");
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: "VS Mono";
+      src: url("../src/visionstyle/assets/fonts/JetBrainsMono-SemiBold.ttf") format("truetype");
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: "VS Sans";
+      src: url("../src/visionstyle/assets/fonts/Inter-Variable.ttf") format("truetype");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --paper: #faf7f0;
+      --cream: #f2ede2;
+      --ink: #111111;
+      --muted: #615f59;
+      --line: #c7c0b3;
+      --blue: #1558e8;
+      --red: #ff382a;
+      --yellow: #ffd514;
+      --pink: #f6a1c4;
+      --green: #22b95a;
+      --white: #fffdf7;
+      --dark: #121212;
+      --dark-2: #1d1c1a;
+      --page-width: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: #d9d3c7; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #d9d3c7;
+      font-family: "VS Sans", sans-serif;
+      font-variation-settings: "opsz" 14;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    .book { padding: 44px 24px; }
+    .sheet {
+      width: min(var(--page-width), 100%);
+      min-height: 1120px;
+      margin: 0 auto 42px;
+      padding: 48px 54px 42px;
+      position: relative;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 18px 42px rgb(47 42 34 / 20%);
+    }
+    .sheet::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .28;
+      background-image: radial-gradient(rgb(17 17 17 / .2) .55px, transparent .65px);
+      background-size: 5px 5px;
+      mix-blend-mode: multiply;
+    }
+    .sheet > * { position: relative; z-index: 1; }
+    .dark-sheet { color: var(--white); background: var(--dark); }
+    .dark-sheet::before { opacity: .18; mix-blend-mode: screen; }
+
+    .meta, .eyebrow, .small-label, .page-no, .token, .rule-label {
+      font-family: "VS Mono", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    .meta { color: var(--muted); display: flex; justify-content: space-between; gap: 24px; }
+    .dark-sheet .meta { color: #bdb8ac; }
+    .eyebrow { color: var(--red); margin: 0 0 16px; }
+    .small-label { color: var(--muted); }
+    .dark-sheet .small-label { color: #bab5ab; }
+    .page-no {
+      position: absolute;
+      bottom: 33px;
+      right: 54px;
+      color: var(--muted);
+    }
+    .dark-sheet .page-no { color: #aaa499; }
+    .rule { height: 1px; width: 100%; background: var(--line); margin: 22px 0; }
+    .dark-sheet .rule { background: #3c3b38; }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(68px, 10.2vw, 138px);
+      font-weight: 400;
+      line-height: .82;
+      letter-spacing: -.085em;
+    }
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 64px;
+      line-height: .92;
+      letter-spacing: -.06em;
+      font-weight: 400;
+    }
+    h3 {
+      margin-bottom: 9px;
+      font-size: 15px;
+      letter-spacing: -.03em;
+    }
+    .lead {
+      max-width: 655px;
+      margin: 30px 0 0;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -.025em;
+    }
+    .body-copy { color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .dark-sheet .body-copy { color: #cbc6bb; }
+
+    /* Cover */
+    .cover { min-height: 1190px; display: flex; flex-direction: column; }
+    .cover::after {
+      content: "";
+      position: absolute;
+      width: 55%; height: 31%; right: -8%; bottom: -4%;
+      background: repeating-linear-gradient(135deg, var(--blue) 0 21px, var(--yellow) 21px 43px, var(--red) 43px 64px, var(--pink) 64px 85px, var(--ink) 85px 106px);
+      clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+      transform: rotate(-5deg);
+      opacity: .98;
+    }
+    .cover .meta { margin-bottom: 86px; }
+    .cover-title { max-width: 840px; }
+    .cover-title em { color: var(--blue); font-style: normal; }
+    .cover-sub { margin-top: 24px; font-family: "VS Mono", monospace; font-size: 12px; line-height: 1.65; max-width: 470px; }
+    .cover-lockup { width: min(690px, 84%); margin-top: auto; margin-bottom: 112px; }
+    .cover-corners { position: absolute; right: 58px; top: 128px; width: 118px; height: 118px; }
+    .cover-corners i { position: absolute; width: 46px; height: 46px; border: 8px solid var(--ink); }
+    .cover-corners i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+    .cover-corners i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+    .cover-corners i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+    .cover-corners i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+    /* Components */
+    .section-heading { display: grid; grid-template-columns: 145px 1fr; align-items: baseline; gap: 24px; margin: 58px 0 32px; }
+    .section-heading .eyebrow { margin: 0; }
+    .grid { display: grid; gap: 20px; }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .note {
+      padding: 18px 20px;
+      border-left: 5px solid var(--red);
+      background: #efe8dc;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .dark-sheet .note { background: #22211e; }
+    .card { min-width: 0; border: 1px solid var(--line); padding: 18px; }
+    .dark-sheet .card { border-color: #4d4a45; }
+    .card p:last-child { margin-bottom: 0; }
+    .artboard { min-height: 264px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .artboard.paper { background: var(--paper); }
+    .artboard.dark { background: var(--dark); }
+    .artboard img { width: 88%; max-height: 210px; object-fit: contain; }
+    .artboard.icon-board img { width: min(62%, 230px); max-height: 210px; }
+    .caption { margin: 12px 0 0; color: var(--muted); font-family: "VS Mono", monospace; font-size: 10px; line-height: 1.45; }
+    .dark-sheet .caption { color: #bcb6ab; }
+
+    /* Logo geometry */
+    .clearspace-demo { position: relative; min-height: 340px; display: grid; place-items: center; background: #e9e1d3; overflow: hidden; }
+    .clearspace-demo .safe { width: 73%; height: 68%; border: 1px dashed var(--blue); display: grid; place-items: center; }
+    .clearspace-demo img { width: 69%; }
+    .measure { position: absolute; color: var(--blue); font-family: "VS Mono", monospace; font-size: 10px; font-weight: 700; }
+    .measure.top { top: 16px; left: 50%; transform: translateX(-50%); }
+    .measure.left { left: 12px; top: 50%; transform: rotate(-90deg) translateX(-50%); transform-origin: top left; }
+    .measure-line { position: absolute; background: var(--blue); }
+    .measure-line.h { width: 44px; height: 1px; top: 31px; left: calc(50% - 22px); }
+    .measure-line.v { width: 1px; height: 42px; top: calc(50% - 21px); left: 32px; }
+    .size-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .size-table th, .size-table td { padding: 11px 0; text-align: left; border-bottom: 1px solid var(--line); }
+    .size-table th { color: var(--muted); font-family: "VS Mono", monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+    .dark-sheet .size-table th { color: #aaa499; }
+    .dark-sheet .size-table th, .dark-sheet .size-table td { border-color: #45433e; }
+
+    /* Palette */
+    .swatch { min-height: 193px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; color: var(--ink); }
+    .swatch.dark-ink { color: var(--white); }
+    .swatch .token { color: inherit; opacity: .83; }
+    .swatch strong { font-family: "VS Mono", monospace; font-size: 14px; }
+    .swatch small { font-family: "VS Mono", monospace; font-size: 10px; }
+    .color-usage { display: grid; grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: end; margin-top: 46px; }
+    .color-usage .super { font-family: Georgia, serif; font-size: 46px; line-height: .96; letter-spacing: -.055em; }
+    .accent-rail { height: 18px; margin-top: 24px; background: linear-gradient(90deg, var(--blue) 0 24%, var(--yellow) 24% 48%, var(--red) 48% 67%, var(--pink) 67% 84%, var(--green) 84%); }
+
+    /* Type */
+    .type-sample-display { font-family: Georgia, serif; font-size: clamp(56px, 8vw, 95px); line-height: .85; letter-spacing: -.085em; }
+    .type-sample-mono { margin-top: 19px; font-family: "VS Mono", monospace; font-size: 15px; line-height: 1.65; }
+    .type-scale { display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .type-row { display: grid; grid-template-columns: 100px 1fr 80px; align-items: baseline; gap: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .type-row > span:first-child, .type-row > span:last-child { font-family: "VS Mono", monospace; font-size: 10px; color: var(--muted); }
+    .type-row > span:last-child { text-align: right; }
+    .type-row .example { letter-spacing: -.035em; }
+
+    /* Do / don't */
+    .do-dont { border: 1px solid var(--line); }
+    .do-dont .flag { display: inline-block; margin: 14px 14px 0; padding: 5px 7px; font-family: "VS Mono", monospace; font-size: 10px; font-weight: 700; letter-spacing: .09em; }
+    .flag.do { color: var(--white); background: var(--green); }
+    .flag.no { color: var(--white); background: var(--red); }
+    .do-dont .visual { min-height: 188px; margin-top: 12px; display: grid; place-items: center; padding: 20px; background: #f1ece2; }
+    .do-dont .visual.dark-ex { background: #161616; }
+    .do-dont .visual img { max-height: 135px; object-fit: contain; }
+    .visual.misuse { filter: grayscale(1); opacity: .45; }
+    .do-dont p { margin: 13px 14px 15px; font-size: 12px; line-height: 1.38; }
+
+    /* Digital mockups */
+    .mockup-stack { display: grid; grid-template-columns: 1.05fr .95fr; gap: 24px; margin-top: 40px; }
+    .mockup { position: relative; overflow: hidden; border: 1px solid #45423d; background: var(--dark); box-shadow: 8px 8px 0 var(--red); }
+    .mockup .bar { height: 37px; display: flex; align-items: center; padding: 0 13px; border-bottom: 1px solid #45423d; color: #b8b2a7; font-family: "VS Mono", monospace; font-size: 9px; }
+    .window { min-height: 279px; padding: 21px; }
+    .window .mini-lockup { width: 175px; }
+    .window h4 { max-width: 250px; margin: 38px 0 9px; font-size: 28px; line-height: 1; letter-spacing: -.06em; color: var(--white); }
+    .window p { max-width: 250px; color: #c4bfb4; font-size: 12px; line-height: 1.45; }
+    .window .orbit { position: absolute; right: -48px; bottom: -65px; width: 255px; height: 255px; border: 19px solid var(--blue); border-radius: 50%; transform: rotate(-35deg); }
+    .window .orbit::after { content: ""; position: absolute; width: 100%; height: 17px; top: 91px; left: -3px; background: var(--yellow); transform: rotate(42deg); }
+    .preset { background: var(--paper); color: var(--ink); box-shadow: 8px 8px 0 var(--blue); }
+    .preset .bar { color: var(--muted); border-color: var(--line); }
+    .preset .window { display: grid; grid-template-columns: 105px 1fr; align-items: center; gap: 18px; }
+    .preset .symbol { width: 102px; }
+    .preset h4 { margin: 0 0 6px; color: var(--ink); font-size: 23px; }
+    .preset p { margin: 0; color: var(--muted); }
+    .github-card { grid-column: 1 / -1; background: var(--paper); color: var(--ink); box-shadow: 8px 8px 0 var(--green); }
+    .github-card .bar { color: var(--muted); border-color: var(--line); }
+    .github-card .window { min-height: 213px; padding: 0; }
+    .github-card img { width: 100%; height: 170px; object-fit: cover; object-position: center; }
+    .github-card .under { padding: 12px 18px 15px; font-family: "VS Mono", monospace; font-size: 10px; display: flex; justify-content: space-between; }
+
+    .asset-list { margin: 0; padding: 0; list-style: none; }
+    .asset-list li { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-family: "VS Mono", monospace; font-size: 11px; }
+    .asset-list li span:last-child { color: var(--muted); text-align: right; }
+    .dark-sheet .asset-list li { border-color: #45433e; }
+    .dark-sheet .asset-list li span:last-child { color: #b4aea2; }
+    .closing-mark { width: 265px; margin: 58px auto 0; }
+    .tiny-footer { position: absolute; left: 54px; bottom: 34px; color: var(--muted); font-family: "VS Mono", monospace; font-size: 10px; }
+    .dark-sheet .tiny-footer { color: #aaa499; }
+
+    @media (max-width: 760px) {
+      .book { padding: 0; }
+      .sheet { min-height: auto; margin: 0; padding: 31px 24px 66px; box-shadow: none; }
+      h1 { font-size: 64px; }
+      h2 { font-size: 46px; }
+      .cover { min-height: 850px; }
+      .cover-corners { right: 24px; top: 105px; transform: scale(.68); transform-origin: top right; }
+      .section-heading, .color-usage, .mockup-stack { display: block; }
+      .section-heading .eyebrow { margin-bottom: 12px; }
+      .two, .three, .four { grid-template-columns: 1fr; }
+      .mockup { margin-bottom: 22px; }
+      .page-no { right: 24px; }
+      .tiny-footer { left: 24px; }
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      html, body { background: white; }
+      .book { padding: 0; }
+      .sheet { width: 210mm; height: 297mm; min-height: 297mm; margin: 0; padding: 13mm 14mm 12mm; box-shadow: none; break-after: page; page-break-after: always; }
+      .sheet:last-child { break-after: auto; page-break-after: auto; }
+      .page-no { right: 14mm; bottom: 10mm; }
+      .tiny-footer { left: 14mm; bottom: 10mm; }
+      .cover { min-height: 297mm; }
+      .cover-lockup { margin-bottom: 30mm; }
+      .cover-corners { right: 14mm; top: 33mm; }
+      h1 { font-size: 31mm; }
+      h2 { font-size: 17mm; }
+      .section-heading { margin-top: 17mm; }
+      .mockup-stack { margin-top: 9mm; }
+    }
+  </style>
+</head>
+<body>
+  <main class="book">
+    <section class="sheet cover" aria-label="Cover">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Chroma Press / 01</span></div>
+      <div class="cover-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="cover-title">
+        <p class="eyebrow">Identity system</p>
+        <h1>Beautiful <em>vision.</em><br>Made visible.</h1>
+        <p class="cover-sub">CHROMA PRESS &nbsp;—&nbsp; A visual operating system for expressive computer-vision overlays.</p>
+      </div>
+      <img class="cover-lockup" src="../assets/brand/chroma-press/chroma-press-light-lockup-transparent.png" alt="visionstyle Chroma Press light logo">
+      <div class="tiny-footer">VERSION 1.0 &nbsp;·&nbsp; SEPTEMBER 2026</div>
+      <div class="page-no">01 / 07</div>
+    </section>
+
+    <section class="sheet" aria-label="Brand idea">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Foundation</span></div>
+      <div class="section-heading"><p class="eyebrow">01 / Idea</p><h2>Technical sight,<br>turned into a visual language.</h2></div>
+      <div class="grid two">
+        <div>
+          <p class="lead">visionstyle gives object detection a point of view. Its identity should make data feel authored—not merely displayed.</p>
+          <div class="note"><strong>Brand behavior.</strong> Be exact, energetic and cultured. Use measured technical detail as a compositional device. The system should feel like a great visual editor has entered the detection pipeline.</div>
+        </div>
+        <div class="grid two">
+          <article class="card"><p class="small-label">01 / Detect</p><h3>Frame the subject</h3><p class="body-copy">Open corners, registration marks and confident geometry make detection visible without looking surveillance-heavy.</p></article>
+          <article class="card"><p class="small-label">02 / Style</p><h3>Make it yours</h3><p class="body-copy">Color rails, grain, confidence dots and tracking paths signal that visionstyle is an expressive toolkit.</p></article>
+          <article class="card"><p class="small-label">03 / Track</p><h3>Let it move</h3><p class="body-copy">A dotted route gives the system a sense of time, direction and kinetic intelligence.</p></article>
+          <article class="card"><p class="small-label">04 / Publish</p><h3>Stay legible</h3><p class="body-copy">The identity scales down to one mark and up to a rich, editorial visual field.</p></article>
+        </div>
+      </div>
+      <div class="color-usage">
+        <div><p class="eyebrow">Signature thought</p><p class="super">Data can be accurate<br>and <span style="color:var(--red)">beautiful.</span></p></div>
+        <div><p class="body-copy">The Chroma Press direction uses bold print color with detection grammar. It is playful without being childish, technical without becoming cold.</p><div class="accent-rail"></div></div>
+      </div>
+      <div class="page-no">02 / 07</div>
+    </section>
+
+    <section class="sheet dark-sheet" aria-label="Logo system">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Logo system</span></div>
+      <div class="section-heading"><p class="eyebrow">02 / Mark</p><h2>One V. Four visual modes.</h2></div>
+      <div class="grid two">
+        <figure class="card"><div class="artboard paper"><img src="../assets/brand/chroma-press/chroma-press-light-lockup-transparent.png" alt="Light theme logo lockup"></div><figcaption class="caption">PRIMARY / LIGHT — paper, README light mode, print</figcaption></figure>
+        <figure class="card"><div class="artboard dark"><img src="../assets/brand/chroma-press/chroma-press-dark-lockup-transparent.png" alt="Dark theme logo lockup"></div><figcaption class="caption">PRIMARY / DARK — product surfaces, dark mode, video</figcaption></figure>
+        <figure class="card"><div class="artboard paper icon-board"><img src="../assets/brand/chroma-press/chroma-press-light-symbol-transparent.png" alt="Light theme V symbol"></div><figcaption class="caption">SYMBOL / LIGHT — app icon, social avatar, compact spaces</figcaption></figure>
+        <figure class="card"><div class="artboard dark icon-board"><img src="../assets/brand/chroma-press/chroma-press-dark-symbol-transparent.png" alt="Dark theme V symbol"></div><figcaption class="caption">SYMBOL / DARK — dark app tile, social avatar, splash</figcaption></figure>
+      </div>
+      <div class="rule"></div>
+      <div class="grid three">
+        <div><p class="small-label">Preferred</p><p class="body-copy">Use the full lockup whenever “visionstyle” has to be read for the first time.</p></div>
+        <div><p class="small-label">Compact</p><p class="body-copy">Use the V symbol in a square or when the name is already visible nearby.</p></div>
+        <div><p class="small-label">Never separate</p><p class="body-copy">Do not rebuild the colored wordmark in a system typeface. Use the supplied lockups.</p></div>
+      </div>
+      <div class="page-no">03 / 07</div>
+    </section>
+
+    <section class="sheet" aria-label="Spacing and sizing">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Geometry</span></div>
+      <div class="section-heading"><p class="eyebrow">03 / Space</p><h2>Give the mark<br>room to perform.</h2></div>
+      <div class="grid two">
+        <div class="clearspace-demo">
+          <span class="measure top">1× clear space</span><span class="measure left">1× clear space</span><span class="measure-line h"></span><span class="measure-line v"></span>
+          <div class="safe"><img src="../assets/brand/chroma-press/chroma-press-light-lockup-transparent.png" alt="Clearspace diagram"></div>
+        </div>
+        <div>
+          <p class="lead" style="font-size:24px">Clear space = the height of the red triangle inside the wordmark’s “v”.</p>
+          <p class="body-copy">Keep this amount of empty space on all sides of the lockup. For the standalone V, use one quarter of the symbol’s overall width. More breathing room is always welcome.</p>
+          <div class="rule"></div>
+          <table class="size-table">
+            <thead><tr><th>Asset</th><th>Digital minimum</th><th>Print minimum</th></tr></thead>
+            <tbody>
+              <tr><td>Full lockup</td><td>220 px wide</td><td>35 mm wide</td></tr>
+              <tr><td>V symbol</td><td>32 px square</td><td>8 mm square</td></tr>
+              <tr><td>Watermark</td><td>56 px square</td><td>12 mm square</td></tr>
+              <tr><td>Favicon</td><td>16 px square</td><td>Digital only</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:34px">
+        <div class="note"><strong>At small sizes.</strong> Use the simplified watermark V below 32 px. The full-color V is expressive; it is not intended to carry detail at favicon scale.</div>
+        <div class="note" style="border-color:var(--blue)"><strong>Alignment.</strong> Align the lockup to content edges, not to the optical bounds of the V. The V is intentionally dynamic and slightly asymmetric.</div>
+      </div>
+      <div class="page-no">04 / 07</div>
+    </section>
+
+    <section class="sheet" aria-label="Color and type">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Color and type</span></div>
+      <div class="section-heading"><p class="eyebrow">04 / Voice</p><h2>Black ink. Paper.<br>Signals in full color.</h2></div>
+      <div class="grid four">
+        <div class="swatch dark-ink" style="background:var(--ink)"><span class="token">Ink</span><strong>#111111</strong><small>PRIMARY FIELD / TYPE</small></div>
+        <div class="swatch" style="background:var(--paper)"><span class="token">Paper</span><strong>#FAF7F0</strong><small>PRIMARY LIGHT FIELD</small></div>
+        <div class="swatch" style="background:var(--blue);color:#fff"><span class="token">Cobalt</span><strong>#1558E8</strong><small>KEY SIGNAL</small></div>
+        <div class="swatch" style="background:var(--red)"><span class="token">Tomato</span><strong>#FF382A</strong><small>FOCUS / ACTION</small></div>
+        <div class="swatch" style="background:var(--yellow)"><span class="token">Saffron</span><strong>#FFD514</strong><small>ENERGY / HIGHLIGHT</small></div>
+        <div class="swatch" style="background:var(--pink)"><span class="token">Pink</span><strong>#F6A1C4</strong><small>HUMAN WARMTH</small></div>
+        <div class="swatch" style="background:var(--green)"><span class="token">Green</span><strong>#22B95A</strong><small>SUCCESS / MOTION POINT</small></div>
+        <div class="swatch" style="background:#fffdf7"><span class="token">Warm white</span><strong>#FFFDF7</strong><small>DARK THEME TYPE</small></div>
+      </div>
+      <div class="grid two" style="margin-top:44px;align-items:end">
+        <div><p class="small-label">Editorial display / Georgia</p><div class="type-sample-display">See clearly.<br>Style boldly.</div><p class="body-copy" style="margin-top:18px">Use for guide titles, campaign statements and feature-page headlines. Never use in product controls.</p></div>
+        <div><p class="small-label">Technical voice / JetBrains Mono</p><div class="type-sample-mono">PRESET: CINEMATIC<br>TRACK_ID: 14<br>CONFIDENCE: 0.93</div><p class="body-copy" style="margin-top:18px">Use for labels, metadata, code, captioning and visual-system signals. Product UI may use the bundled VS Sans for body text.</p></div>
+      </div>
+      <div class="page-no">05 / 07</div>
+    </section>
+
+    <section class="sheet dark-sheet" aria-label="Usage and mockups">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Use in the wild</span></div>
+      <div class="section-heading"><p class="eyebrow">05 / Context</p><h2>Identity that belongs<br>inside the product.</h2></div>
+      <div class="mockup-stack">
+        <article class="mockup"><div class="bar">VISIONSTYLE STUDIO / DARK</div><div class="window"><img class="mini-lockup" src="../assets/brand/chroma-press/chroma-press-dark-lockup-transparent.png" alt="visionstyle logo on dark product mockup"><h4>Style every frame.</h4><p>Let the app use the full lockup in its entry moments, then return to the symbol in persistent navigation.</p><span class="orbit"></span></div></article>
+        <article class="mockup preset"><div class="bar">PRESET LIBRARY</div><div class="window"><img class="symbol" src="../assets/brand/chroma-press/chroma-press-light-symbol-transparent.png" alt="V symbol in preset mockup"><div><h4>Chroma Press</h4><p>Signature colors, live tracking and punchy editorial energy.</p><div class="accent-rail" style="margin-top:16px"></div></div></div></article>
+        <article class="mockup github-card"><div class="bar">README.MD / GITHUB</div><div class="window"><img src="images/hero-chroma-press-light.png" alt="visionstyle README banner mockup"><div class="under"><span>USE THE THEME-AWARE BANNER</span><span>LIGHT / DARK</span></div></div></article>
+      </div>
+      <div class="page-no">06 / 07</div>
+    </section>
+
+    <section class="sheet" aria-label="Favicon and asset handoff">
+      <div class="meta"><span>visionstyle / Brand book</span><span>Handoff</span></div>
+      <div class="section-heading"><p class="eyebrow">06 / Ship</p><h2>Small mark.<br>Big signal.</h2></div>
+      <div class="grid two">
+        <div>
+          <div class="grid four" style="align-items:end;gap:14px">
+            <div><div class="artboard dark icon-board" style="min-height:66px"><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="White favicon mark" style="width:32px"></div><p class="caption">16 PX</p></div>
+            <div><div class="artboard dark icon-board" style="min-height:82px"><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="White favicon mark" style="width:44px"></div><p class="caption">32 PX</p></div>
+            <div><div class="artboard dark icon-board" style="min-height:108px"><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="White favicon mark" style="width:58px"></div><p class="caption">48 PX</p></div>
+            <div><div class="artboard dark icon-board" style="min-height:138px"><img src="../assets/brand/chroma-press/chroma-press-watermark-white.png" alt="White favicon mark" style="width:76px"></div><p class="caption">180 PX</p></div>
+          </div>
+          <div class="note" style="margin-top:30px;border-color:var(--yellow)"><strong>Favicon rule.</strong> Export the simplified V only. Keep its field solid: ink with a warm-white mark for dark contexts, or paper with an ink mark for light contexts. Do not place the detailed color V at 16 px.</div>
+        </div>
+        <div>
+          <p class="small-label">Current source assets</p>
+          <ul class="asset-list">
+            <li><span>chroma-press-light-lockup-transparent.png</span><span>paper surfaces</span></li>
+            <li><span>chroma-press-dark-lockup-transparent.png</span><span>dark surfaces</span></li>
+            <li><span>chroma-press-light-symbol-transparent.png</span><span>light app / avatar</span></li>
+            <li><span>chroma-press-dark-symbol-transparent.png</span><span>dark app / avatar</span></li>
+            <li><span>chroma-press-watermark-ink.png</span><span>light footage</span></li>
+            <li><span>chroma-press-watermark-white.png</span><span>dark footage</span></li>
+            <li><span>hero-chroma-press-{light,dark}.png</span><span>GitHub README</span></li>
+          </ul>
+          <p class="body-copy" style="margin-top:22px">For final production, retain these raster references and commission a vector master (SVG / PDF) for print, high-resolution exports and deterministic favicon generation.</p>
+        </div>
+      </div>
+      <img class="closing-mark" src="../assets/brand/chroma-press/chroma-press-light-symbol-transparent.png" alt="visionstyle Chroma Press V symbol">
+      <div class="tiny-footer">VISIONSTYLE / CHROMA PRESS / BRAND GUIDELINES</div>
+      <div class="page-no">07 / 07</div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,42 +1,27 @@
 import { useStore } from '../store';
 
-export type StudioPanel = 'media' | 'style' | 'export' | null;
-
+export type StudioPanel = 'media' | 'style' | 'objects' | 'export';
 interface TopBarProps {
   panel: StudioPanel;
   onPanelChange: (panel: StudioPanel) => void;
-  onOpenDetections: () => void;
 }
-
-export function TopBar({ panel, onPanelChange, onOpenDetections }: TopBarProps) {
-  const images = useStore((s) => s.images);
-  const imageId = useStore((s) => s.imageId);
-  const detect = useStore((s) => s.detect);
-  const detecting = useStore((s) => s.detecting);
-  const detections = useStore((s) => s.detections);
-  const hidden = useStore((s) => s.hidden);
-  const activePreset = useStore((s) => s.activePreset);
-  const dirty = useStore((s) => s.dirty);
+export function TopBar({ panel, onPanelChange }: TopBarProps) {
   const info = useStore((s) => s.info);
-  const current = images.find((i) => i.id === imageId);
-  const visibleCount = detections.length - hidden.size;
-  const toggle = (next: Exclude<StudioPanel, null>) => onPanelChange(panel === next ? null : next);
-
+  const dirty = useStore((s) => s.dirty);
   return (
     <header className="appbar">
-      <div className="appbar-brand" aria-label="visionstyle Studio">
-        <span className="wordmark">visionstyle</span>
-        <span className="brand-context">Studio</span>
-      </div>
+      <a className="appbar-brand" href="#live-preview" aria-label="visionstyle Studio home">
+        <img className="brand-logo" src="/chroma-press-light-symbol-transparent.png" alt="" />
+        <span className="brand-context">STUDIO</span>
+      </a>
       <nav className="app-nav" aria-label="Studio workspace">
-        <button type="button" className={panel === 'media' ? 'active' : ''} onClick={() => toggle('media')}>Media {current && <small>{current.name}</small>}</button>
-        <button type="button" className={panel === 'style' ? 'active' : ''} onClick={() => toggle('style')}>Fine tune <small>{dirty ? 'unsaved' : activePreset ?? 'custom'}</small></button>
-        <button type="button" className={panel === 'export' ? 'active' : ''} onClick={() => toggle('export')}>Export</button>
+        {([['media', 'Source'], ['style', 'Design'], ['objects', 'Objects']] as const).map(([id, label]) => (
+          <button type="button" key={id} className={panel === id ? 'active' : ''} aria-current={panel === id ? 'page' : undefined} onClick={() => onPanelChange(id)}>{label}</button>
+        ))}
       </nav>
       <div className="appbar-actions">
-        <button type="button" className="detection-count" onClick={onOpenDetections} aria-label="Open detections"><i /> {visibleCount} detections</button>
-        <button type="button" className="detect-action" onClick={() => detect()} disabled={detecting || !imageId}><span className="detect-corners" aria-hidden="true" />{detecting ? 'Scanning…' : 'Detect'}</button>
-        <span className={`server-state ${info ? 'ready' : ''}`} title={info ? `visionstyle ${info.version}` : 'Connecting to Studio'} />
+        <span className="connection-status"><i className={info ? 'ready' : ''} />{info ? (dirty ? 'Style modified' : 'Local session') : 'Connecting…'}</span>
+        <button type="button" className={`btn primary export-button ${panel === 'export' ? 'active' : ''}`} onClick={() => onPanelChange('export')}>Export style <span aria-hidden="true">↗</span></button>
       </div>
     </header>
   );
