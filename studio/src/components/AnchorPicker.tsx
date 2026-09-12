@@ -13,6 +13,8 @@ export function AnchorPicker({ value, placement, onChange }: { value: string; pl
             <button
               key={a}
               type="button"
+              role="radio"
+              aria-checked={value === a}
               className={`anchor-cell ${value === a ? 'active' : ''}`}
               onClick={() => onChange(a)}
               title={a.replace('_', ' ')}

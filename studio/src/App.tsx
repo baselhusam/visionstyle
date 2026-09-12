@@ -3,6 +3,7 @@ import { Detections } from "./components/Detections";
 import { DetectionShelf } from "./components/DetectionShelf";
 import { Export } from "./components/Export";
 import { MediaSetup } from "./components/MediaSetup";
+import { Icon, type IconName } from "./components/Icon";
 import { PresetPicker } from "./components/PresetPicker";
 import { Preview } from "./components/Preview";
 import { StyleControls } from "./components/StyleControls";
@@ -10,10 +11,17 @@ import { TopBar, type StudioPanel } from "./components/TopBar";
 import { useStore } from "./store";
 
 const WORKSPACES = [
-  { id: "media", label: "Source", hint: "Scene" },
-  { id: "style", label: "Design", hint: "Style" },
-  { id: "objects", label: "Objects", hint: "Inspect" },
+  { id: "media", label: "Source", hint: "Scene", icon: "source" },
+  { id: "style", label: "Design", hint: "Style", icon: "design" },
+  { id: "objects", label: "Objects", hint: "Inspect", icon: "objects" },
 ] as const;
+
+const PANELS: StudioPanel[] = ["media", "style", "objects", "export"];
+
+function panelFromUrl(): StudioPanel {
+  const value = new URLSearchParams(window.location.search).get("panel") as StudioPanel | null;
+  return value && PANELS.includes(value) ? value : "style";
+}
 
 export default function App() {
   const boot = useStore((s) => s.boot);
@@ -37,12 +45,21 @@ export default function App() {
   const animated =
     isVideo ||
     (style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0);
-  const [panel, setPanel] = useState<StudioPanel>("style");
+  const [panel, setPanel] = useState<StudioPanel>(panelFromUrl);
   const editor = useRef<HTMLElement>(null);
 
   useEffect(() => {
     boot();
   }, [boot]);
+  useEffect(() => {
+    const warnUnsaved = (event: BeforeUnloadEvent) => {
+      if (!useStore.getState().dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warnUnsaved);
+    return () => window.removeEventListener("beforeunload", warnUnsaved);
+  }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -64,8 +81,18 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [setPlaying, resetStyle, animated]);
+  useEffect(() => {
+    const restorePanel = () => setPanel(panelFromUrl());
+    window.addEventListener("popstate", restorePanel);
+    return () => window.removeEventListener("popstate", restorePanel);
+  }, []);
 
   const openPanel = (next: StudioPanel) => {
+    if (next !== panel) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("panel", next);
+      window.history.pushState({}, "", url);
+    }
     setPanel(next);
     editor.current?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -77,6 +104,7 @@ export default function App() {
   };
   return (
     <div className="app">
+      <a className="skip-link" href="#style-controls">Skip to editor</a>
       <TopBar panel={panel} onPanelChange={openPanel} />
       <main className="studio-stage">
         <header className="workspace-heading">
@@ -129,7 +157,7 @@ export default function App() {
                   onClick={resetStyle}
                   title="Reset to preset (R)"
                 >
-                  ↺ Reset
+                  <Icon name="reset" /> Reset
                 </button>
               </div>
             )}
@@ -139,7 +167,7 @@ export default function App() {
                 className="btn"
                 onClick={() => openPanel("style")}
               >
-                ← Back to design
+                <Icon name="back" /> Back to design
               </button>
             )}
           </div>
@@ -153,7 +181,7 @@ export default function App() {
                   className="workspace-switcher"
                   aria-label="Studio workspace"
                 >
-                  {WORKSPACES.map((item, index) => (
+                  {WORKSPACES.map((item) => (
                     <button
                       type="button"
                       key={item.id}
@@ -161,9 +189,7 @@ export default function App() {
                       aria-current={panel === item.id ? "page" : undefined}
                       onClick={() => openPanel(item.id)}
                     >
-                      <span className="workspace-index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                      <span className="workspace-icon"><Icon name={item.icon as IconName} /></span>
                       <span>
                         <strong>{item.label}</strong>
                         <small>{item.hint}</small>
@@ -221,7 +247,7 @@ export default function App() {
                   className="canvas-link"
                   onClick={() => openPanel("media")}
                 >
-                  Change source <span aria-hidden="true">↗</span>
+                  <Icon name="change" /> Change source
                 </button>
               </div>
               <div className="cinema-canvas">
@@ -240,7 +266,7 @@ export default function App() {
                       : "Choose an animation in Line"
                   }
                 >
-                  <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
+                  <Icon name={playing ? "pause" : "play"} />
                   {playing ? "Pause" : isVideo ? "Play video" : "Play motion"}
                 </button>
                 <label className={`stage-toggle ${synthetic ? "on" : ""}`}>
@@ -263,7 +289,7 @@ export default function App() {
                   onClick={() => detect()}
                   disabled={detecting || !imageId}
                 >
-                  {detecting ? "Detecting…" : "↻ Run detection"}
+                  <Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}
                 </button>
               </div>
               <DetectionShelf />
@@ -275,6 +301,8 @@ export default function App() {
             <img
               src="/chroma-press-light-lockup-transparent.png"
               alt="visionstyle"
+              width="252"
+              height="75"
             />
             <span>Chroma Press / Studio</span>
           </div>

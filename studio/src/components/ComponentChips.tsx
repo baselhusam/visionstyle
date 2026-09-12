@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icon } from './Icon';
 
 const ALL = ['text', 'confidence', 'track_id', 'class_id', 'custom'] as const;
 const LABELS: Record<string, string> = { text: 'Name', confidence: 'Confidence', track_id: 'Track id', class_id: 'Class id', custom: 'Custom' };
@@ -30,10 +31,14 @@ export function ComponentChips({ value, onChange }: { value: string[]; onChange:
               setDrag(null);
             }}
             onDragEnd={() => setDrag(null)}
-            title="Drag to reorder"
+            title="Drag to reorder, or use the arrow buttons"
           >
             <span className="chip-grip">⋮⋮</span>
             {LABELS[c] ?? c}
+            <span className="chip-order">
+              <button type="button" disabled={i === 0} aria-label={`Move ${LABELS[c] ?? c} earlier`} onClick={() => move(i, i - 1)}><Icon name="previous" /></button>
+              <button type="button" disabled={i === value.length - 1} aria-label={`Move ${LABELS[c] ?? c} later`} onClick={() => move(i, i + 1)}><Icon name="next" /></button>
+            </span>
             <button type="button" aria-label={`Remove ${c}`} onClick={() => onChange(value.filter((x) => x !== c))}>
               ×
             </button>

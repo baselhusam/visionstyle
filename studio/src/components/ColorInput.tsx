@@ -43,6 +43,9 @@ export function ColorInput({ value, specials = [], onChange }: { value: string; 
           </label>
           <input
             className="text-input mono"
+            name="color-value"
+            autoComplete="off"
+            aria-label="Color value"
             value={text}
             spellCheck={false}
             onChange={(e) => setText(e.target.value)}
@@ -69,7 +72,7 @@ export function ColorList({ value, onChange }: { value: string[]; onChange: (v: 
       {value.map((c, i) => (
         <div key={i} className="color-list-row">
           <label className="color-well" style={{ background: toHex(c) }}>
-            <input type="color" value={toHex(c)} onChange={(e) => onChange(value.map((x, j) => (j === i ? e.target.value : x)))} />
+            <input type="color" value={toHex(c)} aria-label={`Pick color ${i + 1}`} onChange={(e) => onChange(value.map((x, j) => (j === i ? e.target.value : x)))} />
           </label>
           <span className="mono small">{c}</span>
           <button type="button" className="ghost" disabled={value.length <= 1} onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Remove color">

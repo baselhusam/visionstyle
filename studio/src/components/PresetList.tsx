@@ -36,7 +36,7 @@ export function PresetList() {
         <span className="preset-tooltip" role="tooltip">{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</span>
       </button>
       {origin !== 'builtin' && (
-        <button type="button" className="preset-delete" title="Delete preset" onClick={() => confirm(`Delete preset "${name}"?`) && remove(name)}>
+        <button type="button" className="preset-delete" aria-label={`Delete ${name} preset`} title="Delete preset" onClick={() => confirm(`Delete preset “${name}”?`) && remove(name)}>
           ×
         </button>
       )}

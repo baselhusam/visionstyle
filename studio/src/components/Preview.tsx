@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { useStore, visibleDetections } from '../store';
+import { Icon } from './Icon';
 
 const FRAME_MS = 90;
 
@@ -20,6 +21,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const [fit, setFit] = useState(true);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const tRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -88,11 +90,15 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
 
   useEffect(() => {
     if (!menu) return;
+    menuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
     const close = (event: PointerEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) setMenu(null);
     };
     const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenu(null);
+      if (event.key === 'Escape') {
+        setMenu(null);
+        menuButtonRef.current?.focus();
+      }
     };
     window.addEventListener('pointerdown', close);
     window.addEventListener('keydown', escape);
@@ -111,6 +117,14 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
     });
   };
 
+  const toggleMenu = () => {
+    if (menu) {
+      setMenu(null);
+      return;
+    }
+    setMenu({ x: 12, y: 12 });
+  };
+
   const downloadFrame = () => {
     if (!url) return;
     const anchor = document.createElement('a');
@@ -121,15 +135,23 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   };
 
   return (
-    <div className={`stage-wrap ${fit ? 'fit' : 'actual'}`} onDoubleClick={() => setFit((f) => !f)}>
-      {url ? <img className="stage" src={url} alt="Annotated preview" draggable={false} onClick={openMenu} onContextMenu={openMenu} aria-haspopup="menu" /> : <div className="stage placeholder">Select a source to begin.</div>}
-      {menu && <div ref={menuRef} className="stage-menu" role="menu" aria-label="Preview options" style={{ left: menu.x, top: menu.y }}>
+    <div className={`stage-wrap ${fit ? 'fit' : 'actual'}`}>
+      {url ? <img className="stage" src={url} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} /> : <div className="stage placeholder">Select a source to begin.</div>}
+      {url && <button ref={menuButtonRef} type="button" className="stage-options" aria-label="Preview options" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={toggleMenu}><Icon name="options" /></button>}
+      {menu && <div ref={menuRef} className="stage-menu" role="menu" aria-label="Preview options" style={{ left: menu.x, top: menu.y }} onKeyDown={(event) => {
+        if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const items = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []);
+        const current = items.indexOf(document.activeElement as HTMLButtonElement);
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (current + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items[next]?.focus();
+      }}>
         <span className="stage-menu-label">Preview</span>
-        <button type="button" role="menuitem" className={fit ? 'active' : ''} onClick={() => { setFit(true); setMenu(null); }}><span>⊙</span> Fit to canvas</button>
-        <button type="button" role="menuitem" className={!fit ? 'active' : ''} onClick={() => { setFit(false); setMenu(null); }}><span>1:1</span> Actual size</button>
+        <button type="button" role="menuitem" className={fit ? 'active' : ''} onClick={() => { setFit(true); setMenu(null); menuButtonRef.current?.focus(); }}><Icon name="fit" /> Fit to canvas</button>
+        <button type="button" role="menuitem" className={!fit ? 'active' : ''} onClick={() => { setFit(false); setMenu(null); menuButtonRef.current?.focus(); }}><Icon name="actual" /> Actual size</button>
         <div className="stage-menu-rule" />
-        <button type="button" role="menuitem" onClick={() => { setMenu(null); onChangeSource?.(); }}><span>⇄</span> Change source</button>
-        <button type="button" role="menuitem" onClick={downloadFrame}><span>↓</span> Save frame</button>
+        <button type="button" role="menuitem" onClick={() => { setMenu(null); onChangeSource?.(); }}><Icon name="change" /> Change source</button>
+        <button type="button" role="menuitem" onClick={downloadFrame}><Icon name="download" /> Save frame</button>
       </div>}
       <div className={`busy ${busy ? 'show' : ''}`} aria-hidden="true" />
     </div>

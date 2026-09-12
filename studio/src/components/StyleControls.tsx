@@ -33,19 +33,29 @@ function CategoryIcon({ id }: { id: string }) {
   );
 }
 export function StyleControls() {
-  const [category, setCategory] = useState("presets");
-  const style = useStore((s) => s.style);
-  const setPath = useStore((s) => s.setPath);
-  const section = SECTIONS.find((s) => s.id === category);
   const categories = [
     { id: "presets", title: "Style library" },
     ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
   ];
+  const [category, setCategory] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get("category");
+    return categories.some((item) => item.id === requested) ? requested! : "presets";
+  });
+  const style = useStore((s) => s.style);
+  const setPath = useStore((s) => s.setPath);
+  const section = SECTIONS.find((s) => s.id === category);
+  const selectCategory = (next: string) => {
+    setCategory(next);
+    const url = new URL(window.location.href);
+    url.searchParams.set("category", next);
+    window.history.replaceState({}, "", url);
+  };
   return (
     <div className="design-workspace">
       <div
         className="category-tabs"
         role="tablist"
+        aria-orientation="vertical"
         aria-label="Style categories"
       >
         {categories.map((item, index) => (
@@ -58,18 +68,18 @@ export function StyleControls() {
             tabIndex={category === item.id ? 0 : -1}
             className={category === item.id ? "active" : ""}
             key={item.id}
-            onClick={() => setCategory(item.id)}
+            onClick={() => selectCategory(item.id)}
             onKeyDown={(event) => {
               let next = index;
-              if (event.key === "ArrowRight")
+              if (event.key === "ArrowRight" || event.key === "ArrowDown")
                 next = (index + 1) % categories.length;
-              else if (event.key === "ArrowLeft")
+              else if (event.key === "ArrowLeft" || event.key === "ArrowUp")
                 next = (index + categories.length - 1) % categories.length;
               else if (event.key === "Home") next = 0;
               else if (event.key === "End") next = categories.length - 1;
               else return;
               event.preventDefault();
-              setCategory(categories[next].id);
+              selectCategory(categories[next].id);
               document.getElementById(`tab-${categories[next].id}`)?.focus();
             }}
           >

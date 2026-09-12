@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { useStore } from '../store';
+import { Icon } from './Icon';
 
 export function Export() {
   const style = useStore((s) => s.style);
@@ -65,16 +66,22 @@ export function Export() {
     <section className="rail-section export">
       <div className="section-label">
         <span>Export</span>
-        <span className="tabs-inline">
-          <button type="button" className={tab === 'yaml' ? 'active' : ''} onClick={() => setTab('yaml')}>
+        <span className="tabs-inline" role="tablist" aria-label="Export format" onKeyDown={(event) => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === 'ArrowLeft' || event.key === 'Home' ? 'yaml' : 'python';
+          setTab(next);
+          document.getElementById(`export-tab-${next}`)?.focus();
+        }}>
+          <button id="export-tab-yaml" type="button" role="tab" aria-controls="export-code" aria-selected={tab === 'yaml'} tabIndex={tab === 'yaml' ? 0 : -1} className={tab === 'yaml' ? 'active' : ''} onClick={() => setTab('yaml')}>
             YAML
           </button>
-          <button type="button" className={tab === 'python' ? 'active' : ''} onClick={() => setTab('python')}>
+          <button id="export-tab-python" type="button" role="tab" aria-controls="export-code" aria-selected={tab === 'python'} tabIndex={tab === 'python' ? 0 : -1} className={tab === 'python' ? 'active' : ''} onClick={() => setTab('python')}>
             Python
           </button>
         </span>
       </div>
-      <pre className="code mono" aria-live="polite">
+      <pre id="export-code" className="code mono" role="tabpanel" aria-labelledby={`export-tab-${tab}`} aria-live="polite">
         {tab === 'yaml' ? yaml : python}
       </pre>
       <div className="export-actions">
@@ -84,7 +91,7 @@ export function Export() {
           </label>
         )}
         <button type="button" className="btn" onClick={() => copy(tab === 'yaml' ? yaml : python, tab === 'yaml' ? 'YAML' : 'Snippet')}>
-          Copy {tab === 'yaml' ? 'YAML' : 'snippet'}
+          <Icon name="copy" /> Copy {tab === 'yaml' ? 'YAML' : 'snippet'}
         </button>
       </div>
 
@@ -93,13 +100,15 @@ export function Export() {
           <span>Save as preset</span>
         </div>
         <div className="save-row">
-          <input aria-label="Preset name" className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="preset name" spellCheck={false} />
+          <input name="preset-name" autoComplete="off" aria-label="Preset name" className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. my-style…" spellCheck={false} />
           <button type="button" className="btn primary" onClick={save} disabled={saving || !name.trim()}>
-            {saving ? 'Saving…' : 'Save'}
+            <Icon name="save" /> {saving ? 'Saving…' : 'Save preset'}
           </button>
         </div>
         <input
           className="text-input mono small"
+          name="preset-directory"
+          autoComplete="off"
           aria-label="Preset directory"
           value={dir}
           onChange={(e) => setDir(e.target.value)}

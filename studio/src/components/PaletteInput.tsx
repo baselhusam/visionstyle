@@ -61,7 +61,7 @@ export function ClassColors({ value, onChange }: { value: Record<string, string>
       {entries.map(([k, c]) => (
         <div key={k} className="color-list-row">
           <label className="color-well" style={{ background: c }}>
-            <input type="color" value={c} onChange={(e) => onChange({ ...value, [k]: e.target.value })} />
+            <input type="color" value={c} aria-label={`Pick color for ${k}`} onChange={(e) => onChange({ ...value, [k]: e.target.value })} />
           </label>
           <span className="mono small">{k}</span>
           <button
@@ -79,7 +79,7 @@ export function ClassColors({ value, onChange }: { value: Record<string, string>
         </div>
       ))}
       <div className="color-list-row">
-        <input className="text-input mono" list="class-names" placeholder="class name" value={name} onChange={(e) => setName(e.target.value)} />
+        <input className="text-input mono" name="class-name" autoComplete="off" aria-label="Class name" list="class-names" placeholder="e.g. person…" value={name} onChange={(e) => setName(e.target.value)} />
         <datalist id="class-names">
           {classes.map((c) => (
             <option key={c} value={c} />

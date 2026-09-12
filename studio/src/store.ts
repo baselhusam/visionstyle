@@ -45,6 +45,7 @@ interface State {
   setConf: (v: number) => void;
   detect: () => Promise<void>;
   toggleHidden: (i: number) => void;
+  setHidden: (indices: Set<number>) => void;
   select: (i: number | null) => void;
   selectClass: (className: string | null) => void;
   setSyntheticTrails: (v: boolean) => void;
@@ -199,6 +200,7 @@ export const useStore = create<State>((set, get) => ({
     else hidden.add(i);
     set({ hidden });
   },
+  setHidden: (indices) => set({ hidden: new Set(indices), selected: null }),
   select: (i) => set({ selected: get().selected === i ? null : i, selectedClass: null }),
   selectClass: (className) => set({ selectedClass: get().selectedClass === className ? null : className, selected: null }),
   setSyntheticTrails: (v) => set({ syntheticTrails: v }),

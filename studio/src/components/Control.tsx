@@ -39,6 +39,7 @@ export function Control({ def }: { def: ControlDef }) {
           </div>
           <input
             type="range"
+            name={def.path}
             aria-label={def.label}
             min={def.min}
             max={def.max}
@@ -71,7 +72,7 @@ export function Control({ def }: { def: ControlDef }) {
           <label className="field-label" title={def.hint}>
             {def.label}
           </label>
-          <select aria-label={def.label} value={def.options?.includes(value) ? value : def.options?.[0]} onChange={(e) => set(e.target.value)}>
+          <select name={def.path} aria-label={def.label} value={def.options?.includes(value) ? value : def.options?.[0]} onChange={(e) => set(e.target.value)}>
             {def.options?.map((o) => (
               <option key={o} value={o}>
                 {def.optionLabels?.[o] ?? o.replace('_', ' ')}
@@ -139,7 +140,7 @@ export function Control({ def }: { def: ControlDef }) {
           <label className="field-label" title={def.hint}>
             {def.label}
           </label>
-          <input aria-label={def.label} className="text-input mono" value={String(value ?? '')} onChange={(e) => set(e.target.value)} spellCheck={false} />
+          <input name={def.path} autoComplete="off" aria-label={def.label} className="text-input mono" value={String(value ?? '')} onChange={(e) => set(e.target.value)} spellCheck={false} />
         </div>
       );
   }

@@ -1,4 +1,5 @@
 import { useStore } from "../store";
+import { Icon } from "./Icon";
 
 export type StudioPanel = "media" | "style" | "objects" | "export";
 interface TopBarProps {
@@ -19,6 +20,8 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
           className="brand-logo"
           src="/chroma-press-light-symbol-transparent.png"
           alt=""
+          width="48"
+          height="48"
         />
         <span className="brand-context">STUDIO</span>
       </a>
@@ -33,7 +36,7 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
           className={`btn primary export-button ${panel === "export" ? "active" : ""}`}
           onClick={() => onPanelChange("export")}
         >
-          Export style <span aria-hidden="true">↗</span>
+          <Icon name="export" /> Export style
         </button>
       </div>
     </header>
