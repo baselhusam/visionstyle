@@ -16,6 +16,8 @@ export interface ImageInfo {
   has_detections: boolean;
   width?: number;
   height?: number;
+  kind?: 'image' | 'video';
+  duration?: number | null;
 }
 
 export interface ModelInfo {
@@ -87,7 +89,7 @@ export const api = {
       return r.text();
     }),
   render: async (
-    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; max_size: number; synthetic_trails: boolean },
+    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; media_time?: number; max_size: number; synthetic_trails: boolean },
     signal?: AbortSignal,
   ): Promise<{ url: string; ms: number }> => {
     const res = await post('/api/render', body, signal);

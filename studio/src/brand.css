@@ -1592,3 +1592,227 @@ input[type="range"]::-webkit-slider-thumb {
     grid-template-columns: 1fr;
   }
 }
+
+/* Final workspace polish — compact, application-like, and canvas focused. */
+.studio-stage {
+  width: min(1460px, 100%);
+  padding-inline: clamp(18px, 3vw, 48px);
+}
+.workspace-heading > p {
+  display: none;
+}
+.editor-workspace {
+  margin-top: 22px;
+}
+.editor-heading {
+  margin-bottom: 16px;
+}
+.playground {
+  grid-template-columns: minmax(430px, 470px) minmax(0, 1fr);
+  gap: 18px;
+}
+.control-deck {
+  border-color: #d8d2c7;
+  border-radius: 14px;
+  box-shadow: 0 12px 34px rgb(33 31 27 / 7%);
+}
+.workspace-switcher {
+  gap: 6px;
+  padding: 8px;
+}
+.workspace-switcher button {
+  min-height: 48px;
+  padding-inline: 11px;
+}
+.control-deck .design-workspace {
+  grid-template-columns: 136px minmax(0, 1fr);
+}
+.control-deck .category-tabs {
+  gap: 2px;
+  padding: 10px 8px;
+  background: #f5f2eb;
+}
+.control-deck .category-tabs button {
+  grid-template-columns: 19px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 43px;
+  padding: 0 11px;
+  border-radius: 9px;
+  font-family: var(--sans);
+}
+.control-deck .category-tabs button > svg {
+  width: 16px;
+  height: 16px;
+}
+.control-deck .category-tabs .category-index {
+  display: none;
+}
+.category-tabs button > .category-title {
+  font-size: 10px;
+  font-weight: 610;
+}
+.control-deck .category-tabs button.active::before {
+  top: 11px;
+  bottom: 11px;
+  width: 3px;
+  background: var(--yellow);
+}
+.control-deck .category-content {
+  padding: 18px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.category-heading {
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.category-heading h3 {
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 1.3;
+}
+.category-heading p {
+  display: none;
+}
+.control-deck .preset-rail {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+.control-deck .preset-art {
+  height: 76px;
+}
+.control-deck .preset-text {
+  min-height: 48px;
+  padding: 10px;
+}
+.control-deck .preset-text small {
+  display: none;
+}
+.cinema {
+  border-radius: 14px;
+  box-shadow: 0 12px 34px rgb(20 23 21 / 10%);
+}
+.cinema-meta,
+.cinema-controls {
+  padding-inline: 18px;
+}
+.cinema-canvas {
+  height: clamp(360px, 48vw, 610px);
+  padding: 26px;
+}
+.stage-wrap.fit .stage {
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease;
+}
+.stage-wrap.fit .stage:hover {
+  filter: brightness(1.025);
+}
+.stage-menu {
+  position: absolute;
+  z-index: 12;
+  display: grid;
+  width: 174px;
+  padding: 7px;
+  color: #e9eee8;
+  border: 1px solid #4a514b;
+  border-radius: 11px;
+  background: rgb(36 42 38 / 97%);
+  box-shadow: 0 16px 38px rgb(0 0 0 / 34%);
+  backdrop-filter: blur(14px);
+  animation: stage-menu-in 130ms ease-out both;
+}
+@keyframes stage-menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(.98); }
+}
+.stage-menu-label {
+  padding: 5px 9px 7px;
+  color: #8f9b91;
+  font: 600 8px var(--mono);
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.stage-menu button {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 9px;
+  color: #d8ded7;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 11px;
+  text-align: left;
+}
+.stage-menu button span {
+  color: #99a69b;
+  font: 600 9px var(--mono);
+}
+.stage-menu button:hover,
+.stage-menu button.active {
+  color: white;
+  background: #414b44;
+}
+.stage-menu button.active span {
+  color: #d7e8b8;
+}
+.stage-menu-rule {
+  height: 1px;
+  margin: 5px 4px;
+  background: #4a514b;
+}
+.media-setup {
+  gap: 16px;
+}
+.setup-group {
+  min-height: 148px;
+  padding: 17px;
+}
+.upload-button {
+  width: 100%;
+}
+.setup-note {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1180px) {
+  .playground {
+    grid-template-columns: minmax(410px, 440px) minmax(0, 1fr);
+  }
+  .control-deck .design-workspace {
+    grid-template-columns: 128px minmax(0, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .playground {
+    grid-template-columns: 1fr;
+  }
+  .playground-controls,
+  .control-deck {
+    position: static;
+    max-height: none;
+  }
+  .control-deck .design-workspace,
+  .control-deck .category-tabs,
+  .control-deck .category-content,
+  .control-deck .workspace-surface {
+    max-height: 600px;
+  }
+}
+@media (max-width: 560px) {
+  .control-deck .design-workspace {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+  .control-deck .category-tabs button {
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 7px;
+    padding-inline: 8px;
+  }
+  .category-tabs button > .category-title {
+    font-size: 9px;
+  }
+  .cinema-canvas {
+    height: 300px;
+    padding: 14px;
+  }
+}

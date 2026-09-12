@@ -136,6 +136,42 @@ def test_upload_image_and_delete(client):
     assert bad.status_code == 415
 
 
+def test_upload_video_and_render_frame(client, tmp_path):
+    video_path = tmp_path / "clip.avi"
+    writer = cv2.VideoWriter(
+        str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10, (96, 64)
+    )
+    assert writer.isOpened()
+    for value in (40, 120, 220):
+        writer.write(np.full((64, 96, 3), value, np.uint8))
+    writer.release()
+
+    with video_path.open("rb") as video:
+        response = client.post(
+            "/api/images", files={"file": ("clip.avi", video, "video/x-msvideo")}
+        )
+    assert response.status_code == 200
+    info = response.json()
+    assert info["kind"] == "video"
+    assert info["width"] == 96 and info["height"] == 64
+    assert info["duration"] > 0
+
+    render = client.post(
+        "/api/render",
+        json={
+            "image_id": info["id"],
+            "style": {},
+            "detections": [],
+            "media_time": 0.1,
+        },
+    )
+    assert render.status_code == 200
+    assert cv2.imdecode(np.frombuffer(render.content, np.uint8), cv2.IMREAD_COLOR).shape[:2] == (
+        64,
+        96,
+    )
+
+
 def test_model_upload_rejects_wrong_type(client):
     r = client.post("/api/models", files={"file": ("m.txt", io.BytesIO(b"x"), "text/plain")})
     assert r.status_code == 415

@@ -36,6 +36,7 @@ from visionstyle.style.schema import Style
 SAMPLES_DIR = Path(__file__).resolve().parent.parent / "assets" / "samples"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff"}
+VIDEO_SUFFIXES = {".mp4", ".mov", ".m4v", ".webm", ".avi"}
 MODEL_SUFFIXES = {".pt", ".onnx", ".engine", ".torchscript"}
 
 
@@ -60,16 +61,32 @@ class _State:
             self.images[f"sample:{p.stem}"] = p
         home = studio_home()
         for p in sorted((home / "images").iterdir()):
-            if p.suffix.lower() in IMAGE_SUFFIXES:
+            if p.suffix.lower() in IMAGE_SUFFIXES | VIDEO_SUFFIXES:
                 self.images[p.stem] = p
         for p in sorted((home / "models").iterdir()):
             if p.suffix.lower() in MODEL_SUFFIXES:
                 self.models[p.stem] = p
 
-    def image(self, image_id: str) -> np.ndarray:
+    def image(self, image_id: str, media_time: float = 0.0) -> np.ndarray:
         path = self.images.get(image_id)
         if path is None:
             raise HTTPException(404, f"Unknown image {image_id!r}")
+        if path.suffix.lower() in VIDEO_SUFFIXES:
+            capture = cv2.VideoCapture(str(path))
+            if not capture.isOpened():
+                raise HTTPException(415, f"Cannot decode {path.name}")
+            if media_time > 0:
+                capture.set(cv2.CAP_PROP_POS_MSEC, media_time * 1000)
+            ok, frame = capture.read()
+            capture.release()
+            if not ok or frame is None:
+                # Loop cleanly when the playhead reaches the end.
+                capture = cv2.VideoCapture(str(path))
+                ok, frame = capture.read()
+                capture.release()
+            if not ok or frame is None:
+                raise HTTPException(415, f"Cannot decode {path.name}")
+            return frame
         with self.lock:
             img = self.image_cache.get(image_id)
             if img is None:
@@ -118,6 +135,7 @@ class RenderRequest(BaseModel):
     t: float = 0.0
     max_size: int = Field(1600, ge=200, le=4096)
     synthetic_trails: bool = True
+    media_time: float = Field(0.0, ge=0)
     format: str = Field("jpeg", pattern="^(jpeg|png|webp)$")
     quality: int = Field(90, ge=30, le=100)
 
@@ -255,7 +273,18 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
                 "id": image_id,
                 "name": path.name,
                 "sample": image_id.startswith("sample:"),
+                "kind": "video" if path.suffix.lower() in VIDEO_SUFFIXES else "image",
             }
+            if entry["kind"] == "video":
+                capture = cv2.VideoCapture(str(path))
+                fps = capture.get(cv2.CAP_PROP_FPS) or 0
+                frames = capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0
+                entry.update(
+                    width=round(capture.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    height=round(capture.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                    duration=frames / fps if fps > 0 else None,
+                )
+                capture.release()
             sidecar = path.with_suffix(".detections.json")
             entry["has_detections"] = sidecar.exists()
             out.append(entry)
@@ -271,14 +300,26 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
     @app.post("/api/images")
     async def upload_image(file: UploadFile = File(...)) -> dict[str, Any]:
         suffix = Path(file.filename or "upload.jpg").suffix.lower() or ".jpg"
-        if suffix not in IMAGE_SUFFIXES:
-            raise HTTPException(415, f"Unsupported image type {suffix}")
+        if suffix not in IMAGE_SUFFIXES | VIDEO_SUFFIXES:
+            raise HTTPException(415, f"Unsupported media type {suffix}")
         data = await file.read()
         digest = hashlib.sha1(data).hexdigest()[:10]
         image_id = f"{Path(file.filename or 'upload').stem[:40]}-{digest}"
         path = studio_home() / "images" / f"{image_id}{suffix}"
         path.write_bytes(data)
-        img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+        is_video = suffix in VIDEO_SUFFIXES
+        if is_video:
+            capture = cv2.VideoCapture(str(path))
+            ok, img = capture.read()
+            fps = capture.get(cv2.CAP_PROP_FPS) or 0
+            frames = capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0
+            duration = frames / fps if fps > 0 else None
+            capture.release()
+            if not ok:
+                img = None
+        else:
+            img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+            duration = None
         if img is None:
             path.unlink(missing_ok=True)
             raise HTTPException(415, "Could not decode image")
@@ -291,6 +332,8 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
             "height": img.shape[0],
             "sample": False,
             "has_detections": False,
+            "kind": "video" if is_video else "image",
+            "duration": duration,
         }
 
     @app.delete("/api/images/{image_id}")
@@ -369,7 +412,7 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
     # ---- render -------------------------------------------------------------
     @app.post("/api/render")
     def render(body: RenderRequest) -> Response:
-        img = state.image(body.image_id)
+        img = state.image(body.image_id, body.media_time)
         try:
             style = Style.from_dict(body.style)
         except ValueError as exc:

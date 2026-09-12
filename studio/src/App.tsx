@@ -32,8 +32,11 @@ export default function App() {
   const detections = useStore((s) => s.detections);
   const detect = useStore((s) => s.detect);
   const detecting = useStore((s) => s.detecting);
+  const img = images.find((i) => i.id === imageId);
+  const isVideo = img?.kind === "video";
   const animated =
-    style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0;
+    isVideo ||
+    (style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0);
   const [panel, setPanel] = useState<StudioPanel>("style");
   const editor = useRef<HTMLElement>(null);
 
@@ -72,8 +75,6 @@ export default function App() {
     });
     editor.current?.focus({ preventScroll: true });
   };
-  const img = images.find((i) => i.id === imageId);
-
   return (
     <div className="app">
       <TopBar panel={panel} onPanelChange={openPanel} />
@@ -208,11 +209,11 @@ export default function App() {
               <div className="cinema-meta">
                 <div className="scene-name">
                   <span className="scene-icon" aria-hidden="true">
-                    ▧
+                    {isVideo ? "▶" : "▧"}
                   </span>
                   <span>{img?.name ?? "Choose a source"}</span>
                   <span className="scene-badge">
-                    {img?.sample ? "Sample scene" : "Your scene"}
+                    {img?.sample ? "Sample scene" : isVideo ? "Video" : "Your scene"}
                   </span>
                 </div>
                 <button
@@ -224,7 +225,7 @@ export default function App() {
                 </button>
               </div>
               <div className="cinema-canvas">
-                <Preview />
+                <Preview onChangeSource={() => openPanel("media")} />
                 <span className="canvas-label">LIVE PREVIEW</span>
               </div>
               <div className="cinema-controls">
@@ -236,11 +237,11 @@ export default function App() {
                   title={
                     animated
                       ? "Play or pause (Space)"
-                      : "Choose an animation in the Line category"
+                      : "Choose an animation in Line"
                   }
                 >
                   <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
-                  {playing ? "Pause motion" : "Play motion"}
+                  {playing ? "Pause" : isVideo ? "Play video" : "Play motion"}
                 </button>
                 <label className={`stage-toggle ${synthetic ? "on" : ""}`}>
                   <input
