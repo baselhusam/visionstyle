@@ -2031,3 +2031,41 @@ input[type="range"]::-webkit-slider-thumb {
 .chip-order button:hover:not(:disabled) { color: var(--blue); background: var(--paper-2); }
 .chip-order button:disabled { opacity: .25; }
 .chip-order svg { width: 12px; height: 12px; }
+
+/* Instrument deck — both panes occupy one deliberate, scrollable work area. */
+@media (min-width: 721px) {
+  .playground {
+    --workbench-height: clamp(540px, calc(100vh - 150px), 710px);
+    align-items: stretch;
+    min-height: var(--workbench-height);
+  }
+  .playground-controls,
+  .control-deck,
+  .playground-preview { height: var(--workbench-height); max-height: none; }
+  .control-deck { overflow: hidden; }
+  .control-deck-body { display: flex; flex: 1 1 auto; min-height: 0; }
+  .control-deck .design-workspace,
+  .control-deck .workspace-surface { width: 100%; height: 100%; max-height: none; }
+  .control-deck .workspace-surface { overflow-y: auto; }
+  .cinema { display: flex; flex-direction: column; }
+  .cinema-canvas { height: auto; min-height: 0; flex: 1 1 auto; }
+}
+
+/* Keep the original warm, neutral Studio surface—only the panel mechanics change. */
+.control-glyph { display: inline-grid; width: 15px; height: 15px; flex: 0 0 15px; place-items: center; color: var(--blue); }
+.control-glyph svg { width: 14px; height: 14px; }
+
+/* Preset descriptions now clear the card edge instead of being cut off by it. */
+.preset { overflow: visible; }
+.preset-main { overflow: hidden; border-radius: 8px; }
+.preset-info { z-index: 8; }
+.preset-tooltip { z-index: 40; right: 0; bottom: calc(100% + 8px); width: min(220px, calc(100vw - 52px)); box-shadow: 0 10px 26px rgb(35 34 30 / 20%); }
+
+.model-lockup { display: grid; gap: 2px; padding: 11px 12px; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 8px; background: var(--paper-2); }
+.model-lockup strong { font: 650 12px var(--sans); letter-spacing: -.01em; }
+.model-lockup span { color: var(--muted); font: 8px var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+.setup-model .setup-note { grid-column: auto; margin: 0; }
+
+@media (max-width: 720px) {
+  .control-deck .workspace-surface { overflow: visible; }
+}

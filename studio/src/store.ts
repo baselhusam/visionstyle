@@ -110,7 +110,7 @@ export const useStore = create<State>((set, get) => ({
         yoloAvailable: models.yolo_available,
         style: def ? def.style : (defaultStyle() as Style),
       });
-      const first = images.find((i) => i.id === 'sample:street') ?? images[0];
+      const first = images.find((i) => i.id === 'sample:city-walkthrough') ?? images[0];
       if (first) await get().selectImage(first.id);
     } catch (e) {
       set({ error: `Could not reach the studio server: ${(e as Error).message}` });
@@ -153,8 +153,12 @@ export const useStore = create<State>((set, get) => ({
   },
 
   selectImage: async (id) => {
-    set({ imageId: id, detections: [], hidden: new Set(), selected: null, selectedClass: null });
     const img = get().images.find((i) => i.id === id);
+    set({
+      imageId: id,
+      modelId: img?.kind === 'video' && get().yoloAvailable ? 'yolov8n.pt' : null,
+      detections: [], hidden: new Set(), selected: null, selectedClass: null,
+    });
     if (img?.has_detections && !get().modelId) {
       await get().detect();
     } else if (get().modelId || get().yoloAvailable) {
@@ -180,7 +184,7 @@ export const useStore = create<State>((set, get) => ({
     if (!imageId) return;
     const img = images.find((i) => i.id === imageId);
     let model = modelId;
-    if (!model && !img?.has_detections) model = yoloAvailable ? 'yolo11n.pt' : null;
+    if (!model && !img?.has_detections) model = yoloAvailable ? 'yolov8n.pt' : null;
     if (!model && !img?.has_detections) {
       set({ error: 'No detections available: upload a model or install visionstyle[yolo].' });
       return;

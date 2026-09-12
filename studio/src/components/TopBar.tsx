@@ -25,7 +25,6 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
         />
         <span className="brand-context">STUDIO</span>
       </a>
-      <span className="appbar-product">Visual annotation workspace</span>
       <div className="appbar-actions">
         <span className="connection-status">
           <i className={info ? "ready" : ""} />

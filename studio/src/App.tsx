@@ -107,19 +107,6 @@ export default function App() {
       <a className="skip-link" href="#style-controls">Skip to editor</a>
       <TopBar panel={panel} onPanelChange={openPanel} />
       <main className="studio-stage">
-        <header className="workspace-heading">
-          <div>
-            <p className="eyebrow">Computer vision, with character</p>
-            <h1>
-              A better way to <em>see.</em>
-            </h1>
-          </div>
-          <p>
-            Your scene. Your visual language.
-            <br />
-            Make every detection feel intentional.
-          </p>
-        </header>
         <section
           ref={editor}
           id="style-controls"
@@ -131,21 +118,21 @@ export default function App() {
             <div>
               <p className="eyebrow">
                 {panel === "style"
-                  ? "Design playground"
+                  ? "Annotation design"
                   : panel === "media"
-                    ? "Start with a scene"
+                    ? "Scene setup"
                     : panel === "objects"
-                      ? "Inside the frame"
-                      : "Ready for your project"}
+                      ? "Detected objects"
+                      : "Export"}
               </p>
               <h2>
                 {panel === "style"
-                  ? "Find your signature."
+                  ? "Style the annotation."
                   : panel === "media"
-                    ? "Set the scene."
+                    ? "Choose a video source."
                     : panel === "objects"
-                      ? "Every object, considered."
-                      : "Take it from here."}
+                      ? "Review the frame."
+                      : "Use this style elsewhere."}
               </h2>
             </div>
             {panel === "style" && (
@@ -238,9 +225,7 @@ export default function App() {
                     {isVideo ? "▶" : "▧"}
                   </span>
                   <span>{img?.name ?? "Choose a source"}</span>
-                  <span className="scene-badge">
-                    {img?.sample ? "Sample scene" : isVideo ? "Video" : "Your scene"}
-                  </span>
+                  <span className="scene-badge">{isVideo ? "Video" : img?.sample ? "Sample image" : "Image"}</span>
                 </div>
                 <button
                   type="button"
@@ -259,7 +244,7 @@ export default function App() {
                   type="button"
                   className={`playback ${playing ? "active" : ""}`}
                   onClick={() => setPlaying(!playing)}
-                  disabled={!animated}
+                  disabled={!animated && !isVideo}
                   title={
                     animated
                       ? "Play or pause (Space)"

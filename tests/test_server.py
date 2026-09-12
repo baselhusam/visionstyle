@@ -28,6 +28,8 @@ def test_samples_and_detect_from_sidecar(client):
     images = client.get("/api/images").json()
     ids = {i["id"] for i in images}
     assert "sample:street" in ids
+    video = next(i for i in images if i["id"] == "sample:city-walkthrough")
+    assert video["kind"] == "video" and video["duration"] > 0 and video["has_detections"]
     res = client.post("/api/detect", json={"image_id": "sample:street", "conf": 0.5}).json()
     assert res["source"] == "bundled" and res["detections"]
     assert all(d["confidence"] >= 0.5 for d in res["detections"])

@@ -57,8 +57,9 @@ class _State:
         self.image_cache: dict[str, np.ndarray] = {}
         self.lock = threading.Lock()
         self.presets_dir: Path | None = None
-        for p in sorted(SAMPLES_DIR.glob("*.jpg")):
-            self.images[f"sample:{p.stem}"] = p
+        for p in sorted(SAMPLES_DIR.iterdir()):
+            if p.suffix.lower() in IMAGE_SUFFIXES | VIDEO_SUFFIXES:
+                self.images[f"sample:{p.stem}"] = p
         home = studio_home()
         for p in sorted((home / "images").iterdir()):
             if p.suffix.lower() in IMAGE_SUFFIXES | VIDEO_SUFFIXES:
@@ -356,7 +357,7 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
         return {
             "models": entries,
             "yolo_available": _ultralytics_available(),
-            "default": "yolo11n.pt" if _ultralytics_available() else None,
+            "default": "yolov8n.pt" if _ultralytics_available() else None,
         }
 
     @app.post("/api/models")
