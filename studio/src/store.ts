@@ -166,16 +166,26 @@ export const useStore = create<State>((set, get) => ({
     }
   },
   uploadImage: async (file) => {
-    const info = await api.uploadImage(file);
-    set({ images: [...get().images.filter((i) => i.id !== info.id), info] });
-    await get().selectImage(info.id);
-    get().notify(`Loaded ${info.name}`);
+    set({ error: null });
+    try {
+      const info = await api.uploadImage(file);
+      set({ images: [...get().images.filter((i) => i.id !== info.id), info] });
+      await get().selectImage(info.id);
+      get().notify(`Loaded ${info.name}`);
+    } catch (e) {
+      set({ error: `Could not load ${file.name}: ${(e as Error).message}` });
+    }
   },
   uploadModel: async (file) => {
-    const info = await api.uploadModel(file);
-    set({ models: [...get().models.filter((m) => m.id !== info.id), info], modelId: info.id });
-    get().notify(`Model ${info.name} ready`);
-    await get().detect();
+    set({ error: null });
+    try {
+      const info = await api.uploadModel(file);
+      set({ models: [...get().models.filter((m) => m.id !== info.id), info], modelId: info.id });
+      get().notify(`Model ${info.name} ready`);
+      await get().detect();
+    } catch (e) {
+      set({ error: `Could not load ${file.name}: ${(e as Error).message}` });
+    }
   },
   setModel: (id) => set({ modelId: id }),
   setConf: (v) => set({ conf: v }),

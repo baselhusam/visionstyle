@@ -34,7 +34,7 @@ export function MediaSetup() {
           {images.map((image) => <option key={image.id} value={image.id}>{image.kind === "video" ? "Video · " : ""}{image.sample ? `Sample · ${image.name}` : image.name}</option>)}
         </select>
         <button type="button" className="btn upload-button" onClick={() => imageInput.current?.click()}><Icon name="source" /> Upload media</button>
-        <input ref={imageInput} type="file" accept="image/*,video/mp4,video/quicktime,video/webm,video/x-msvideo" hidden onChange={(event) => {
+        <input ref={imageInput} type="file" accept="image/*,video/mp4,video/quicktime,video/webm,video/x-msvideo,.mp4,.mov,.m4v,.webm,.avi" hidden onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) uploadImage(file);
           event.target.value = "";
