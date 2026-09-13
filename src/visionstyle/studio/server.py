@@ -510,15 +510,15 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
         path.write_bytes(data)
         is_video = suffix in VIDEO_SUFFIXES
         fps = frames = 0.0
+        img: np.ndarray | None
         if is_video:
             capture = cv2.VideoCapture(str(path))
-            ok, img = capture.read()
+            ok, frame = capture.read()
             fps = capture.get(cv2.CAP_PROP_FPS) or 0
             frames = capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0
             duration = frames / fps if fps > 0 else None
             capture.release()
-            if not ok:
-                img = None
+            img = frame if ok else None
         else:
             img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
             duration = None
