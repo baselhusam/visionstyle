@@ -24,14 +24,11 @@ function Item({ name, description, origin }: { name: string; description: string
   return (
     <div className={`preset ${active ? 'active' : ''}`}>
       <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
-        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /><span className="art-caption">OBJECT · 0.98</span></span>
+        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /><span className="art-caption">person 0.98</span></span>
         <span className="preset-text">
           <strong>{name}</strong>
+          <small>{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</small>
         </span>
-      </button>
-      <button type="button" className="preset-info" aria-label={`About ${name}`}>
-        <span aria-hidden="true">i</span>
-        <span className="preset-tooltip" role="tooltip">{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</span>
       </button>
       {origin !== 'builtin' && (
         <button type="button" className="preset-delete" aria-label={`Delete ${name} preset`} title="Delete preset" onClick={() => confirm(`Delete preset “${name}”?`) && remove(name)}>

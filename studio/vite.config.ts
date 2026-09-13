@@ -15,6 +15,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: { '/api': 'http://127.0.0.1:8420' },
+    // The Studio uses the same font files the Python annotator renders with; they live one level up.
+    fs: { allow: ['..'] },
   },
   test: { environment: 'node' },
 });

@@ -49,6 +49,16 @@ export function Timeline() {
 
   return (
     <div className="timeline" aria-label="Video timeline">
+      <button
+        type="button"
+        className={`timeline-play ${playing ? 'active' : ''}`}
+        onClick={() => setPlaying(!playing)}
+        disabled={count === 0}
+        aria-label={playing ? 'Pause' : 'Play'}
+        title={playing ? 'Pause (Space)' : 'Play (Space)'}
+      >
+        <Icon name={playing ? 'pause' : 'play'} />
+      </button>
       <div className="timeline-steps">
         <button type="button" aria-label="Previous frame" title="Previous frame (←)" onClick={() => stepFrame(-1)} disabled={count === 0}><Icon name="previous" /></button>
         <button type="button" aria-label="Next frame" title="Next frame (→)" onClick={() => stepFrame(1)} disabled={count === 0}><Icon name="next" /></button>
@@ -72,7 +82,7 @@ export function Timeline() {
         {formatTime(sourceFrame / rate)} <em>/ {formatTime(duration)}</em>
       </span>
       <span className="timeline-frame">
-        frame {sourceFrame + 1} / {media.frame_count ?? count}
+        f {sourceFrame + 1} / {media.frame_count ?? count}
       </span>
       <span className={`timeline-status ${frames ? 'tracked' : ''}`}>
         {frames ? `${tracks} tracked objects` : 'not tracked'}

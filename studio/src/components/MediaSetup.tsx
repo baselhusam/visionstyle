@@ -44,7 +44,6 @@ export function MediaSetup() {
           <span className="setup-icon"><Icon name="source" /></span>
           <div><strong>Scene</strong><small>Image or video input</small></div>
         </div>
-        <span className="setup-label" id="source-label">Source</span>
         <SourcePicker />
         <button type="button" className="btn upload-button" onClick={() => imageInput.current?.click()}><Icon name="source" /> Upload media</button>
         <input ref={imageInput} type="file" accept="image/*,video/mp4,video/quicktime,video/webm,video/x-msvideo,.mp4,.mov,.m4v,.webm,.avi" hidden onChange={(event) => {

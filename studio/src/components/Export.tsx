@@ -65,7 +65,7 @@ export function Export() {
   return (
     <section className="rail-section export">
       <div className="section-label">
-        <span>Export</span>
+        <span>Format</span>
         <span className="tabs-inline" role="tablist" aria-label="Export format" onKeyDown={(event) => {
           if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
           event.preventDefault();

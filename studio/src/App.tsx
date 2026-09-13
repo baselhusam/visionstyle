@@ -3,7 +3,7 @@ import { Detections } from "./components/Detections";
 import { DetectionShelf } from "./components/DetectionShelf";
 import { Export } from "./components/Export";
 import { MediaSetup } from "./components/MediaSetup";
-import { Icon, type IconName } from "./components/Icon";
+import { Icon } from "./components/Icon";
 import { PresetPicker } from "./components/PresetPicker";
 import { Preview } from "./components/Preview";
 import { StyleControls } from "./components/StyleControls";
@@ -11,12 +11,6 @@ import { Timeline } from "./components/Timeline";
 import { TopBar, type StudioPanel } from "./components/TopBar";
 import { displayName } from "./api";
 import { useStore } from "./store";
-
-const WORKSPACES = [
-  { id: "media", label: "Source", hint: "Scene", icon: "source" },
-  { id: "style", label: "Design", hint: "Style", icon: "design" },
-  { id: "objects", label: "Objects", hint: "Inspect", icon: "objects" },
-] as const;
 
 const PANELS: StudioPanel[] = ["media", "style", "objects", "export"];
 
@@ -93,6 +87,7 @@ export default function App() {
     });
     editor.current?.focus({ preventScroll: true });
   };
+  const deck = DECKS[panel];
   return (
     <div className="app">
       <a className="skip-link" href="#style-controls">Skip to editor</a>
@@ -105,78 +100,43 @@ export default function App() {
           tabIndex={-1}
           aria-label="Editing workspace"
         >
-          <div className="editor-heading">
-            <div>
-              <p className="eyebrow">
-                {panel === "style"
-                  ? "Annotation design"
-                  : panel === "media"
-                    ? "Scene setup"
-                    : panel === "objects"
-                      ? "Detected objects"
-                      : "Export"}
-              </p>
-              <h2>
-                {panel === "style"
-                  ? "Style the annotation."
-                  : panel === "media"
-                    ? "Choose a video source."
-                    : panel === "objects"
-                      ? "Review the frame."
-                      : "Use this style elsewhere."}
-              </h2>
-            </div>
-            {panel === "style" && (
-              <div className="editor-actions">
-                <PresetPicker />
-                <button
-                  type="button"
-                  className="reset-style"
-                  onClick={resetStyle}
-                  title="Reset to preset (R)"
-                >
-                  <Icon name="reset" /> Reset
-                </button>
-              </div>
-            )}
-            {panel === "export" && (
-              <button
-                type="button"
-                className="btn"
-                onClick={() => openPanel("style")}
-              >
-                <Icon name="back" /> Back to design
-              </button>
-            )}
-          </div>
           <div className={`playground panel-${panel}`}>
             <aside
               className="playground-controls"
               aria-label="Configuration controls"
             >
               <div className="control-deck">
-                <nav
-                  className="workspace-switcher"
-                  aria-label="Studio workspace"
-                >
-                  {WORKSPACES.map((item) => (
+                <div className="deck-toolbar">
+                  <div>
+                    <h2>{deck.title}</h2>
+                    <p className="hint">{deck.hint}</p>
+                  </div>
+                  {panel === "style" && (
+                    <div className="editor-actions">
+                      <PresetPicker />
+                      <button
+                        type="button"
+                        className="btn quiet"
+                        onClick={resetStyle}
+                        title="Reset to preset (R)"
+                        aria-label="Reset style to preset"
+                      >
+                        <Icon name="reset" />
+                      </button>
+                    </div>
+                  )}
+                  {panel === "export" && (
                     <button
                       type="button"
-                      key={item.id}
-                      className={panel === item.id ? "active" : ""}
-                      aria-current={panel === item.id ? "page" : undefined}
-                      onClick={() => openPanel(item.id)}
+                      className="btn"
+                      onClick={() => openPanel("style")}
                     >
-                      <span className="workspace-icon"><Icon name={item.icon as IconName} /></span>
-                      <span>
-                        <strong>{item.label}</strong>
-                        <small>{item.hint}</small>
-                      </span>
+                      <Icon name="back" /> Design
                     </button>
-                  ))}
-                </nav>
+                  )}
+                </div>
                 <div className="control-deck-body">
-                  <div hidden={panel !== "style"}>
+                  <div hidden={panel !== "style"} className="design-workspace-host">
                     <StyleControls />
                   </div>
                   {panel === "media" && (
@@ -187,10 +147,6 @@ export default function App() {
                   {panel === "objects" && <ObjectsWorkspace />}
                   {panel === "export" && (
                     <div className="workspace-surface export-workspace">
-                      <p className="section-description">
-                        Save a reusable preset or bring the style straight into
-                        your Python project.
-                      </p>
                       <Export />
                     </div>
                   )}
@@ -213,23 +169,18 @@ export default function App() {
             </section>
           </div>
         </section>
-        <footer className="studio-footer">
-          <div className="footer-brand">
-            <img
-              src="/chroma-press-light-lockup-transparent.png"
-              alt="visionstyle"
-              width="252"
-              height="75"
-            />
-            <span>Chroma Press / Studio</span>
-          </div>
-          <a href="#live-preview">Back to the scene ↑</a>
-        </footer>
       </main>
       <Notices />
     </div>
   );
 }
+
+const DECKS: Record<StudioPanel, { title: string; hint: string }> = {
+  style: { title: "Design", hint: "Every change renders live on the right." },
+  media: { title: "Source", hint: "Pick a scene, then run detection." },
+  objects: { title: "Objects", hint: "Hide or isolate detected objects." },
+  export: { title: "Export", hint: "Save a preset or copy it into Python." },
+};
 
 function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boolean {
   return style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0;
@@ -237,19 +188,26 @@ function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boo
 
 function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {
   const img = useStore((s) => s.images.find((i) => i.id === s.imageId));
+  const renderMs = useStore((s) => s.renderMs);
   const isVideo = img?.kind === "video";
   return (
     <div className="cinema-meta">
       <div className="scene-name">
         <span className="scene-icon" aria-hidden="true">
-          {isVideo ? "▶" : "▧"}
+          <Icon name={isVideo ? "play" : "source"} />
         </span>
         <span>{img ? displayName(img.name) : "Choose a source"}</span>
-        <span className="scene-badge">{isVideo ? "Video" : img?.sample ? "Sample image" : "Image"}</span>
+        <span className="scene-badge">{isVideo ? "Video" : img?.sample ? "Sample" : "Image"}</span>
       </div>
-      <button type="button" className="canvas-link" onClick={onChangeSource}>
-        <Icon name="change" /> Change source
-      </button>
+      <div className="cinema-meta-actions">
+        <span className="render-status" title="Time to render the last frame">
+          <i />
+          {renderMs ? `${renderMs.toFixed(0)} ms` : "Ready"}
+        </span>
+        <button type="button" className="canvas-link" onClick={onChangeSource}>
+          <Icon name="change" /> Change source
+        </button>
+      </div>
     </div>
   );
 }
@@ -258,7 +216,6 @@ function CinemaControls() {
   const playing = useStore((s) => s.playing);
   const setPlaying = useStore((s) => s.setPlaying);
   const animated = useStore((s) => lineAnimated(s.style));
-  const renderMs = useStore((s) => s.renderMs);
   const synthetic = useStore((s) => s.syntheticTrails);
   const setSynthetic = useStore((s) => s.setSyntheticTrails);
   const imageId = useStore((s) => s.imageId);
@@ -266,30 +223,28 @@ function CinemaControls() {
   const tracked = useStore((s) => s.frames !== null);
   const detect = useStore((s) => s.detect);
   const detecting = useStore((s) => s.detecting);
-  const canPlay = isVideo || animated;
   return (
     <div className="cinema-controls">
-      <button
-        type="button"
-        className={`playback ${playing ? "active" : ""}`}
-        onClick={() => setPlaying(!playing)}
-        disabled={!canPlay}
-        title={canPlay ? "Play or pause (Space)" : "Choose an animation in Line"}
-      >
-        <Icon name={playing ? "pause" : "play"} />
-        {playing ? "Pause" : isVideo ? "Play video" : "Play motion"}
-      </button>
-      <label className={`stage-toggle ${synthetic ? "on" : ""}`}>
+      {/* video playback lives in the timeline; this button only drives line animation on stills */}
+      {!isVideo && (
+        <button
+          type="button"
+          className={`playback ${playing ? "active" : ""}`}
+          onClick={() => setPlaying(!playing)}
+          disabled={!animated}
+          title={animated ? "Play or pause (Space)" : "Choose an animation in Line to preview motion"}
+        >
+          <Icon name={playing ? "pause" : "play"} />
+          {playing ? "Pause" : "Play motion"}
+        </button>
+      )}
+      <label className={`stage-toggle ${synthetic ? "on" : ""}`} title="Preview the tracking trail without a tracked video">
         <input type="checkbox" checked={synthetic} onChange={(e) => setSynthetic(e.target.checked)} />
         <span />
         {tracked ? "Synthetic trails" : "Trail preview"}
       </label>
-      <span className="render-status">
-        <i />
-        {renderMs ? `${renderMs.toFixed(0)} ms` : "Ready"}
-        <span> · rendered locally</span>
-      </span>
-      <button type="button" className="canvas-link" onClick={() => detect()} disabled={detecting || !imageId}>
+      <span className="spacer" />
+      <button type="button" className="canvas-link detect" onClick={() => detect()} disabled={detecting || !imageId}>
         <Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}
       </button>
     </div>

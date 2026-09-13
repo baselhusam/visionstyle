@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { SECTIONS } from "../controls/registry";
+import { Fragment, useState } from "react";
+import { SECTIONS, type ControlDef } from "../controls/registry";
 import { getDeep, useStore } from "../store";
 import { Control } from "./Control";
 import { PresetList } from "./PresetList";
@@ -24,8 +24,8 @@ function CategoryIcon({ id }: { id: string }) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.75"
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
     >
       <path d={CATEGORY_PATHS[id]} />
@@ -34,7 +34,7 @@ function CategoryIcon({ id }: { id: string }) {
 }
 export function StyleControls() {
   const categories = [
-    { id: "presets", title: "Style library" },
+    { id: "presets", title: "Library" },
     ...SECTIONS.map((s) => ({ id: s.id, title: s.title })),
   ];
   const [category, setCategory] = useState(() => {
@@ -59,6 +59,7 @@ export function StyleControls() {
         aria-label="Style categories"
       >
         {categories.map((item, index) => (
+          <Fragment key={item.id}>
           <button
             type="button"
             role="tab"
@@ -66,8 +67,7 @@ export function StyleControls() {
             aria-controls="category-content"
             id={`tab-${item.id}`}
             tabIndex={category === item.id ? 0 : -1}
-            className={category === item.id ? "active" : ""}
-            key={item.id}
+            className={`${category === item.id ? "active" : ""} ${item.id === "presets" ? "library" : ""}`}
             onClick={() => selectCategory(item.id)}
             onKeyDown={(event) => {
               let next = index;
@@ -83,16 +83,15 @@ export function StyleControls() {
               document.getElementById(`tab-${categories[next].id}`)?.focus();
             }}
           >
-            <span className="category-index">
-              {String(index + 1).padStart(2, "0")}
-            </span>
             <CategoryIcon id={item.id} />
             <span className="category-title">{item.title}</span>
           </button>
+          {item.id === "presets" && <span className="rail-rule" aria-hidden="true" />}
+          </Fragment>
         ))}
       </div>
       <section
-        className="category-content"
+        className={`category-content ${section?.master && !getDeep(style, section.master) ? "off" : ""}`}
         role="tabpanel"
         id="category-content"
         aria-labelledby={`tab-${category}`}
@@ -100,17 +99,12 @@ export function StyleControls() {
       >
         <div className="category-heading">
           <div>
-            <h3>
-              {section?.title ?? "A starting point for every perspective."}
-            </h3>
-            <p>
-              {section?.intro ??
-                "Choose a look, then make it your own. Every detail is yours to change."}
-            </p>
+            <h3>{section?.title ?? "Style library"}</h3>
+            <p>{section?.intro ?? "Start from a look, then make it yours."}</p>
           </div>
           {section?.master && (
             <div className="category-enable">
-              <span>Enable {section.title.toLowerCase()}</span>
+              <span>{getDeep(style, section.master) ? "On" : "Off"}</span>
               <button
                 type="button"
                 className={`mini-toggle ${getDeep(style, section.master) ? "on" : ""}`}
@@ -125,10 +119,26 @@ export function StyleControls() {
           )}
         </div>
         {section ? (
-          <div className="parameter-grid">
-            {section.controls.map((control) => (
-              <Control key={control.path} def={control} />
-            ))}
+          <div className="parameter-list">
+            {groupControls(section.controls).map((item) =>
+              "children" in item ? (
+                <div
+                  key={item.head.path}
+                  className={`field-group ${getDeep(style, item.head.path) ? "on" : ""}`}
+                >
+                  <Control def={item.head} />
+                  {Boolean(getDeep(style, item.head.path)) && (
+                    <div className="group-body">
+                      {item.children.map((child) => (
+                        <Control key={child.path} def={shortLabel(child, item.head)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Control key={item.path} def={item} />
+              ),
+            )}
           </div>
         ) : (
           <PresetList />
@@ -136,4 +146,34 @@ export function StyleControls() {
       </section>
     </div>
   );
+}
+
+/** "Glow radius" under a "Glow" switch reads as "Radius". */
+function shortLabel(child: ControlDef, head: ControlDef): ControlDef {
+  const prefix = `${head.label} `;
+  return child.label.startsWith(prefix) && child.label.length > prefix.length
+    ? { ...child, label: child.label.slice(prefix.length).replace(/^./, (c) => c.toUpperCase()) }
+    : child;
+}
+
+type Grouped = ControlDef | { head: ControlDef; children: ControlDef[] };
+
+/** Nest `effects.glow.radius`-style controls under their `effects.glow.enabled` switch so a
+ *  toggled-off effect collapses to a single row instead of scattering loose fields. */
+function groupControls(controls: ControlDef[]): Grouped[] {
+  const out: Grouped[] = [];
+  for (const control of controls) {
+    const parts = control.path.split(".");
+    const prefix = parts.length >= 3 ? parts.slice(0, -1).join(".") : null;
+    const last = out[out.length - 1];
+    if (prefix && last && "children" in last && last.head.path === `${prefix}.enabled`) {
+      last.children.push(control);
+    } else if (prefix && parts[parts.length - 1] === "enabled" && control.kind === "toggle") {
+      out.push({ head: control, children: [] });
+    } else {
+      out.push(control);
+    }
+  }
+  // a switch with nothing under it is just a plain toggle row
+  return out.map((item) => ("children" in item && item.children.length === 0 ? item.head : item));
 }

@@ -23,7 +23,8 @@ export type IconName =
   | "save"
   | "back"
   | "previous"
-  | "next";
+  | "next"
+  | "chevron";
 
 const paths: Record<IconName, JSX.Element> = {
   source: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m5.5 16 4.2-4.3 3.2 3.2 2.1-2.1 3.5 3.7M8 8.5h.01" /></>,
@@ -49,6 +50,7 @@ const paths: Record<IconName, JSX.Element> = {
   back: <path d="m15 5-7 7 7 7M8 12h12" />,
   previous: <path d="m14.5 7-5 5 5 5" />,
   next: <path d="m9.5 7 5 5-5 5" />,
+  chevron: <path d="m6 9 6 6 6-6" />,
 };
 
 export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
@@ -60,8 +62,8 @@ export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGEle
       fill="none"
       stroke="currentColor"
       strokeWidth="1.7"
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
       {...props}
