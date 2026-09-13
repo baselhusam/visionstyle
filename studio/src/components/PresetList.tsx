@@ -15,17 +15,15 @@ const GLYPH: Record<string, string> = {
   confidence: 'conf',
 };
 
-export function PresetList() {
-  const presets = useStore((s) => s.presets);
-  const active = useStore((s) => s.activePreset);
+// Defined at module scope: a component created inside the render would be a new type every
+// render, remounting every card (and eating clicks) whenever the list re-renders.
+function Item({ name, description, origin }: { name: string; description: string; origin: string }) {
+  const active = useStore((s) => s.activePreset === name);
   const apply = useStore((s) => s.applyPreset);
   const remove = useStore((s) => s.deletePreset);
-  const builtin = presets.filter((p) => p.origin === 'builtin');
-  const mine = presets.filter((p) => p.origin !== 'builtin');
-
-  const Item = ({ name, description, origin }: { name: string; description: string; origin: string }) => (
-    <div className={`preset ${active === name ? 'active' : ''}`}>
-      <button type="button" className="preset-main" aria-pressed={active === name} onClick={() => apply(name)}>
+  return (
+    <div className={`preset ${active ? 'active' : ''}`}>
+      <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
         <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /><span className="art-caption">OBJECT · 0.98</span></span>
         <span className="preset-text">
           <strong>{name}</strong>
@@ -42,6 +40,12 @@ export function PresetList() {
       )}
     </div>
   );
+}
+
+export function PresetList() {
+  const presets = useStore((s) => s.presets);
+  const builtin = presets.filter((p) => p.origin === 'builtin');
+  const mine = presets.filter((p) => p.origin !== 'builtin');
 
   return (
     <div className="preset-list">

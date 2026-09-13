@@ -140,9 +140,7 @@ def test_upload_image_and_delete(client):
 
 def test_upload_video_and_render_frame(client, tmp_path):
     video_path = tmp_path / "clip.avi"
-    writer = cv2.VideoWriter(
-        str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10, (96, 64)
-    )
+    writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10, (96, 64))
     assert writer.isOpened()
     for value in (40, 120, 220):
         writer.write(np.full((64, 96, 3), value, np.uint8))
@@ -178,3 +176,80 @@ def test_model_upload_rejects_wrong_type(client):
     r = client.post("/api/models", files={"file": ("m.txt", io.BytesIO(b"x"), "text/plain")})
     assert r.status_code == 415
     assert "models" in client.get("/api/models").json()
+
+
+def test_sample_video_tracks_thumbnail_and_frame_render(client):
+    video = next(
+        i for i in client.get("/api/images").json() if i["id"] == "sample:city-walkthrough"
+    )
+    assert video["tracked"] and video["fps"] > 0 and video["frame_count"] > 0
+
+    tracks = client.get("/api/images/sample:city-walkthrough/tracks").json()
+    assert tracks["frame_count"] == len(tracks["frames"]) > 0
+    assert tracks["frames"][10]["index"] == 10
+    assert all(d["track_id"] is not None for d in tracks["frames"][10]["detections"])
+    assert client.get("/api/images/sample:street/tracks").status_code == 404
+
+    thumb = client.get("/api/images/sample:city-walkthrough/thumbnail")
+    assert thumb.status_code == 200 and thumb.headers["content-type"] == "image/jpeg"
+    assert (
+        max(cv2.imdecode(np.frombuffer(thumb.content, np.uint8), cv2.IMREAD_COLOR).shape[:2]) <= 320
+    )
+
+    # a per-frame render with real trails replayed from the stored tracks
+    style = {"trail": {"enabled": True, "length": 20}}
+    for synthetic in (False, True):
+        render = client.post(
+            "/api/render",
+            json={
+                "image_id": "sample:city-walkthrough",
+                "style": style,
+                "detections": tracks["frames"][40]["detections"],
+                "frame_index": 40,
+                "synthetic_trails": synthetic,
+            },
+        )
+        assert render.status_code == 200
+    # omitting detections falls back to the stored frame
+    render = client.post(
+        "/api/render",
+        json={"image_id": "sample:city-walkthrough", "style": {}, "frame_index": 40},
+    )
+    assert render.status_code == 200
+    # the bundled single-frame path still answers /api/detect
+    dets = client.post(
+        "/api/detect", json={"image_id": "sample:city-walkthrough", "conf": 0.3}
+    ).json()
+    assert dets["source"] == "bundled" and dets["detections"]
+
+
+def test_video_job_requires_video_and_unknown_job_404(client):
+    assert client.post("/api/detect/video", json={"image_id": "sample:street"}).status_code == 400
+    assert client.get("/api/jobs/nope").status_code == 404
+    assert client.delete("/api/jobs/nope").status_code == 404
+
+
+def test_delete_video_removes_stored_tracks(client, tmp_path):
+    from visionstyle.studio.server import studio_home
+
+    video_path = tmp_path / "clip.avi"
+    writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10, (96, 64))
+    for value in (40, 120):
+        writer.write(np.full((64, 96, 3), value, np.uint8))
+    writer.release()
+    with video_path.open("rb") as video:
+        info = client.post(
+            "/api/images", files={"file": ("clip.avi", video, "video/x-msvideo")}
+        ).json()
+    assert info["frame_count"] == 2 and info["tracked"] is False
+
+    sidecar = studio_home() / "images" / f"{info['id']}.detections.json"
+    sidecar.write_text(
+        '{"fps": 10, "frame_count": 2, "frames": [{"index": 0, "time": 0, "detections": []}, '
+        '{"index": 1, "time": 0.1, "detections": [{"xyxy": [1, 1, 20, 20], "track_id": 3}]}]}'
+    )
+    listed = next(i for i in client.get("/api/images").json() if i["id"] == info["id"])
+    assert listed["tracked"]
+    assert len(client.get(f"/api/images/{info['id']}/tracks").json()["frames"]) == 2
+    assert client.delete(f"/api/images/{info['id']}").status_code == 200
+    assert not sidecar.exists()

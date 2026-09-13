@@ -126,3 +126,17 @@ def test_render_video_roundtrip(tmp_path, frame):
     cap = cv2.VideoCapture(str(out))
     assert cap.isOpened() and int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) == 3
     cap.release()
+
+
+def test_render_video_with_per_frame_sidecar(tmp_path):
+    from visionstyle.cli import _load_detections_json
+
+    sidecar = SAMPLE.with_name("city-walkthrough.detections.json")
+    assert len(_load_detections_json(sidecar, 0)) > 0
+    assert len(_load_detections_json(sidecar, 10_000)) == 0  # frame not stored → nothing
+    out = tmp_path / "clip.mp4"
+    video = SAMPLE.with_name("city-walkthrough.mp4")
+    assert main(["render", str(video), "-s", "tracking", "-o", str(out), "--max-frames", "5"]) == 0
+    capture = cv2.VideoCapture(str(out))
+    assert capture.isOpened() and capture.get(cv2.CAP_PROP_FRAME_COUNT) == 5
+    capture.release()

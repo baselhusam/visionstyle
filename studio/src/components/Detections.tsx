@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { useStore } from '../store';
+import { detectionKey, useStore } from '../store';
 import { Icon } from './Icon';
 
 export function Detections() {
   const detections = useStore((s) => s.detections);
+  const tracked = useStore((s) => s.frames !== null);
   const hidden = useStore((s) => s.hidden);
   const selected = useStore((s) => s.selected);
   const toggle = useStore((s) => s.toggleHidden);
   const setHidden = useStore((s) => s.setHidden);
   const select = useStore((s) => s.select);
   const [query, setQuery] = useState('');
-  const visible = detections.length - hidden.size;
+  const keys = detections.map((detection, index) => detectionKey(detection, index, tracked));
+  const hiddenHere = keys.filter((key) => hidden.has(key)).length;
+  const visible = detections.length - hiddenHere;
   const filtered = detections
-    .map((detection, index) => ({ detection, index }))
+    .map((detection, index) => ({ detection, index, key: keys[index] }))
     .filter(({ detection }) => (detection.class_name ?? `class ${detection.class_id}`).toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
@@ -32,16 +35,16 @@ export function Detections() {
         </label>
         <div className="visibility-actions" aria-label="Object visibility">
           <button type="button" onClick={() => setHidden(new Set())} disabled={hidden.size === 0}><Icon name="eye" /> Show all</button>
-          <button type="button" onClick={() => setHidden(new Set(detections.map((_, index) => index)))} disabled={hidden.size === detections.length}><Icon name="eyeOff" /> Hide all</button>
+          <button type="button" onClick={() => setHidden(new Set([...hidden, ...keys]))} disabled={hiddenHere === detections.length}><Icon name="eyeOff" /> Hide all</button>
         </div>
       </div>}
       <div className="object-list">
         {detections.length === 0 && <p className="muted small">No detections yet. Choose a model and press Detect.</p>}
         {detections.length > 0 && filtered.length === 0 && <div className="object-empty"><Icon name="search" /><strong>No matching objects</strong><span>Try another class name.</span></div>}
-        {filtered.map(({ detection: d, index: i }) => (
-          <div key={i} className={`object-row ${selected === i ? 'active' : ''} ${hidden.has(i) ? 'hidden' : ''}`}>
-            <button type="button" className="object-toggle" aria-label={`${hidden.has(i) ? 'Show' : 'Hide'} ${d.class_name ?? `class ${d.class_id}`} ${i + 1}`} aria-pressed={!hidden.has(i)} onClick={() => toggle(i)} />
-            <button type="button" className="object-main" aria-pressed={selected === i} onClick={() => select(i)} title="Select to isolate">
+        {filtered.map(({ detection: d, index: i, key }) => (
+          <div key={key} className={`object-row ${selected === key ? 'active' : ''} ${hidden.has(key) ? 'hidden' : ''}`}>
+            <button type="button" className="object-toggle" aria-label={`${hidden.has(key) ? 'Show' : 'Hide'} ${d.class_name ?? `class ${d.class_id}`} ${tracked && d.track_id !== null ? `#${d.track_id}` : i + 1}`} aria-pressed={!hidden.has(key)} onClick={() => toggle(key)} />
+            <button type="button" className="object-main" aria-pressed={selected === key} onClick={() => select(key)} title={tracked ? 'Select to isolate this track' : 'Select to isolate'}>
               <span className="object-name">{d.class_name ?? `class ${d.class_id}`}</span>
               <span className="object-meta mono">
                 {d.track_id !== null && `#${d.track_id} · `}

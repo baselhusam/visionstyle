@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-yolo = ["ultralytics>=8.3"]
+yolo = ["ultralytics>=8.3", "lap>=0.5.12"]  # lap: ByteTrack/BoT-SORT assignment
 studio = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "python-multipart>=0.0.9"]
 all = ["visionstyle[yolo,studio]"]
 

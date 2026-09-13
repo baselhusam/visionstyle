@@ -1,20 +1,35 @@
 import { useRef } from "react";
 import { useStore } from "../store";
 import { Icon } from "./Icon";
+import { SourcePicker } from "./SourcePicker";
 
 export function MediaSetup() {
   const images = useStore((s) => s.images);
   const imageId = useStore((s) => s.imageId);
-  const selectImage = useStore((s) => s.selectImage);
   const uploadImage = useStore((s) => s.uploadImage);
   const yolo = useStore((s) => s.yoloAvailable);
   const conf = useStore((s) => s.conf);
   const setConf = useStore((s) => s.setConf);
   const detect = useStore((s) => s.detect);
   const detecting = useStore((s) => s.detecting);
+  const job = useStore((s) => s.job);
+  const cancelDetection = useStore((s) => s.cancelDetection);
+  const frames = useStore((s) => s.frames);
   const imageInput = useRef<HTMLInputElement>(null);
   const current = images.find((image) => image.id === imageId);
   const isVideo = current?.kind === "video";
+  const tracked = frames !== null;
+  const progress = job ? `${job.done} / ${job.total}` : null;
+
+  const videoNote = !isVideo
+    ? "Select the included video to preview the YOLOv8 Nano workflow."
+    : job
+      ? `Tracking every frame · ${progress}. You can keep editing while it runs.`
+      : tracked
+        ? `Tracked · ${frames.length} frames${current?.duration ? ` · ${current.duration.toFixed(1)}s` : ""}. Scrub the timeline or press play.`
+        : yolo
+          ? "Run detection to track every frame of this video with YOLOv8 Nano + ByteTrack."
+          : "Install visionstyle[yolo] to track uploaded videos; the sample ships with its tracks.";
 
   return (
     <div className="media-setup">
@@ -29,10 +44,8 @@ export function MediaSetup() {
           <span className="setup-icon"><Icon name="source" /></span>
           <div><strong>Scene</strong><small>Image or video input</small></div>
         </div>
-        <label className="setup-label" htmlFor="source-image">Source</label>
-        <select id="source-image" name="source" value={imageId ?? ""} onChange={(event) => selectImage(event.target.value)}>
-          {images.map((image) => <option key={image.id} value={image.id}>{image.kind === "video" ? "Video · " : ""}{image.sample ? `Sample · ${image.name}` : image.name}</option>)}
-        </select>
+        <span className="setup-label" id="source-label">Source</span>
+        <SourcePicker />
         <button type="button" className="btn upload-button" onClick={() => imageInput.current?.click()}><Icon name="source" /> Upload media</button>
         <input ref={imageInput} type="file" accept="image/*,video/mp4,video/quicktime,video/webm,video/x-msvideo,.mp4,.mov,.m4v,.webm,.avi" hidden onChange={(event) => {
           const file = event.target.files?.[0];
@@ -47,11 +60,11 @@ export function MediaSetup() {
             <span className="setup-icon"><Icon name="model" /></span>
             <div><strong>Detector</strong><small>Video analysis only</small></div>
           </div>
-          <div className="model-lockup" aria-label="Active detector: YOLOv8 Nano">
+          <div className="model-lockup" aria-label="Active detector: YOLOv8 Nano with ByteTrack">
             <strong>YOLOv8 Nano</strong>
-            <span>Single-model preview</span>
+            <span>+ ByteTrack · every frame</span>
           </div>
-          <p className="setup-note">{yolo ? "Runs at a 0.30 confidence threshold." : "Uses the bundled detections at a 0.30 confidence threshold."}</p>
+          <p className="setup-note">{yolo ? "Detections are tracked across the whole clip and stored next to it, so every frame keeps its own boxes and ids." : "Uses the tracks bundled with the sample."}</p>
         </div>
       )}
 
@@ -68,8 +81,12 @@ export function MediaSetup() {
       </div>
 
       <div className="setup-run">
-        <button type="button" className="detect-wide" onClick={() => detect()} disabled={detecting || !imageId}><Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}</button>
-        <p className="setup-note">{current?.kind === "video" ? `Video ready${current.duration ? ` · ${current.duration.toFixed(1)}s` : ""}. Use play on the preview.` : "Select the included video to preview the YOLOv8 Nano workflow."}</p>
+        {job ? (
+          <button type="button" className="detect-wide cancel" onClick={() => cancelDetection()}><Icon name="detect" /> Cancel · {progress}</button>
+        ) : (
+          <button type="button" className="detect-wide" onClick={() => detect()} disabled={detecting || !imageId}><Icon name="detect" /> {detecting ? "Detecting…" : isVideo ? (tracked ? "Track again" : "Run detection") : "Run detection"}</button>
+        )}
+        <p className="setup-note">{videoNote}</p>
       </div>
     </div>
   );

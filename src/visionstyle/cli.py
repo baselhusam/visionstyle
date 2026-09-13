@@ -32,10 +32,22 @@ def _read_image(path: Path) -> np.ndarray | None:
     return None if img is None else np.asarray(img, np.uint8)
 
 
-def _load_detections_json(path: Path) -> Detections:
+def _load_detections_json(path: Path, index: int = 0) -> Detections:
+    """Read a detections JSON file: a bare list, ``{"detections": [...]}`` or a per-frame
+    ``{"frames": [{"index": i, "detections": [...]}, ...]}`` sidecar (frame ``index``)."""
     raw = json.loads(path.read_text())
+    if isinstance(raw, dict) and "frames" in raw:
+        frame = next((f for f in raw["frames"] if f["index"] == index), None)
+        return Detections.from_dicts(frame["detections"] if frame else [])
     items = raw["detections"] if isinstance(raw, dict) else raw
     return Detections.from_dicts(items)
+
+
+def _has_frames(path: Path) -> bool:
+    try:
+        return '"frames"' in path.read_text(encoding="utf-8")[:4096]
+    except OSError:
+        return False
 
 
 # ----------------------------------------------------------------------------- commands
@@ -64,10 +76,10 @@ def cmd_render(args: argparse.Namespace) -> int:
             fn = track if (args.track or style.trail.enabled) and is_video else detect
             return fn(model, frame, conf=args.conf)
         if args.detections:
-            return _load_detections_json(Path(args.detections))
+            return _load_detections_json(Path(args.detections), index)
         sidecar = src.with_suffix(".detections.json")
-        if sidecar.exists() and index == 0:
-            return _load_detections_json(sidecar)
+        if sidecar.exists() and (index == 0 or _has_frames(sidecar)):
+            return _load_detections_json(sidecar, index)
         print(
             "No model or detections given; rendering nothing. Use --model or --detections.",
             file=sys.stderr,

@@ -7,7 +7,9 @@ import { Icon, type IconName } from "./components/Icon";
 import { PresetPicker } from "./components/PresetPicker";
 import { Preview } from "./components/Preview";
 import { StyleControls } from "./components/StyleControls";
+import { Timeline } from "./components/Timeline";
 import { TopBar, type StudioPanel } from "./components/TopBar";
+import { displayName } from "./api";
 import { useStore } from "./store";
 
 const WORKSPACES = [
@@ -23,28 +25,16 @@ function panelFromUrl(): StudioPanel {
   return value && PANELS.includes(value) ? value : "style";
 }
 
+/** True when the current scene is a video. Selected as a boolean so the root never re-renders per frame. */
+const selectIsVideo = (s: ReturnType<typeof useStore.getState>) =>
+  s.images.find((i) => i.id === s.imageId)?.kind === "video";
+
 export default function App() {
   const boot = useStore((s) => s.boot);
-  const toast = useStore((s) => s.toast);
-  const error = useStore((s) => s.error);
-  const setError = useStore((s) => s.setError);
-  const playing = useStore((s) => s.playing);
   const setPlaying = useStore((s) => s.setPlaying);
-  const style = useStore((s) => s.style);
-  const renderMs = useStore((s) => s.renderMs);
   const resetStyle = useStore((s) => s.resetStyle);
-  const synthetic = useStore((s) => s.syntheticTrails);
-  const setSynthetic = useStore((s) => s.setSyntheticTrails);
-  const images = useStore((s) => s.images);
-  const imageId = useStore((s) => s.imageId);
-  const detections = useStore((s) => s.detections);
-  const detect = useStore((s) => s.detect);
-  const detecting = useStore((s) => s.detecting);
-  const img = images.find((i) => i.id === imageId);
-  const isVideo = img?.kind === "video";
-  const animated =
-    isVideo ||
-    (style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0);
+  const stepFrame = useStore((s) => s.stepFrame);
+  const isVideo = useStore(selectIsVideo);
   const [panel, setPanel] = useState<StudioPanel>(panelFromUrl);
   const editor = useRef<HTMLElement>(null);
 
@@ -63,16 +53,17 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (
-        target.closest(
-          'input, select, textarea, button, a, [contenteditable="true"], [role="switch"]',
-        ) ||
-        e.metaKey ||
-        e.ctrlKey ||
-        e.altKey
-      )
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // a range slider (the scrubber, style sliders) does not use Space or type text
+      const typing = Boolean(target.closest?.('input:not([type="range"]), select, textarea, [contenteditable="true"]'));
+      // arrows step the video unless a field needs them; buttons and links do not
+      if (isVideo && !typing && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        e.preventDefault();
+        stepFrame((e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 10 : 1));
         return;
-      if (e.code === "Space" && animated) {
+      }
+      if (typing || target.closest?.('button, a, [role="switch"]')) return;
+      if (e.code === "Space" && (isVideo || lineAnimated(useStore.getState().style))) {
         e.preventDefault();
         setPlaying(!useStore.getState().playing);
       }
@@ -80,7 +71,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [setPlaying, resetStyle, animated]);
+  }, [setPlaying, resetStyle, isVideo, stepFrame]);
   useEffect(() => {
     const restorePanel = () => setPanel(panelFromUrl());
     window.addEventListener("popstate", restorePanel);
@@ -193,15 +184,7 @@ export default function App() {
                       <MediaSetup />
                     </div>
                   )}
-                  {panel === "objects" && (
-                    <div className="workspace-surface objects-workspace">
-                      <p className="section-description">
-                        {detections.length} objects in this scene. Toggle
-                        visibility or select an object to isolate it.
-                      </p>
-                      <Detections />
-                    </div>
-                  )}
+                  {panel === "objects" && <ObjectsWorkspace />}
                   {panel === "export" && (
                     <div className="workspace-surface export-workspace">
                       <p className="section-description">
@@ -219,64 +202,13 @@ export default function App() {
               className="cinema playground-preview"
               aria-label="Live preview"
             >
-              <div className="cinema-meta">
-                <div className="scene-name">
-                  <span className="scene-icon" aria-hidden="true">
-                    {isVideo ? "▶" : "▧"}
-                  </span>
-                  <span>{img?.name ?? "Choose a source"}</span>
-                  <span className="scene-badge">{isVideo ? "Video" : img?.sample ? "Sample image" : "Image"}</span>
-                </div>
-                <button
-                  type="button"
-                  className="canvas-link"
-                  onClick={() => openPanel("media")}
-                >
-                  <Icon name="change" /> Change source
-                </button>
-              </div>
+              <CinemaMeta onChangeSource={() => openPanel("media")} />
               <div className="cinema-canvas">
                 <Preview onChangeSource={() => openPanel("media")} />
                 <span className="canvas-label">LIVE PREVIEW</span>
               </div>
-              <div className="cinema-controls">
-                <button
-                  type="button"
-                  className={`playback ${playing ? "active" : ""}`}
-                  onClick={() => setPlaying(!playing)}
-                  disabled={!animated && !isVideo}
-                  title={
-                    animated
-                      ? "Play or pause (Space)"
-                      : "Choose an animation in Line"
-                  }
-                >
-                  <Icon name={playing ? "pause" : "play"} />
-                  {playing ? "Pause" : isVideo ? "Play video" : "Play motion"}
-                </button>
-                <label className={`stage-toggle ${synthetic ? "on" : ""}`}>
-                  <input
-                    type="checkbox"
-                    checked={synthetic}
-                    onChange={(e) => setSynthetic(e.target.checked)}
-                  />
-                  <span />
-                  Trail preview
-                </label>
-                <span className="render-status">
-                  <i />
-                  {renderMs ? `${renderMs.toFixed(0)} ms` : "Ready"}
-                  <span> · rendered locally</span>
-                </span>
-                <button
-                  type="button"
-                  className="canvas-link"
-                  onClick={() => detect()}
-                  disabled={detecting || !imageId}
-                >
-                  <Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}
-                </button>
-              </div>
+              <Timeline />
+              <CinemaControls />
               <DetectionShelf />
             </section>
           </div>
@@ -294,21 +226,108 @@ export default function App() {
           <a href="#live-preview">Back to the scene ↑</a>
         </footer>
       </main>
+      <Notices />
+    </div>
+  );
+}
+
+function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boolean {
+  return style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0;
+}
+
+function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {
+  const img = useStore((s) => s.images.find((i) => i.id === s.imageId));
+  const isVideo = img?.kind === "video";
+  return (
+    <div className="cinema-meta">
+      <div className="scene-name">
+        <span className="scene-icon" aria-hidden="true">
+          {isVideo ? "▶" : "▧"}
+        </span>
+        <span>{img ? displayName(img.name) : "Choose a source"}</span>
+        <span className="scene-badge">{isVideo ? "Video" : img?.sample ? "Sample image" : "Image"}</span>
+      </div>
+      <button type="button" className="canvas-link" onClick={onChangeSource}>
+        <Icon name="change" /> Change source
+      </button>
+    </div>
+  );
+}
+
+function CinemaControls() {
+  const playing = useStore((s) => s.playing);
+  const setPlaying = useStore((s) => s.setPlaying);
+  const animated = useStore((s) => lineAnimated(s.style));
+  const renderMs = useStore((s) => s.renderMs);
+  const synthetic = useStore((s) => s.syntheticTrails);
+  const setSynthetic = useStore((s) => s.setSyntheticTrails);
+  const imageId = useStore((s) => s.imageId);
+  const isVideo = useStore(selectIsVideo);
+  const tracked = useStore((s) => s.frames !== null);
+  const detect = useStore((s) => s.detect);
+  const detecting = useStore((s) => s.detecting);
+  const canPlay = isVideo || animated;
+  return (
+    <div className="cinema-controls">
+      <button
+        type="button"
+        className={`playback ${playing ? "active" : ""}`}
+        onClick={() => setPlaying(!playing)}
+        disabled={!canPlay}
+        title={canPlay ? "Play or pause (Space)" : "Choose an animation in Line"}
+      >
+        <Icon name={playing ? "pause" : "play"} />
+        {playing ? "Pause" : isVideo ? "Play video" : "Play motion"}
+      </button>
+      <label className={`stage-toggle ${synthetic ? "on" : ""}`}>
+        <input type="checkbox" checked={synthetic} onChange={(e) => setSynthetic(e.target.checked)} />
+        <span />
+        {tracked ? "Synthetic trails" : "Trail preview"}
+      </label>
+      <span className="render-status">
+        <i />
+        {renderMs ? `${renderMs.toFixed(0)} ms` : "Ready"}
+        <span> · rendered locally</span>
+      </span>
+      <button type="button" className="canvas-link" onClick={() => detect()} disabled={detecting || !imageId}>
+        <Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}
+      </button>
+    </div>
+  );
+}
+
+function ObjectsWorkspace() {
+  const count = useStore((s) => s.detections.length);
+  const frameNumber = useStore((s) => (s.frames ? (s.frames[s.frameIndex]?.index ?? 0) + 1 : null));
+  return (
+    <div className="workspace-surface objects-workspace">
+      <p className="section-description">
+        {frameNumber !== null
+          ? `${count} objects in frame ${frameNumber}. Hiding or isolating an object applies to its track in every frame.`
+          : `${count} objects in this scene. Toggle visibility or select an object to isolate it.`}
+      </p>
+      <Detections />
+    </div>
+  );
+}
+
+function Notices() {
+  const toast = useStore((s) => s.toast);
+  const error = useStore((s) => s.error);
+  const setError = useStore((s) => s.setError);
+  return (
+    <>
       <div className={`toast ${toast ? "show" : ""}`} role="status">
         {toast}
       </div>
       {error && (
         <div className="error-bar" role="alert">
           <span>{error}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            aria-label="Dismiss error"
-          >
+          <button type="button" onClick={() => setError(null)} aria-label="Dismiss error">
             ×
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 }

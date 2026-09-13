@@ -1,6 +1,6 @@
 /* Application state (zustand). */
 import { create } from 'zustand';
-import { api, type DetectionItem, type ImageInfo, type Info, type ModelInfo, type PresetInfo } from './api';
+import { api, displayName, type DetectionItem, type ImageInfo, type Info, type JobStatus, type ModelInfo, type PresetInfo, type VideoFrame } from './api';
 import { defaultStyle } from './schema';
 import type { Style } from './types/style';
 
@@ -19,10 +19,17 @@ interface State {
   yoloAvailable: boolean;
   conf: number;
   detections: DetectionItem[];
+  /** Per-frame detections for a tracked video; null for stills and untracked videos. */
+  frames: VideoFrame[] | null;
+  fps: number;
+  /** Position in `frames` (or the raw frame number for an untracked video). */
+  frameIndex: number;
+  /** Hidden objects — keyed by track id for a tracked video, by index otherwise (see detectionKey). */
   hidden: Set<number>;
   selected: number | null;
   selectedClass: string | null;
   detecting: boolean;
+  job: JobStatus | null;
   syntheticTrails: boolean;
   playing: boolean;
   openPanels: Set<PanelId>;
@@ -40,6 +47,12 @@ interface State {
   deletePreset: (name: string) => Promise<void>;
   selectImage: (id: string) => Promise<void>;
   uploadImage: (file: File) => Promise<void>;
+  deleteImage: (id: string) => Promise<void>;
+  loadTracks: (id: string) => Promise<void>;
+  detectVideo: () => Promise<void>;
+  cancelDetection: () => Promise<void>;
+  setFrame: (index: number) => void;
+  stepFrame: (delta: number) => void;
   uploadModel: (file: File) => Promise<void>;
   setModel: (id: string | null) => void;
   setConf: (v: number) => void;
@@ -87,10 +100,14 @@ export const useStore = create<State>((set, get) => ({
   yoloAvailable: false,
   conf: 0.3,
   detections: [],
+  frames: null,
+  fps: 24,
+  frameIndex: 0,
   hidden: new Set(),
   selected: null,
   selectedClass: null,
   detecting: false,
+  job: null,
   syntheticTrails: true,
   playing: false,
   openPanels: new Set<PanelId>(['presets', 'box']),
@@ -154,24 +171,97 @@ export const useStore = create<State>((set, get) => ({
 
   selectImage: async (id) => {
     const img = get().images.find((i) => i.id === id);
+    const isVideo = img?.kind === 'video';
     set({
       imageId: id,
-      modelId: img?.kind === 'video' && get().yoloAvailable ? 'yolov8n.pt' : null,
-      detections: [], hidden: new Set(), selected: null, selectedClass: null,
+      modelId: isVideo && get().yoloAvailable ? 'yolov8n.pt' : null,
+      detections: [], frames: null, frameIndex: 0, fps: img?.fps ?? 24,
+      hidden: new Set(), selected: null, selectedClass: null, playing: false,
     });
-    if (img?.has_detections && !get().modelId) {
+    if (isVideo && img?.tracked) {
+      await get().loadTracks(id);
+    } else if (img?.has_detections && !get().modelId) {
       await get().detect();
     } else if (get().modelId || get().yoloAvailable) {
       await get().detect();
     }
   },
+  deleteImage: async (id) => {
+    const img = get().images.find((i) => i.id === id);
+    await api.deleteImage(id);
+    const images = get().images.filter((i) => i.id !== id);
+    set({ images });
+    if (get().imageId === id) {
+      const next = images.find((i) => i.id === 'sample:city-walkthrough') ?? images[0];
+      if (next) await get().selectImage(next.id);
+      else set({ imageId: null, detections: [], frames: null });
+    }
+    get().notify(`Removed ${displayName(img?.name) || id}`);
+  },
+  loadTracks: async (id) => {
+    try {
+      const tracks = await api.tracks(id);
+      if (get().imageId !== id) return;
+      const fps = tracks.fps || get().fps;
+      set({
+        // the decoder's real frame count beats the container's estimate
+        images: get().images.map((i) => (i.id === id ? { ...i, fps, frame_count: tracks.frame_count, duration: tracks.frame_count / fps } : i)),
+        frames: tracks.frames, fps, frameIndex: 0,
+        detections: tracks.frames[0]?.detections ?? [],
+        hidden: new Set(), selected: null, selectedClass: null,
+        syntheticTrails: false, // real trails replay from the stored tracks
+      });
+    } catch (e) {
+      set({ error: (e as Error).message });
+    }
+  },
+  detectVideo: async () => {
+    const { imageId, modelId, conf } = get();
+    if (!imageId) return;
+    set({ detecting: true, error: null, playing: false });
+    try {
+      let job = await api.detectVideo(imageId, modelId ?? 'yolov8n.pt', conf);
+      set({ job });
+      while (job.status === 'running') {
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        job = await api.job(job.id);
+        if (get().imageId !== imageId) return; // the user moved on; the job finishes server-side
+        set({ job });
+      }
+      if (job.status === 'done') {
+        set({ images: get().images.map((i) => (i.id === imageId ? { ...i, tracked: true, has_detections: true } : i)) });
+        await get().loadTracks(imageId);
+        get().notify(`Tracked ${job.total} frames · ${(job.ms / 1000).toFixed(1)} s`);
+      } else if (job.status === 'error') {
+        set({ error: job.error ?? 'Video detection failed' });
+      } else {
+        get().notify('Detection cancelled');
+      }
+    } catch (e) {
+      set({ error: (e as Error).message });
+    } finally {
+      set({ detecting: false, job: null });
+    }
+  },
+  cancelDetection: async () => {
+    const job = get().job;
+    if (job) await api.cancelJob(job.id).catch(() => undefined);
+  },
+  setFrame: (index) => {
+    const { frames, images, imageId } = get();
+    const count = frames ? frames.length : (images.find((i) => i.id === imageId)?.frame_count ?? 0);
+    if (count <= 0) return;
+    const next = ((index % count) + count) % count;
+    set(frames ? { frameIndex: next, detections: frames[next].detections } : { frameIndex: next });
+  },
+  stepFrame: (delta) => get().setFrame(get().frameIndex + delta),
   uploadImage: async (file) => {
     set({ error: null });
     try {
       const info = await api.uploadImage(file);
       set({ images: [...get().images.filter((i) => i.id !== info.id), info] });
       await get().selectImage(info.id);
-      get().notify(`Loaded ${info.name}`);
+      get().notify(`Loaded ${displayName(info.name)}`);
     } catch (e) {
       set({ error: `Could not load ${file.name}: ${(e as Error).message}` });
     }
@@ -193,6 +283,10 @@ export const useStore = create<State>((set, get) => ({
     const { imageId, modelId, conf, yoloAvailable, images } = get();
     if (!imageId) return;
     const img = images.find((i) => i.id === imageId);
+    if (img?.kind === 'video' && yoloAvailable) {
+      await get().detectVideo();
+      return;
+    }
     let model = modelId;
     if (!model && !img?.has_detections) model = yoloAvailable ? 'yolov8n.pt' : null;
     if (!model && !img?.has_detections) {
@@ -235,6 +329,17 @@ export const useStore = create<State>((set, get) => ({
 }));
 
 /** Detections currently visible (respecting hidden set / selection isolate). */
-export function visibleDetections(dets: DetectionItem[], hidden: Set<number>): DetectionItem[] {
-  return dets.filter((_, i) => !hidden.has(i));
+/** Identity used for hide/isolate: the track id when the scene is tracked, else the index in the frame. */
+export function detectionKey(det: DetectionItem, index: number, tracked: boolean): number {
+  return tracked && det.track_id !== null ? det.track_id : index;
+}
+
+export function visibleDetections(dets: DetectionItem[], hidden: Set<number>, tracked = false): DetectionItem[] {
+  return dets.filter((det, i) => !hidden.has(detectionKey(det, i, tracked)));
+}
+
+export function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds - m * 60;
+  return `${String(m).padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
 }

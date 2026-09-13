@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
-import { useStore, visibleDetections } from '../store';
+import { detectionKey, useStore, visibleDetections } from '../store';
 import { Icon } from './Icon';
 
 const FRAME_MS = 90;
@@ -14,6 +14,10 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const selectedClass = useStore((s) => s.selectedClass);
   const syntheticTrails = useStore((s) => s.syntheticTrails);
   const playing = useStore((s) => s.playing);
+  const frames = useStore((s) => s.frames);
+  const frameIndex = useStore((s) => s.frameIndex);
+  const fps = useStore((s) => s.fps);
+  const setFrame = useStore((s) => s.setFrame);
   const setRenderMs = useStore((s) => s.setRenderMs);
   const setError = useStore((s) => s.setError);
   const [url, setUrl] = useState<string | null>(null);
@@ -22,19 +26,26 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const tRef = useRef(0);
+  const busyRef = useRef(false);
+  const lastFrameRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
   const timer = useRef<number | undefined>(undefined);
   const animated = style.line?.animation !== 'none' && (style.line?.speed ?? 0) > 0;
   const media = useStore((s) => s.images.find((item) => item.id === s.imageId));
   const isVideo = media?.kind === 'video';
+  const tracked = frames !== null;
+  const frameCount = frames ? frames.length : (media?.frame_count ?? 0);
+  // the frame number inside the file (differs from the position when tracks were sampled with a stride)
+  const sourceFrame = frames ? (frames[frameIndex]?.index ?? 0) : frameIndex;
 
   const dets = selected !== null
-    ? detections.filter((_, i) => i === selected)
+    ? detections.filter((detection, i) => detectionKey(detection, i, tracked) === selected)
     : selectedClass
-      ? detections.filter((detection, i) => !hidden.has(i) && (detection.class_name ?? `class ${detection.class_id ?? '—'}`) === selectedClass)
-      : visibleDetections(detections, hidden);
-  const key = JSON.stringify({ style, imageId, dets, syntheticTrails });
+      ? detections.filter((detection, i) => !hidden.has(detectionKey(detection, i, tracked)) && (detection.class_name ?? `class ${detection.class_id ?? '—'}`) === selectedClass)
+      : visibleDetections(detections, hidden, tracked);
+  const key = JSON.stringify({ style, imageId, dets, syntheticTrails, sourceFrame: isVideo ? sourceFrame : 0 });
 
   useEffect(() => {
     if (!imageId) return;
@@ -43,10 +54,21 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
       abortRef.current?.abort();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
+      busyRef.current = true;
       setBusy(true);
       try {
-        const mediaTime = isVideo && media?.duration ? t % media.duration : isVideo ? t : 0;
-        const res = await api.render({ image_id: imageId, style, detections: dets, t, media_time: mediaTime, max_size: 1600, synthetic_trails: syntheticTrails }, ctrl.signal);
+        // render no larger than the canvas can show (device pixels), capped at 1600 px
+        const box = wrapRef.current;
+        const dpr = window.devicePixelRatio || 1;
+        const maxSize = fit && box ? Math.min(1600, Math.max(640, Math.round(Math.max(box.clientWidth, box.clientHeight) * dpr))) : 1600;
+        const res = await api.render({ image_id: imageId, style, detections: dets, t, frame_index: isVideo ? sourceFrame : undefined, max_size: maxSize, synthetic_trails: syntheticTrails }, ctrl.signal);
+        if (!cancelled && !ctrl.signal.aborted) {
+          // Decode off the main thread before swapping so playback never flashes or stalls.
+          // Chrome defers decode() in a background tab, so never wait on it for long.
+          const image = new Image();
+          image.src = res.url;
+          await Promise.race([image.decode().catch(() => undefined), new Promise((resolve) => setTimeout(resolve, 120))]);
+        }
         if (cancelled || ctrl.signal.aborted) {
           URL.revokeObjectURL(res.url);
           return;
@@ -60,15 +82,20 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
       } catch (e) {
         if ((e as Error).name !== 'AbortError') setError((e as Error).message);
       } finally {
+        if (!ctrl.signal.aborted) busyRef.current = false;
         if (!cancelled) setBusy(false);
       }
     };
-    // debounce slider drags
+    // video animation time follows the playhead so every frame renders the same way twice
+    const time = isVideo ? sourceFrame / (fps || 24) : tRef.current;
+    // a new frame renders immediately; style edits are debounced so slider drags do not flood the server
+    const frameChanged = isVideo && sourceFrame !== lastFrameRef.current;
+    lastFrameRef.current = isVideo ? sourceFrame : -1;
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => run(tRef.current), 60);
+    timer.current = window.setTimeout(() => run(time), frameChanged ? 0 : 60);
 
     let raf: number | undefined;
-    if (playing && (animated || isVideo)) {
+    if (playing && animated && !isVideo) {
       let last = performance.now();
       const tick = (now: number) => {
         if (now - last >= FRAME_MS) {
@@ -86,7 +113,25 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
       if (raf) cancelAnimationFrame(raf);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, playing, animated, isVideo, media?.duration]);
+  }, [key, playing, animated, isVideo, fit]);
+
+  // Playback clock: advance the playhead in real time, skipping frames the renderer cannot keep up with.
+  // A timer rather than requestAnimationFrame so playback survives a backgrounded tab (rAF pauses there).
+  useEffect(() => {
+    if (!playing || !isVideo || frameCount <= 0) return;
+    const startFrame = useStore.getState().frameIndex;
+    const start = performance.now();
+    const rate = fps || 24;
+    let timer: number | undefined;
+    const tick = () => {
+      timer = window.setTimeout(tick, Math.max(8, 500 / rate));
+      if (busyRef.current) return;
+      const next = (startFrame + Math.floor(((performance.now() - start) / 1000) * rate)) % frameCount;
+      if (next !== useStore.getState().frameIndex) setFrame(next);
+    };
+    tick();
+    return () => window.clearTimeout(timer);
+  }, [playing, isVideo, frameCount, fps, setFrame]);
 
   useEffect(() => {
     if (!menu) return;
@@ -135,7 +180,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   };
 
   return (
-    <div className={`stage-wrap ${fit ? 'fit' : 'actual'}`}>
+    <div ref={wrapRef} className={`stage-wrap ${fit ? 'fit' : 'actual'}`}>
       {url ? <img className="stage" src={url} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} /> : <div className="stage placeholder">Select a source to begin.</div>}
       {url && <button ref={menuButtonRef} type="button" className="stage-options" aria-label="Preview options" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={toggleMenu}><Icon name="options" /></button>}
       {menu && <div ref={menuRef} className="stage-menu" role="menu" aria-label="Preview options" style={{ left: menu.x, top: menu.y }} onKeyDown={(event) => {

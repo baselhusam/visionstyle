@@ -18,6 +18,37 @@ export interface ImageInfo {
   height?: number;
   kind?: 'image' | 'video';
   duration?: number | null;
+  fps?: number | null;
+  frame_count?: number;
+  tracked?: boolean;
+}
+
+export interface VideoFrame {
+  index: number;
+  time: number;
+  detections: DetectionItem[];
+}
+
+export interface VideoTracks {
+  image: string;
+  model: string;
+  conf: number;
+  fps: number;
+  frame_count: number;
+  width: number;
+  height: number;
+  frames: VideoFrame[];
+}
+
+export interface JobStatus {
+  id: string;
+  image_id: string;
+  model_id: string;
+  status: 'running' | 'done' | 'error' | 'cancelled';
+  done: number;
+  total: number;
+  ms: number;
+  error: string | null;
 }
 
 export interface ModelInfo {
@@ -39,6 +70,11 @@ export interface Info {
   yolo_available: boolean;
   presets_dir: string;
   user_presets_dir: string;
+}
+
+/** Uploads are stored as `<stem>-<sha1[:10]>.<ext>`; show the name the user actually chose. */
+export function displayName(name: string | undefined): string {
+  return (name ?? '').replace(/-[0-9a-f]{10}(?=\.[^.]+$)/, '');
 }
 
 async function json<T>(res: Response): Promise<T> {
@@ -70,6 +106,14 @@ export const api = {
   deletePreset: (name: string) =>
     fetch(`/api/presets/${encodeURIComponent(name)}`, { method: 'DELETE' }).then((r) => json<{ deleted: string }>(r)),
   images: () => fetch('/api/images').then((r) => json<ImageInfo[]>(r)),
+  thumbnailUrl: (image_id: string) => `/api/images/${encodeURIComponent(image_id)}/thumbnail`,
+  deleteImage: (image_id: string) =>
+    fetch(`/api/images/${encodeURIComponent(image_id)}`, { method: 'DELETE' }).then((r) => json<{ deleted: string }>(r)),
+  tracks: (image_id: string) => fetch(`/api/images/${encodeURIComponent(image_id)}/tracks`).then((r) => json<VideoTracks>(r)),
+  detectVideo: (image_id: string, model_id: string, conf: number) =>
+    post('/api/detect/video', { image_id, model_id, conf }).then((r) => json<JobStatus>(r)),
+  job: (id: string) => fetch(`/api/jobs/${id}`).then((r) => json<JobStatus>(r)),
+  cancelJob: (id: string) => fetch(`/api/jobs/${id}`, { method: 'DELETE' }).then((r) => json<JobStatus>(r)),
   uploadImage: (file: File) => {
     const fd = new FormData();
     fd.append('file', file);
@@ -89,7 +133,7 @@ export const api = {
       return r.text();
     }),
   render: async (
-    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; media_time?: number; max_size: number; synthetic_trails: boolean },
+    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; media_time?: number; frame_index?: number; max_size: number; synthetic_trails: boolean },
     signal?: AbortSignal,
   ): Promise<{ url: string; ms: number }> => {
     const res = await post('/api/render', body, signal);
