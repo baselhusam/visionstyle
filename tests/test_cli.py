@@ -52,7 +52,7 @@ def test_render_image_with_sidecar(tmp_path):
     out = tmp_path / "out.jpg"
     assert main(["render", str(SAMPLE), "-s", "corners", "-o", str(out)]) == 0
     img = cv2.imread(str(out))
-    assert img is not None and img.shape[:2] == (929, 1600)
+    assert img is not None and img.shape[:2] == (1037, 1600)
 
 
 def test_render_with_detection_file(tmp_path, frame):

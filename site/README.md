@@ -15,14 +15,20 @@ The site is an application of the **Chroma Press** identity documented in [`docs
 ## Interactions (`script.js`)
 
 - Hero board switches between the real `cinematic` and `neon` renders.
-- The preset explorer crops `docs/images/gallery.jpg` (a 3 × 4 grid of 500 × 316 tiles with a 26 px label bar) with CSS transforms, so every tile is a genuine render. It auto-advances until the visitor interacts, pauses on hover / when the tab is hidden, and is keyboard navigable (arrows, Home, End).
+- The preset explorer crossfades between `docs/images/presets/<name>.jpg` — one genuine render per preset, produced with `visionstyle render` on the bundled `street.jpg` (Osaka taxi alley) and its shipped detections; the hero uses `night.jpg` (rainy Manhattan). Frames are fetched on demand (current + next). It auto-advances until the visitor interacts, pauses on hover / when the tab is hidden, and is keyboard navigable (arrows, Home, End).
 - Install tabs, copy buttons, scroll-spy navigation and scroll reveals. Everything degrades gracefully with `prefers-reduced-motion`.
 
 ## Updating the site
 
-- Edit the page and its interactions in this folder. Keep asset URLs relative (`images/gallery.jpg`) so the site works at the project URL and in a local static server.
+- Edit the page and its interactions in this folder. Keep asset URLs relative (`images/presets/neon.jpg`) so the site works at the project URL and in a local static server.
 - Product imagery lives in `docs/images/`, logos in `assets/brand/chroma-press/`, fonts in `src/visionstyle/assets/fonts/`. The workflow copies exactly the files the site needs.
-- If the gallery image changes shape, update `ROW_OFFSETS` in `script.js` and the `data-col` / `data-row` attributes in `index.html`.
+- To refresh the preset renders after a preset changes, re-run for each name and re-encode at 1400 px wide (JPEG q80):
+
+  ```bash
+  uv run visionstyle render src/visionstyle/assets/samples/street.jpg -s neon -d src/visionstyle/assets/samples/street.detections.json -o /tmp/neon.png
+  ```
+
+- `docs/images/studio.jpg` is a 2× screenshot of the Studio at 1600 × 1000 with `night.jpg` loaded and the cinematic preset selected.
 - Install copy intentionally says "from source" until the first PyPI release; flip the default tab when `pip install visionstyle` works.
 
 ## Local preview

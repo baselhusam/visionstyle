@@ -4,183 +4,171 @@
  "detections": [
   {
    "xyxy": [
-    1505.99,
-    538.37,
-    1596.3,
-    789.47
+    303.84,
+    625.27,
+    444.49,
+    717.64
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8783,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.8904,
    "track_id": 1
   },
   {
    "xyxy": [
-    872.95,
-    545.82,
-    934.32,
-    739.8
+    1422.12,
+    615.83,
+    1594.23,
+    739.82
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8638,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.8654,
    "track_id": 2
   },
   {
    "xyxy": [
-    802.71,
-    559.11,
-    859.86,
-    750.91
+    835.1,
+    567.99,
+    886.95,
+    760.6
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.8401,
+   "confidence": 0.7675,
    "track_id": 3
   },
   {
    "xyxy": [
-    356.16,
-    550.96,
-    409.05,
-    727.14
+    1214.84,
+    572.94,
+    1328.46,
+    763.37
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.8364,
+   "confidence": 0.7559,
    "track_id": 4
   },
   {
    "xyxy": [
-    726.26,
-    558.72,
-    783.01,
-    735.28
+    1339.84,
+    614.52,
+    1439.14,
+    711.05
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8236,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.6981,
    "track_id": 5
   },
   {
    "xyxy": [
-    1225.88,
-    556.66,
-    1296.82,
-    769.41
+    1282.91,
+    570.75,
+    1355.67,
+    762.69
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.8183,
+   "confidence": 0.6533,
    "track_id": 6
   },
   {
    "xyxy": [
-    669.68,
-    558.4,
-    726.83,
-    737.39
+    970.57,
+    613.54,
+    995.89,
+    665.35
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.7909,
+   "confidence": 0.5722,
    "track_id": 7
   },
   {
    "xyxy": [
-    594.84,
-    555.51,
-    676.07,
-    744.79
+    762.29,
+    610.87,
+    787.9,
+    664.96
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.7766,
+   "confidence": 0.5645,
    "track_id": 8
   },
   {
    "xyxy": [
-    1074.97,
-    545.9,
-    1135.47,
-    764.21
+    161.77,
+    605.89,
+    206.8,
+    629.12
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.7724,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.5634,
    "track_id": 9
   },
   {
    "xyxy": [
-    1147.71,
-    560.19,
-    1213.3,
-    753.9
+    488.97,
+    575.64,
+    751.57,
+    661.89
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.7529,
+   "class_id": 5,
+   "class_name": "bus",
+   "confidence": 0.4077,
    "track_id": 10
   },
   {
    "xyxy": [
-    1023.58,
-    546.65,
-    1085.03,
-    759.14
+    920.53,
+    626.58,
+    971.07,
+    652.13
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.719,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.3972,
    "track_id": 11
   },
   {
    "xyxy": [
-    1279.56,
-    627.41,
-    1313.63,
-    691.2
+    1141.91,
+    585.22,
+    1266.4,
+    696.48
    ],
-   "class_id": 26,
-   "class_name": "handbag",
-   "confidence": 0.4487,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.378,
    "track_id": 12
   },
   {
    "xyxy": [
-    570.65,
-    653.27,
-    712.93,
-    728.24
+    769.53,
+    535.19,
+    892.64,
+    576.68
    ],
-   "class_id": 1,
-   "class_name": "bicycle",
-   "confidence": 0.4403,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.3667,
    "track_id": 13
   },
   {
    "xyxy": [
-    1020.29,
-    627.99,
-    1070.45,
-    678.9
+    212.64,
+    614.88,
+    234.08,
+    659.54
    ],
-   "class_id": 26,
-   "class_name": "handbag",
-   "confidence": 0.3916,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.3556,
    "track_id": 14
-  },
-  {
-   "xyxy": [
-    569.2,
-    654.77,
-    633.68,
-    728.99
-   ],
-   "class_id": 1,
-   "class_name": "bicycle",
-   "confidence": 0.3567,
-   "track_id": 15
   }
  ]
 }

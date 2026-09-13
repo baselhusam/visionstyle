@@ -1,9 +1,10 @@
-# Sample image credits
+# Sample credits
 
 | File | Source | Author | License |
 |---|---|---|---|
-| `street.jpg` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Traffic_and_pedestrians_on_Calle_Vel%C3%A1squez_near_Catedral_San_Nicol%C3%A1s_de_Bari_in_Porlamar,_Venezuela.jpg) | Wilfredor | CC0 1.0 |
-| `night.jpg` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Heavy_Traffic_On_The_Street_(219585595).jpeg) | M Kwow (500px) | CC BY 3.0 |
+| `night.jpg` | [Pexels #10398361](https://www.pexels.com/photo/10398361/) | Jane Mir | [Pexels License](https://www.pexels.com/license/) |
+| `street.jpg` | [Pexels #940035](https://www.pexels.com/photo/940035/) | Andrey Grushnikov | [Pexels License](https://www.pexels.com/license/) |
 
-Both images were downscaled to 1600 px wide. `*.detections.json` files were produced with
-Ultralytics `yolo11n.pt` and are shipped so the Studio works without a model installed.
+Both photos were downscaled to 1600 px wide. `*.detections.json` files were produced with
+Ultralytics `yolo11n.pt` (`imgsz=1280`, `conf=0.35`) and are shipped so the Studio and the
+`sample` CLI source work without a model installed.

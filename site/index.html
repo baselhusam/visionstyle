@@ -62,7 +62,7 @@
 
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow reveal"><span class="pulse" aria-hidden="true"></span>Chroma Press · Object-detection styling for Python</p>
+            <p class="eyebrow reveal"><span class="pulse" aria-hidden="true"></span>Object-detection styling for Python</p>
             <h1 class="reveal d1">Boxes that<br />look <em>authored.</em></h1>
             <p class="lead reveal d2">
               visionstyle turns raw model output into a deliberate visual language. One typed
@@ -91,18 +91,18 @@
               </div>
             </div>
             <div class="board-canvas">
-              <img class="hero-frame is-on" src="images/hero-cinematic.jpg" alt="A night street scene annotated with the cinematic preset: rounded amber frames, pill labels and glow." width="1600" height="1068" data-frame="cinematic" />
-              <img class="hero-frame" src="images/night-neon.jpg" alt="The same scene annotated with the neon preset: glowing cyan and magenta outlines." width="1600" height="1068" data-frame="neon" loading="lazy" />
+              <img class="hero-frame is-on" src="images/hero-cinematic.jpg" alt="A rainy Manhattan street at night annotated with the cinematic preset: rounded amber frames, pill labels and glow around pedestrians, a bus and cars." width="1600" height="1057" data-frame="cinematic" />
+              <img class="hero-frame" src="images/night-neon.jpg" alt="The same scene annotated with the neon preset: glowing cyan and lime outlines." width="1600" height="1057" data-frame="neon" loading="lazy" />
               <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i><i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
               <div class="legend" aria-hidden="true">
-                <span class="chip" style="--chip:#f2b04a">person · 0.84</span>
-                <span class="chip" style="--chip:#5ad7e6">bicycle · 0.36</span>
-                <span class="chip" style="--chip:#f6a1c4">handbag · 0.45</span>
+                <span class="chip" style="--chip:#f2b04a">person · 0.77</span>
+                <span class="chip" style="--chip:#8ee0a0">bus · 0.41</span>
+                <span class="chip" style="--chip:#f4f1ea">car · 0.89</span>
               </div>
             </div>
             <figcaption class="board-foot">
               <code data-hero-code>vs.annotate(frame, dets, style="cinematic")</code>
-              <span>1600 px · opencv · bgr</span>
+              <span>night.jpg · 1600 × 1057</span>
             </figcaption>
           </figure>
         </div>
@@ -122,36 +122,28 @@
           <div class="pillars reveal-on-scroll">
             <article class="card pillar">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" /><rect x="8" y="8" width="8" height="8" /></svg>
-              <p class="small-label">01 / Describe</p>
+              <p class="small-label">Describe</p>
               <h3>One typed Style</h3>
               <p>Box, stroke, fill, line, label, effects and trail live in a single Pydantic model. Every choice is inspectable, portable, and saves as plain YAML.</p>
             </article>
             <article class="card pillar">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h12M19 6h2M3 12h4M11 12h10M3 18h14M21 18h0" /><circle cx="17" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="19" cy="18" r="2" /></svg>
-              <p class="small-label">02 / Tune</p>
+              <p class="small-label">Tune</p>
               <h3>By eye, in the Studio</h3>
               <p>Your image, your model, live controls. The preview is rendered by the Python package itself, so what you see is exactly what <code>annotate()</code> produces.</p>
             </article>
             <article class="card pillar">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c4 0 5-9 9-9s5 6 9 6" stroke-dasharray="2.4 2.6" /><circle cx="21" cy="15" r="2" fill="currentColor" stroke="none" /></svg>
-              <p class="small-label">03 / Track</p>
+              <p class="small-label">Track</p>
               <h3>Let it move</h3>
               <p>Keep one <code>Annotator</code> per stream and trails, marching dashes, hue cycles and pulses carry across frames — on video or a live webcam.</p>
             </article>
             <article class="card pillar">
               <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" /><rect x="7" y="7" width="10" height="10" /><path d="M3 12h4M17 12h4M12 3v4M12 17v4" /></svg>
-              <p class="small-label">04 / Render</p>
+              <p class="small-label">Render</p>
               <h3>Any resolution</h3>
               <p>Sizes are reference pixels at ~1080p and scale automatically, so one style looks identical on a webcam frame and a 4K deliverable.</p>
             </article>
-          </div>
-
-          <div class="thought reveal-on-scroll">
-            <p class="super">Data can be accurate<br />and <span>beautiful.</span></p>
-            <div>
-              <p>Bold print colour meets detection grammar: open corners, registration marks, confidence dots and a tracking route. Playful without being childish, technical without turning cold.</p>
-              <div class="accent-rail inline"></div>
-            </div>
           </div>
         </div>
       </section>
@@ -167,28 +159,39 @@
 
           <div class="preset-explorer reveal-on-scroll" data-explorer>
             <div class="preset-list" role="tablist" aria-label="Built-in presets" aria-orientation="vertical">
-              <button role="tab" class="active" aria-selected="true" data-preset="cinematic" data-col="0" data-row="0"><b>cinematic</b><span>Rounded amber / teal frames, gradient fill, pill labels, glow, filmic grade</span></button>
-              <button role="tab" aria-selected="false" data-preset="confidence" data-col="1" data-row="0"><b>confidence</b><span>Stroke and tag colour follow the confidence score</span></button>
-              <button role="tab" aria-selected="false" data-preset="corners" data-col="2" data-row="0"><b>corners</b><span>Thin L-brackets, monospace tag</span></button>
-              <button role="tab" aria-selected="false" data-preset="dashed" data-col="0" data-row="1"><b>dashed</b><span>Dashed perimeter with marching ants</span></button>
-              <button role="tab" aria-selected="false" data-preset="default" data-col="1" data-row="1"><b>default</b><span>Clean rectangle, solid tag</span></button>
-              <button role="tab" aria-selected="false" data-preset="glass" data-col="2" data-row="1"><b>glass</b><span>Frosted-glass fill and label</span></button>
-              <button role="tab" aria-selected="false" data-preset="hud" data-col="0" data-row="2"><b>hud</b><span>Double frame, reticle marks, inside mono labels, dotted trails</span></button>
-              <button role="tab" aria-selected="false" data-preset="minimal" data-col="1" data-row="2"><b>minimal</b><span>Hairline outline, bare text</span></button>
-              <button role="tab" aria-selected="false" data-preset="neon" data-col="2" data-row="2"><b>neon</b><span>Glowing hue-cycling gradient outlines</span></button>
-              <button role="tab" aria-selected="false" data-preset="rounded" data-col="0" data-row="3"><b>rounded</b><span>Rounded corners, gradient tint, pill label</span></button>
-              <button role="tab" aria-selected="false" data-preset="spotlight" data-col="1" data-row="3"><b>spotlight</b><span>Dims everything outside the detections</span></button>
-              <button role="tab" aria-selected="false" data-preset="tracking" data-col="2" data-row="3"><b>tracking</b><span>Bold per-track trails, id-first labels</span></button>
+              <button role="tab" class="active" aria-selected="true" data-preset="cinematic"><b>cinematic</b><span>Amber / teal rounded frames, pill labels, soft glow, filmic grade</span></button>
+              <button role="tab" aria-selected="false" data-preset="confidence"><b>confidence</b><span>Stroke and tag colour follow the score</span></button>
+              <button role="tab" aria-selected="false" data-preset="corners"><b>corners</b><span>Thin L-brackets, monospace tag</span></button>
+              <button role="tab" aria-selected="false" data-preset="dashed"><b>dashed</b><span>Dashed perimeter with marching ants</span></button>
+              <button role="tab" aria-selected="false" data-preset="default"><b>default</b><span>Clean rectangle, solid tag</span></button>
+              <button role="tab" aria-selected="false" data-preset="glass"><b>glass</b><span>Frosted-glass fill and label</span></button>
+              <button role="tab" aria-selected="false" data-preset="hud"><b>hud</b><span>Double frame, reticle marks, dotted trails</span></button>
+              <button role="tab" aria-selected="false" data-preset="minimal"><b>minimal</b><span>Hairline outline, bare text</span></button>
+              <button role="tab" aria-selected="false" data-preset="neon"><b>neon</b><span>Glowing hue-cycling gradient outlines</span></button>
+              <button role="tab" aria-selected="false" data-preset="rounded"><b>rounded</b><span>Rounded corners, gradient tint, pill label</span></button>
+              <button role="tab" aria-selected="false" data-preset="spotlight"><b>spotlight</b><span>Dims everything outside the detections</span></button>
+              <button role="tab" aria-selected="false" data-preset="tracking"><b>tracking</b><span>Bold per-track trails, id-first labels</span></button>
             </div>
 
             <figure class="board board-night preset-board">
               <div class="board-bar">
                 <span class="board-status"><i class="live"></i>preset / <b data-preset-name>cinematic</b></span>
-                <span class="board-meta">street.jpg · 12 / 12</span>
+                <span class="board-meta">street.jpg · <b data-preset-index>01</b> / 12</span>
                 <button class="autoplay" type="button" data-autoplay aria-pressed="true" title="Toggle auto-advance"><i></i><span>auto</span></button>
               </div>
-              <div class="board-canvas sprite-window" role="tabpanel" aria-live="polite">
-                <img class="sprite" src="images/gallery.jpg" alt="The street scene rendered with the selected preset." width="1500" height="1265" data-sprite />
+              <div class="board-canvas preset-window" role="tabpanel" aria-live="polite">
+                <img class="preset-frame is-on" src="images/presets/cinematic.jpg" alt="A neon-lit street at night with taxis and pedestrians, rendered with the cinematic preset." width="1400" height="907" data-preset-frame="cinematic" />
+                <img class="preset-frame" data-src="images/presets/confidence.jpg" alt="" width="1400" height="907" data-preset-frame="confidence" />
+                <img class="preset-frame" data-src="images/presets/corners.jpg" alt="" width="1400" height="907" data-preset-frame="corners" />
+                <img class="preset-frame" data-src="images/presets/dashed.jpg" alt="" width="1400" height="907" data-preset-frame="dashed" />
+                <img class="preset-frame" data-src="images/presets/default.jpg" alt="" width="1400" height="907" data-preset-frame="default" />
+                <img class="preset-frame" data-src="images/presets/glass.jpg" alt="" width="1400" height="907" data-preset-frame="glass" />
+                <img class="preset-frame" data-src="images/presets/hud.jpg" alt="" width="1400" height="907" data-preset-frame="hud" />
+                <img class="preset-frame" data-src="images/presets/minimal.jpg" alt="" width="1400" height="907" data-preset-frame="minimal" />
+                <img class="preset-frame" data-src="images/presets/neon.jpg" alt="" width="1400" height="907" data-preset-frame="neon" />
+                <img class="preset-frame" data-src="images/presets/rounded.jpg" alt="" width="1400" height="907" data-preset-frame="rounded" />
+                <img class="preset-frame" data-src="images/presets/spotlight.jpg" alt="" width="1400" height="907" data-preset-frame="spotlight" />
+                <img class="preset-frame" data-src="images/presets/tracking.jpg" alt="" width="1400" height="907" data-preset-frame="tracking" />
                 <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i><i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
                 <div class="progress" aria-hidden="true"><i data-progress></i></div>
               </div>
@@ -279,7 +282,7 @@ visionstyle studio          <span class="c"># → http://127.0.0.1:8420</span></
 
           <figure class="studio-shell reveal-on-scroll">
             <div class="studio-bar"><i></i><i></i><i></i><span>visionstyle studio — 127.0.0.1:8420</span><b><i class="live"></i>server live</b></div>
-            <img src="images/studio.png" alt="The visionstyle Studio: a style editor on the left, a live annotated preview in the centre, detected objects and export panel on the right." width="1500" height="940" loading="lazy" />
+            <img src="images/studio.jpg" alt="The visionstyle Studio: the style library and controls on the left, a live annotated preview of the rainy-street sample on the right." width="2400" height="1500" loading="lazy" />
           </figure>
         </div>
       </section>
@@ -339,7 +342,7 @@ visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
       <div class="shell footer-grid">
         <div class="footer-brand">
           <a class="lockup" href="#top" aria-label="Back to top"><img src="images/visionstyle-lockup.png" alt="visionstyle" width="1774" height="887" /></a>
-          <p>Object detection, with a point of view.</p>
+          <p>Object detection,<br />with a point of view.</p>
         </div>
         <nav class="footer-links" aria-label="Project">
           <p class="small-label">Project</p>
@@ -356,11 +359,11 @@ visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
         </nav>
         <div class="footer-meta">
           <p class="small-label">Colophon</p>
-          <p>Georgia for display, JetBrains Mono for the technical voice, Inter for body — the same fonts the package ships. Type licensed under the SIL OFL.</p>
+          <p>Set in Georgia, Inter and JetBrains Mono — the same fonts the package ships. Type licensed under the SIL OFL.</p>
           <p>MIT © Basel Mather</p>
         </div>
       </div>
-      <div class="shell footer-line"><span>visionstyle / chroma press / v0.1.0</span><span>◱ ◲ ◳ ◰</span></div>
+      <div class="shell footer-line"><span>visionstyle · v0.1.0 · MIT</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></div>
     </footer>
 
     <script src="script.js" defer></script>

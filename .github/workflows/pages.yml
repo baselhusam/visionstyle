@@ -28,8 +28,9 @@ jobs:
           mkdir -p _site/images _site/fonts
           cp -R site/. _site/
 
-          # Product imagery used by the landing page
-          cp docs/images/hero-cinematic.jpg docs/images/night-neon.jpg docs/images/gallery.jpg docs/images/studio.png _site/images/
+          # Product imagery used by the landing page (all real renders of the bundled samples)
+          cp docs/images/hero-cinematic.jpg docs/images/night-neon.jpg docs/images/studio.jpg _site/images/
+          cp -R docs/images/presets _site/images/presets
           cp docs/images/hero-chroma-press-light.png _site/images/og-banner.png
 
           # Chroma Press lockups (light for paper surfaces, dark for the night preview boards)

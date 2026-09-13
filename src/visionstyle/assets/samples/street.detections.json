@@ -4,231 +4,111 @@
  "detections": [
   {
    "xyxy": [
-    632.03,
-    562.61,
-    691.61,
-    738.41
+    489.17,
+    405.38,
+    581.3,
+    679.47
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.8884,
+   "confidence": 0.8311,
    "track_id": 1
   },
   {
    "xyxy": [
-    492.46,
-    541.45,
-    604.4,
-    867.29
+    623.66,
+    431.22,
+    858.51,
+    683.78
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8763,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.8266,
    "track_id": 2
   },
   {
    "xyxy": [
-    749.53,
-    605.66,
-    938.16,
-    763.29
+    57.74,
+    397.95,
+    150.11,
+    694.02
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.8673,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.821,
    "track_id": 3
   },
   {
    "xyxy": [
-    68.48,
-    558.52,
-    161.88,
-    805.78
+    468.03,
+    359.27,
+    627.23,
+    412.49
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8304,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.6186,
    "track_id": 4
   },
   {
    "xyxy": [
-    1381.79,
-    539.1,
-    1462.98,
-    771.47
+    824.22,
+    392.83,
+    924.04,
+    454.94
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8172,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.5815,
    "track_id": 5
   },
   {
    "xyxy": [
-    337.31,
-    632.87,
-    500.94,
-    811.98
+    557.6,
+    402.0,
+    611.05,
+    584.52
    ],
-   "class_id": 3,
-   "class_name": "motorcycle",
-   "confidence": 0.8129,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.5384,
    "track_id": 6
   },
   {
    "xyxy": [
-    157.8,
-    563.71,
-    207.63,
-    758.71
+    760.41,
+    445.76,
+    1338.82,
+    944.18
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.6805,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.4616,
    "track_id": 7
   },
   {
    "xyxy": [
-    881.73,
-    545.01,
-    1281.82,
-    845.89
+    437.72,
+    520.85,
+    500.46,
+    649.48
    ],
-   "class_id": 7,
-   "class_name": "truck",
-   "confidence": 0.6642,
+   "class_id": 1,
+   "class_name": "bicycle",
+   "confidence": 0.3901,
    "track_id": 8
   },
   {
    "xyxy": [
-    844.63,
-    559.69,
-    896.48,
-    610.24
+    757.76,
+    445.72,
+    1338.48,
+    948.31
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.6597,
+   "class_id": 7,
+   "class_name": "truck",
+   "confidence": 0.3678,
    "track_id": 9
-  },
-  {
-   "xyxy": [
-    1358.15,
-    661.75,
-    1413.35,
-    735.71
-   ],
-   "class_id": 26,
-   "class_name": "handbag",
-   "confidence": 0.6251,
-   "track_id": 10
-  },
-  {
-   "xyxy": [
-    686.89,
-    567.41,
-    714.79,
-    598.17
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.6087,
-   "track_id": 11
-  },
-  {
-   "xyxy": [
-    249.21,
-    583.0,
-    303.73,
-    771.66
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.6087,
-   "track_id": 12
-  },
-  {
-   "xyxy": [
-    334.27,
-    478.24,
-    552.77,
-    563.94
-   ],
-   "class_id": 25,
-   "class_name": "umbrella",
-   "confidence": 0.5986,
-   "track_id": 13
-  },
-  {
-   "xyxy": [
-    881.18,
-    544.16,
-    1281.56,
-    845.9
-   ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.584,
-   "track_id": 14
-  },
-  {
-   "xyxy": [
-    678.46,
-    597.8,
-    797.31,
-    706.65
-   ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.5779,
-   "track_id": 15
-  },
-  {
-   "xyxy": [
-    589.43,
-    584.81,
-    634.52,
-    732.77
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.5018,
-   "track_id": 16
-  },
-  {
-   "xyxy": [
-    893.4,
-    579.13,
-    924.38,
-    608.24
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.4731,
-   "track_id": 17
-  },
-  {
-   "xyxy": [
-    771.79,
-    570.76,
-    803.89,
-    627.91
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.4036,
-   "track_id": 18
-  },
-  {
-   "xyxy": [
-    601.66,
-    589.31,
-    634.23,
-    732.37
-   ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.3775,
-   "track_id": 19
   }
  ]
 }

@@ -12,14 +12,18 @@
 
   const navLinks = $$('[data-nav] a');
   const sections = navLinks.map((a) => $(a.getAttribute('href'))).filter(Boolean);
-  if ('IntersectionObserver' in window && sections.length) {
-    const spy = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === `#${entry.target.id}`));
-      });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    sections.forEach((s) => spy.observe(s));
+  let spyFrame = 0;
+  const spy = () => {
+    spyFrame = 0;
+    const line = window.scrollY + window.innerHeight * 0.35;
+    let current = null;
+    sections.forEach((s) => { if (s.offsetTop <= line) current = s; });
+    navLinks.forEach((a) => a.classList.toggle('active', !!current && a.getAttribute('href') === `#${current.id}`));
+  };
+  if (sections.length) {
+    spy();
+    window.addEventListener('scroll', () => { if (!spyFrame) spyFrame = requestAnimationFrame(spy); }, { passive: true });
+    window.addEventListener('resize', spy);
   }
 
   /* ---------- Scroll reveals ---------- */
@@ -39,8 +43,8 @@
   if (hero) {
     const chips = $$('.chip', hero);
     const palette = {
-      cinematic: ['#f2b04a', '#5ad7e6', '#f6a1c4'],
-      neon: ['#2ee6ff', '#ff3fd1', '#ffe83a'],
+      cinematic: ['#f2b04a', '#8ee0a0', '#f4f1ea'],
+      neon: ['#2ee6ff', '#3aff9a', '#c8ff3a'],
     };
     const setHero = (name) => {
       $$('[data-hero-preset]', hero).forEach((b) => {
@@ -55,21 +59,25 @@
     $$('[data-hero-preset]', hero).forEach((b) => b.addEventListener('click', () => setHero(b.dataset.heroPreset)));
   }
 
-  /* ---------- Preset explorer (sprite over the real gallery render) ---------- */
+  /* ---------- Preset explorer (one real render per preset) ---------- */
   const explorer = $('[data-explorer]');
   if (explorer) {
     const tabs = $$('[data-preset]', explorer);
-    const sprite = $('[data-sprite]', explorer);
+    const frames = $$('[data-preset-frame]', explorer);
     const name = $('[data-preset-name]', explorer);
+    const counter = $('[data-preset-index]', explorer);
     const code = $('[data-preset-code]', explorer);
     const progress = $('[data-progress]', explorer)?.parentElement;
     const autoplayBtn = $('[data-autoplay]', explorer);
-    // gallery.jpg is a 3 × 4 grid of 500 × 316 tiles; each tile has a 26 px label bar on top.
-    const ROW_OFFSETS = ['2.055%', '27.036%', '52.095%', '77.075%'];
-    const INTERVAL = 3800;
+    const INTERVAL = 4200;
     let index = 0;
     let timer = null;
     let autoplay = !reducedMotion;
+
+    // frames carry data-src so the twelve renders are fetched only as they are needed
+    const load = (frame) => {
+      if (frame && frame.dataset.src) { frame.src = frame.dataset.src; delete frame.dataset.src; }
+    };
 
     const show = (i, { focus = false } = {}) => {
       index = (i + tabs.length) % tabs.length;
@@ -80,12 +88,17 @@
         tab.tabIndex = on ? 0 : -1;
         if (on && focus) tab.focus({ preventScroll: true });
       });
-      const tab = tabs[index];
-      sprite.style.setProperty('--col', tab.dataset.col);
-      sprite.style.setProperty('--row-offset', ROW_OFFSETS[Number(tab.dataset.row)]);
-      sprite.alt = `The street scene rendered with the ${tab.dataset.preset} preset.`;
-      name.textContent = tab.dataset.preset;
-      code.textContent = `style = vs.Style.preset("${tab.dataset.preset}")`;
+      const preset = tabs[index].dataset.preset;
+      frames.forEach((frame) => {
+        const on = frame.dataset.presetFrame === preset;
+        if (on) { load(frame); frame.alt = `A neon-lit street at night with taxis and pedestrians, rendered with the ${preset} preset.`; }
+        else frame.alt = '';
+        frame.classList.toggle('is-on', on);
+      });
+      load(frames[(index + 1) % frames.length]);
+      name.textContent = preset;
+      if (counter) counter.textContent = String(index + 1).padStart(2, '0');
+      code.textContent = `style = vs.Style.preset("${preset}")`;
       restartProgress();
     };
 
@@ -125,11 +138,11 @@
     board?.addEventListener('pointerleave', () => { if (autoplay) { start(); restartProgress(); } });
     document.addEventListener('visibilitychange', () => (document.hidden ? stop() : autoplay && start()));
 
-    // only run the slideshow while the explorer is on screen
+    // only run the slideshow while the explorer is on screen; warm the next frame as it approaches
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) { if (autoplay) { start(); restartProgress(); } } else stop();
-      }, { threshold: 0.3 }).observe(explorer);
+        if (entry.isIntersecting) { load(frames[1]); if (autoplay) { start(); restartProgress(); } } else stop();
+      }, { threshold: 0.3, rootMargin: '200px 0px' }).observe(explorer);
     } else if (autoplay) start();
 
     show(0);

@@ -134,7 +134,7 @@ pip install "visionstyle[studio,yolo]"
 visionstyle studio          # opens http://127.0.0.1:8420
 ```
 
-<p align="center"><img src="docs/images/studio.png" alt="The visionstyle Studio" width="100%"></p>
+<p align="center"><img src="docs/images/studio.jpg" alt="The visionstyle Studio" width="100%"></p>
 
 * Upload an image or use the bundled samples; upload a `.pt` / `.onnx` model or use `yolo11n.pt`.
 * Every section above is a live control. The preview is rendered by the **Python package itself**, so
