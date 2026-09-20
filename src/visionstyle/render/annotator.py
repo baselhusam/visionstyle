@@ -21,7 +21,7 @@ from visionstyle.color import (
 )
 from visionstyle.detections import Detection, Detections
 from visionstyle.render import shapes
-from visionstyle.render.canvas import ROI, Layer, gaussian, scale_factor
+from visionstyle.render.canvas import ROI, Layer, gaussian, object_scale_factor, scale_factor
 from visionstyle.render.effects import (
     apply_grade,
     apply_grain,
@@ -215,9 +215,11 @@ class Annotator:
             return
         box: Box = (x1, y1, x2, y2)
         color = self.resolve_color(st.stroke.color, det, index)
-        thickness = max(0.75, st.stroke.thickness * s)
+        # per-object scale: small boxes get lighter strokes/tags, big boxes heavier ones
+        s_box, s_label = self._object_scales(box, w, h, s)
+        thickness = max(0.75, st.stroke.thickness * s_box)
 
-        outline = self._outline_paths(box, s)
+        outline = self._outline_paths(box, s_box)
         pad = thickness * 2 + 6
         if st.effects.glow.enabled:
             pad += st.effects.glow.radius * s * 2
@@ -236,7 +238,7 @@ class Annotator:
 
         # --- fill (+ glass) ---------------------------------------------------------
         if st.fill.enabled or (st.effects.glass.enabled and st.effects.glass.apply_to != "label"):
-            self._draw_fill(layer, base, box, det, index, color, s, roi)
+            self._draw_fill(layer, base, box, det, index, color, s, roi, s_box)
 
         # --- shadow -----------------------------------------------------------------
         if st.effects.shadow.enabled and st.stroke.enabled and outline:
@@ -264,10 +266,10 @@ class Annotator:
                     time,
                 )
             if st.box.double_line and st.box.shape in ("rectangle", "rounded", "corners"):
-                inset = st.box.double_gap * s + thickness
+                inset = st.box.double_gap * s_box + thickness
                 ib = shapes.inset_box(x1, y1, x2, y2, inset)
                 if ib[2] - ib[0] > 2 and ib[3] - ib[1] > 2:
-                    inner = self._outline_paths(ib, s)
+                    inner = self._outline_paths(ib, s_box)
                     self._stroke_paths(
                         layer,
                         inner,
@@ -281,7 +283,7 @@ class Annotator:
                     )
             if st.box.center_mark:
                 cx, cy = det.center
-                cross = shapes.center_cross_paths(cx, cy, 5 * s)
+                cross = shapes.center_cross_paths(cx, cy, 5 * s_box)
                 self._stroke_paths(
                     layer,
                     cross,
@@ -299,7 +301,27 @@ class Annotator:
 
         # --- label ------------------------------------------------------------------
         if st.label.enabled:
-            self._draw_label(layer, base, det, index, box, color, thickness, s)
+            self._draw_label(layer, base, det, index, box, color, thickness, s_label)
+
+    def _object_scales(self, box: Box, w: int, h: int, s: float) -> tuple[float, float]:
+        """Return ``(box_scale, label_scale)``: the frame scale ``s`` multiplied by the
+        per-object factor for whichever parts ``object_scale.apply_to`` selects."""
+        os_ = self.style.object_scale
+        if not os_.enabled:
+            return s, s
+        k = object_scale_factor(
+            box[2] - box[0],
+            box[3] - box[1],
+            w,
+            h,
+            reference=os_.reference,
+            strength=os_.strength,
+            min_factor=os_.min_factor,
+            max_factor=os_.max_factor,
+        )
+        s_box = s * k if os_.apply_to in ("both", "box") else s
+        s_label = s * k if os_.apply_to in ("both", "label") else s
+        return s_box, s_label
 
     def _outline_paths(self, box: Box, s: float) -> list[shapes.Path]:
         b = self.style.box
@@ -445,9 +467,10 @@ class Annotator:
         color: RGB,
         s: float,
         roi: ROI,
+        s_box: float,
     ) -> None:
         st = self.style
-        region = self._region_path(box, s)
+        region = self._region_path(box, s_box)
         mask = layer.blank_mask(roi)
         shapes.fill_polygon(mask, region, roi.x0, roi.y0)
         glass = st.effects.glass

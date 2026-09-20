@@ -109,10 +109,14 @@ OpenCV; pass `rgb=True` for RGB arrays.
 | **Label** | ordered components (`text`, `confidence`, `track_id`, `class_id`, `custom` template), 9 anchors × inside/outside, vertical tags on the sides, fonts (Inter, JetBrains Mono or your `.ttf`), size, weight, uppercase, `solid` / `pill` / `glass` / `underline` / `none` backgrounds, border, padding, formats |
 | **Effects** | glow, shadow, frosted glass, spotlight dimming, vignette, film grain, color grade |
 | **Tracking** | trail length, anchor (feet/center/top), `solid` / `dotted` / `dashed` / `ribbon`, fade & taper, smoothing, glow, points |
-| **Global** | palette (built-in or custom list), per-class color overrides, confidence threshold, resolution scaling, fps |
+| **Global** | palette (built-in or custom list), per-class color overrides, confidence threshold, resolution scaling, per-object scaling (strength, clamps, box/label), fps |
 
 All sizes are in *reference pixels* at ~1080p and scale automatically with the frame size
 (`style.scale = "auto"`), so one style looks the same on a webcam and a 4K photo.
+On top of that, strokes and label tags scale with each detected object's size
+(`style.object_scale`, on by default): far-away objects get thin outlines and small tags, close-up
+ones get heavier outlines and larger text. Tune `strength`, `min_factor` / `max_factor`, or restrict
+it with `apply_to: box | label`; set `enabled: false` for constant sizes.
 
 ### Save and share styles
 

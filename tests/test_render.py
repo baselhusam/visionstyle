@@ -7,7 +7,7 @@ import pytest
 
 import visionstyle as vs
 from visionstyle.render import shapes
-from visionstyle.render.canvas import Layer, scale_factor
+from visionstyle.render.canvas import Layer, object_scale_factor, scale_factor
 from visionstyle.render.labels import compose_label, format_confidence, place_tag
 from visionstyle.render.trails import TrailBuffer, synthetic_trajectory
 from visionstyle.style.presets import list_presets
@@ -300,6 +300,110 @@ def test_trail_line_styles(frame, detections, line):
     )
     out = vs.annotate(frame, detections, style=st, synthetic_trails=True)
     assert changed(frame, out) > 0
+
+
+# --------------------------------------------------------------------------- object scale
+def _stroke_pixels(style: vs.Style, box: list[float], size=(1080, 1920)) -> int:
+    """Count pixels the outline of one box changes on a flat frame (a proxy for line weight)."""
+    frame = np.full((*size, 3), 90, np.uint8)
+    dets = vs.Detections(xyxy=[box], class_id=[0], class_name=["x"])
+    out = vs.annotate(frame, dets, style=style)
+    return int((out != frame).any(axis=2).sum())
+
+
+def _label_height(style: vs.Style, box: list[float], size=(1080, 1920)) -> int:
+    """Height of the label tag drawn above an outside/top_left anchored box."""
+    frame = np.full((*size, 3), 90, np.uint8)
+    dets = vs.Detections(xyxy=[box], class_id=[0], class_name=["x"])
+    out = vs.annotate(frame, dets, style=style)
+    rows = (out[: int(box[1]) - 1] != frame[: int(box[1]) - 1]).any(axis=2).any(axis=1)
+    return int(rows.sum())
+
+
+def test_object_scale_factor_curve():
+    kw = {"reference": 0.25, "strength": 0.5, "min_factor": 0.6, "max_factor": 1.8}
+    # a box exactly at the reference size renders at 1x
+    assert object_scale_factor(480, 270, 1920, 1080, **kw) == pytest.approx(1.0)
+    small = object_scale_factor(60, 60, 1920, 1080, **kw)
+    big = object_scale_factor(1500, 900, 1920, 1080, **kw)
+    assert 0.6 <= small < 1.0 < big <= 1.8
+    # clamps hold at the extremes
+    assert object_scale_factor(2, 2, 1920, 1080, **kw) == 0.6
+    assert (
+        object_scale_factor(
+            1920, 1080, 1920, 1080, reference=0.05, strength=1, min_factor=0.6, max_factor=1.8
+        )
+        == 1.8
+    )
+    # strength 0 disables the curve entirely
+    assert (
+        object_scale_factor(
+            2, 2, 1920, 1080, reference=0.25, strength=0, min_factor=0.6, max_factor=1.8
+        )
+        == 1.0
+    )
+    # shape does not matter, only area
+    assert object_scale_factor(400, 100, 1920, 1080, **kw) == pytest.approx(
+        object_scale_factor(200, 200, 1920, 1080, **kw)
+    )
+
+
+def test_object_scale_is_on_by_default():
+    assert vs.Style().object_scale.enabled is True
+    assert vs.Style().object_scale.apply_to == "both"
+
+
+def test_object_scale_thins_small_boxes_and_thickens_large_ones():
+    base = vs.Style().copy_with(label={"enabled": False}, stroke={"thickness": 4})
+    off = base.copy_with(object_scale={"enabled": False})
+    small = [100, 100, 160, 160]
+    large = [200, 100, 1700, 1000]
+    # small box: fewer changed pixels than the constant-size render; large box: more
+    assert _stroke_pixels(base, small) < _stroke_pixels(off, small)
+    assert _stroke_pixels(base, large) > _stroke_pixels(off, large)
+
+
+def test_object_scale_scales_label_text():
+    base = vs.Style().copy_with(
+        stroke={"enabled": False}, label={"components": ["text"], "anchor": "top_left"}
+    )
+    off = base.copy_with(object_scale={"enabled": False})
+    small = [100, 200, 160, 260]
+    large = [200, 400, 1700, 1000]
+    assert _label_height(base, small) < _label_height(off, small)
+    assert _label_height(base, large) > _label_height(off, large)
+
+
+def test_object_scale_apply_to_limits_effect():
+    small = [100, 200, 160, 260]
+    off = vs.Style().copy_with(object_scale={"enabled": False})
+    box_only = vs.Style().copy_with(object_scale={"apply_to": "box"})
+    label_only = vs.Style().copy_with(object_scale={"apply_to": "label"})
+    # label-only leaves the outline identical to the constant-size render
+    no_label = {"label": {"enabled": False}}
+    assert _stroke_pixels(label_only.copy_with(**no_label), small) == _stroke_pixels(
+        off.copy_with(**no_label), small
+    )
+    assert _stroke_pixels(box_only.copy_with(**no_label), small) < _stroke_pixels(
+        off.copy_with(**no_label), small
+    )
+    # box-only leaves the tag identical
+    no_stroke = {"stroke": {"enabled": False}}
+    assert _label_height(box_only.copy_with(**no_stroke), small) == _label_height(
+        off.copy_with(**no_stroke), small
+    )
+    assert _label_height(label_only.copy_with(**no_stroke), small) < _label_height(
+        off.copy_with(**no_stroke), small
+    )
+
+
+def test_object_scale_validation():
+    s = vs.Style().copy_with(object_scale={"min_factor": 1.0, "max_factor": 1.0})
+    assert s.object_scale.min_factor == s.object_scale.max_factor == 1.0
+    with pytest.raises(ValueError):
+        vs.Style().copy_with(object_scale={"strength": 2})
+    with pytest.raises(ValueError):
+        vs.Style().copy_with(object_scale={"apply_to": "stroke"})
 
 
 # --------------------------------------------------------------------------- primitives

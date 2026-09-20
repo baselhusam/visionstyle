@@ -309,6 +309,32 @@ class TrailStyle(_Model):
     gap_length: float = Field(8, ge=1, le=100)
 
 
+# ----------------------------------------------------------------------------- object scale
+class ObjectScaleStyle(_Model):
+    """Per-detection sizing. Multiplies stroke, corner and label sizes by a factor derived
+    from each box's size relative to the frame, so far-away objects get thin strokes and
+    small tags while close-up objects get heavier ones. Applied on top of ``Style.scale``."""
+
+    enabled: bool = Field(True, description="Scale sizes with each box's size.")
+    strength: float = Field(
+        0.5,
+        ge=0,
+        le=1,
+        description="0 = every box the same size; 1 = fully proportional to box size.",
+    )
+    reference: float = Field(
+        0.25,
+        ge=0.02,
+        le=1,
+        description="Box size (√area as a fraction of the frame's √area) that renders at 1x.",
+    )
+    min_factor: float = Field(0.6, ge=0.1, le=1, description="Smallest multiplier (tiny boxes).")
+    max_factor: float = Field(1.8, ge=1, le=5, description="Largest multiplier (huge boxes).")
+    apply_to: Literal["both", "box", "label"] = Field(
+        "both", description="Which sizes follow the box: outline, label tag, or both."
+    )
+
+
 # ----------------------------------------------------------------------------- global
 class PaletteSpec(_Model):
     colors: str | list[str] = Field(
@@ -353,6 +379,7 @@ class Style(_Model):
         "auto",
         description="`auto` scales sizes with image resolution (1080p ≈ 1.0).",
     )
+    object_scale: ObjectScaleStyle = Field(default_factory=ObjectScaleStyle)
     fps: float = Field(30, gt=0, le=240, description="Frame rate assumed for animations.")
     box: BoxStyle = Field(default_factory=BoxStyle)
     stroke: StrokeStyle = Field(default_factory=StrokeStyle)

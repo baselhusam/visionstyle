@@ -708,6 +708,63 @@
       "title": "LinePattern",
       "type": "object"
     },
+    "ObjectScaleStyle": {
+      "additionalProperties": false,
+      "description": "Per-detection sizing. Multiplies stroke, corner and label sizes by a factor derived\nfrom each box's size relative to the frame, so far-away objects get thin strokes and\nsmall tags while close-up objects get heavier ones. Applied on top of ``Style.scale``.",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Scale sizes with each box's size.",
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "strength": {
+          "default": 0.5,
+          "description": "0 = every box the same size; 1 = fully proportional to box size.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Strength",
+          "type": "number"
+        },
+        "reference": {
+          "default": 0.25,
+          "description": "Box size (\u221aarea as a fraction of the frame's \u221aarea) that renders at 1x.",
+          "maximum": 1,
+          "minimum": 0.02,
+          "title": "Reference",
+          "type": "number"
+        },
+        "min_factor": {
+          "default": 0.6,
+          "description": "Smallest multiplier (tiny boxes).",
+          "maximum": 1,
+          "minimum": 0.1,
+          "title": "Min Factor",
+          "type": "number"
+        },
+        "max_factor": {
+          "default": 1.8,
+          "description": "Largest multiplier (huge boxes).",
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Max Factor",
+          "type": "number"
+        },
+        "apply_to": {
+          "default": "both",
+          "description": "Which sizes follow the box: outline, label tag, or both.",
+          "enum": [
+            "both",
+            "box",
+            "label"
+          ],
+          "title": "Apply To",
+          "type": "string"
+        }
+      },
+      "title": "ObjectScaleStyle",
+      "type": "object"
+    },
     "PaletteSpec": {
       "additionalProperties": false,
       "properties": {
@@ -1037,6 +1094,9 @@
       "default": "auto",
       "description": "`auto` scales sizes with image resolution (1080p \u2248 1.0).",
       "title": "Scale"
+    },
+    "object_scale": {
+      "$ref": "#/$defs/ObjectScaleStyle"
     },
     "fps": {
       "default": 30,

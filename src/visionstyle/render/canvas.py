@@ -31,6 +31,32 @@ def scale_factor(width: int, height: int, requested: float | str) -> float:
     return float(max(0.4, (diag / REFERENCE_DIAGONAL) ** 0.7))
 
 
+def object_scale_factor(
+    box_w: float,
+    box_h: float,
+    width: int,
+    height: int,
+    *,
+    reference: float,
+    strength: float,
+    min_factor: float,
+    max_factor: float,
+) -> float:
+    """Per-box multiplier from the box's size relative to the frame.
+
+    Size is the geometric mean of width and height (√area) so long thin boxes and squat wide
+    ones of equal area scale alike. A box whose √area is ``reference`` times the frame's √area
+    renders at 1x; ``strength`` bends the curve (0 = constant, 1 = proportional) and the
+    result is clamped to ``[min_factor, max_factor]``.
+    """
+    if strength <= 0:
+        return 1.0
+    frame = math.sqrt(max(1.0, float(width) * float(height)))
+    size = math.sqrt(max(0.0, box_w) * max(0.0, box_h)) / frame
+    k = (max(size, 1e-6) / reference) ** strength
+    return float(min(max_factor, max(min_factor, k)))
+
+
 @dataclass(frozen=True)
 class ROI:
     """Integer pixel rectangle, clipped to the layer. ``x1``/``y1`` are exclusive."""

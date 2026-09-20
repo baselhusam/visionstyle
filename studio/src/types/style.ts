@@ -23,6 +23,30 @@ export type ConfidenceThreshold = number;
  */
 export type Scale = number | 'auto';
 /**
+ * Scale sizes with each box's size.
+ */
+export type Enabled = boolean;
+/**
+ * 0 = every box the same size; 1 = fully proportional to box size.
+ */
+export type Strength = number;
+/**
+ * Box size (√area as a fraction of the frame's √area) that renders at 1x.
+ */
+export type Reference = number;
+/**
+ * Smallest multiplier (tiny boxes).
+ */
+export type MinFactor = number;
+/**
+ * Largest multiplier (huge boxes).
+ */
+export type MaxFactor = number;
+/**
+ * Which sizes follow the box: outline, label tag, or both.
+ */
+export type ApplyTo = 'both' | 'box' | 'label';
+/**
  * Frame rate assumed for animations.
  */
 export type Fps = number;
@@ -62,7 +86,7 @@ export type ReticleLength = number;
  * Draw a small cross at the box center.
  */
 export type CenterMark = boolean;
-export type Enabled = boolean;
+export type Enabled1 = boolean;
 /**
  * Line weight (ref px).
  */
@@ -72,7 +96,7 @@ export type Opacity = number;
  * Hex / rgb() / name, or `palette` (per class/track) or `confidence` (red→green ramp).
  */
 export type Color = string;
-export type Enabled1 = boolean;
+export type Enabled2 = boolean;
 export type Opacity1 = number;
 /**
  * `inherit` follows the stroke color.
@@ -126,7 +150,7 @@ export type Animation = 'none' | 'march' | 'hue_cycle' | 'pulse';
  * Animation speed multiplier.
  */
 export type Speed = number;
-export type Enabled2 = boolean;
+export type Enabled3 = boolean;
 /**
  * Ordered parts of the label. Add/remove/reorder freely.
  */
@@ -206,21 +230,21 @@ export type MinConfidence = number;
  * If > 0, truncate labels wider than this fraction of the image.
  */
 export type MaxWidthFraction = number;
-export type Enabled3 = boolean;
+export type Enabled4 = boolean;
 /**
  * Blur radius (ref px).
  */
 export type Radius1 = number;
 export type Intensity = number;
 export type Color2 = string;
-export type ApplyTo = 'stroke' | 'label' | 'both';
-export type Enabled4 = boolean;
+export type ApplyTo1 = 'stroke' | 'label' | 'both';
+export type Enabled5 = boolean;
 export type OffsetX = number;
 export type OffsetY = number;
 export type Blur = number;
 export type Opacity2 = number;
 export type Color3 = string;
-export type Enabled5 = boolean;
+export type Enabled6 = boolean;
 /**
  * Blur radius (ref px).
  */
@@ -231,21 +255,21 @@ export type Blur1 = number;
 export type Opacity3 = number;
 export type Tint = string;
 export type TintOpacity = number;
-export type ApplyTo1 = 'fill' | 'label' | 'both';
+export type ApplyTo2 = 'fill' | 'label' | 'both';
 /**
  * Lift/darken the blurred region.
  */
 export type Brighten = number;
-export type Enabled6 = boolean;
+export type Enabled7 = boolean;
 export type Amount = number;
 export type Seed = number;
-export type Enabled7 = boolean;
-export type Strength = number;
+export type Enabled8 = boolean;
+export type Strength1 = number;
 /**
  * Clear-area radius as a fraction.
  */
 export type Radius2 = number;
-export type Enabled8 = boolean;
+export type Enabled9 = boolean;
 export type Contrast = number;
 export type Saturation = number;
 /**
@@ -261,7 +285,7 @@ export type Monochrome = boolean;
  * Darken everything outside the boxes (spotlight effect).
  */
 export type DimOutside = number;
-export type Enabled9 = boolean;
+export type Enabled10 = boolean;
 /**
  * Number of past positions to keep.
  */
@@ -306,6 +330,7 @@ export interface Style {
   palette?: PaletteSpec;
   confidence_threshold?: ConfidenceThreshold;
   scale?: Scale;
+  object_scale?: ObjectScaleStyle;
   fps?: Fps;
   box?: BoxStyle;
   stroke?: StrokeStyle;
@@ -331,6 +356,22 @@ export interface ClassColors {
   [k: string]: string;
 }
 /**
+ * Per-detection sizing. Multiplies stroke, corner and label sizes by a factor derived
+ * from each box's size relative to the frame, so far-away objects get thin strokes and
+ * small tags while close-up objects get heavier ones. Applied on top of ``Style.scale``.
+ *
+ * This interface was referenced by `Style`'s JSON-Schema
+ * via the `definition` "ObjectScaleStyle".
+ */
+export interface ObjectScaleStyle {
+  enabled?: Enabled;
+  strength?: Strength;
+  reference?: Reference;
+  min_factor?: MinFactor;
+  max_factor?: MaxFactor;
+  apply_to?: ApplyTo;
+}
+/**
  * Geometry of the box outline.
  *
  * This interface was referenced by `Style`'s JSON-Schema
@@ -354,7 +395,7 @@ export interface BoxStyle {
  * via the `definition` "StrokeStyle".
  */
 export interface StrokeStyle {
-  enabled?: Enabled;
+  enabled?: Enabled1;
   thickness?: Thickness;
   opacity?: Opacity;
   color?: Color;
@@ -366,7 +407,7 @@ export interface StrokeStyle {
  * via the `definition` "FillStyle".
  */
 export interface FillStyle {
-  enabled?: Enabled1;
+  enabled?: Enabled2;
   opacity?: Opacity1;
   color?: Color1;
   mode?: Mode;
@@ -400,7 +441,7 @@ export interface LinePattern {
  * via the `definition` "LabelStyle".
  */
 export interface LabelStyle {
-  enabled?: Enabled2;
+  enabled?: Enabled3;
   components?: Components;
   anchor?: Anchor;
   placement?: Placement;
@@ -445,18 +486,18 @@ export interface EffectsStyle {
  * via the `definition` "GlowEffect".
  */
 export interface GlowEffect {
-  enabled?: Enabled3;
+  enabled?: Enabled4;
   radius?: Radius1;
   intensity?: Intensity;
   color?: Color2;
-  apply_to?: ApplyTo;
+  apply_to?: ApplyTo1;
 }
 /**
  * This interface was referenced by `Style`'s JSON-Schema
  * via the `definition` "ShadowEffect".
  */
 export interface ShadowEffect {
-  enabled?: Enabled4;
+  enabled?: Enabled5;
   offset_x?: OffsetX;
   offset_y?: OffsetY;
   blur?: Blur;
@@ -470,12 +511,12 @@ export interface ShadowEffect {
  * via the `definition` "GlassEffect".
  */
 export interface GlassEffect {
-  enabled?: Enabled5;
+  enabled?: Enabled6;
   blur?: Blur1;
   opacity?: Opacity3;
   tint?: Tint;
   tint_opacity?: TintOpacity;
-  apply_to?: ApplyTo1;
+  apply_to?: ApplyTo2;
   brighten?: Brighten;
 }
 /**
@@ -483,7 +524,7 @@ export interface GlassEffect {
  * via the `definition` "GrainEffect".
  */
 export interface GrainEffect {
-  enabled?: Enabled6;
+  enabled?: Enabled7;
   amount?: Amount;
   seed?: Seed;
 }
@@ -492,8 +533,8 @@ export interface GrainEffect {
  * via the `definition` "VignetteEffect".
  */
 export interface VignetteEffect {
-  enabled?: Enabled7;
-  strength?: Strength;
+  enabled?: Enabled8;
+  strength?: Strength1;
   radius?: Radius2;
 }
 /**
@@ -503,7 +544,7 @@ export interface VignetteEffect {
  * via the `definition` "ColorGrade".
  */
 export interface ColorGrade {
-  enabled?: Enabled8;
+  enabled?: Enabled9;
   contrast?: Contrast;
   saturation?: Saturation;
   temperature?: Temperature;
@@ -517,7 +558,7 @@ export interface ColorGrade {
  * via the `definition` "TrailStyle".
  */
 export interface TrailStyle {
-  enabled?: Enabled9;
+  enabled?: Enabled10;
   length?: Length;
   anchor?: Anchor1;
   line?: Line;

@@ -4,8 +4,38 @@
     {
       "name": "pages-site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8787", "--directory", "_site"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8787",
+        "--directory",
+        "_site"
+      ],
       "port": 8787
+    },
+    {
+      "name": "studio-api",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "visionstyle.cli",
+        "studio",
+        "--no-browser",
+        "--port",
+        "8420"
+      ],
+      "port": 8420
+    },
+    {
+      "name": "studio-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "studio"
+      ],
+      "port": 5173
     }
   ]
 }

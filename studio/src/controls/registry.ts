@@ -245,6 +245,12 @@ export const SECTIONS: SectionDef[] = [
       control({ path: 'palette.class_colors', label: 'Per-class overrides', kind: 'classcolors' }),
       control({ path: 'confidence_threshold', label: 'Hide below confidence' }),
       control({ path: 'fps', label: 'Animation fps', min: 1, max: 120, step: 1 }),
+      control({ path: 'object_scale.enabled', label: 'Scale with object size', hint: 'Thinner strokes and smaller tags on small boxes, heavier ones on large boxes.' }),
+      control({ path: 'object_scale.apply_to', label: 'Scale', optionLabels: { both: 'Box + label', box: 'Box only', label: 'Label only' }, when: on('object_scale.enabled') }),
+      control({ path: 'object_scale.strength', label: 'Strength', when: on('object_scale.enabled') }),
+      control({ path: 'object_scale.reference', label: 'Reference size', min: 0.05, max: 0.6, step: 0.01, when: on('object_scale.enabled'), hint: 'Box size (relative to the frame) that keeps the base sizes.' }),
+      control({ path: 'object_scale.min_factor', label: 'Min factor', step: 0.05, when: on('object_scale.enabled') }),
+      control({ path: 'object_scale.max_factor', label: 'Max factor', max: 3, step: 0.1, when: on('object_scale.enabled') }),
     ],
   },
 ];
