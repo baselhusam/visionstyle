@@ -3,10 +3,10 @@ import { Icon, type IconName } from "./Icon";
 
 export type StudioPanel = "media" | "style" | "objects" | "export";
 
-const WORKSPACES: { id: StudioPanel; label: string; icon: IconName }[] = [
-  { id: "media", label: "Source", icon: "source" },
-  { id: "style", label: "Design", icon: "design" },
-  { id: "objects", label: "Objects", icon: "objects" },
+const WORKSPACES: { id: StudioPanel; label: string; icon: IconName; step: string }[] = [
+  { id: "media", label: "Source", icon: "source", step: "01" },
+  { id: "style", label: "Design", icon: "design", step: "02" },
+  { id: "objects", label: "Objects", icon: "objects", step: "03" },
 ];
 
 interface TopBarProps {
@@ -43,8 +43,9 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
             aria-current={panel === item.id ? "page" : undefined}
             onClick={() => onPanelChange(item.id)}
           >
+            <span className="nav-step" aria-hidden="true">{item.step}</span>
             <Icon name={item.icon} />
-            {item.label}
+            <span>{item.label}</span>
           </button>
         ))}
       </nav>

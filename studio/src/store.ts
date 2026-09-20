@@ -48,7 +48,7 @@ interface State {
   selectImage: (id: string) => Promise<void>;
   uploadImage: (file: File) => Promise<void>;
   deleteImage: (id: string) => Promise<void>;
-  loadTracks: (id: string) => Promise<void>;
+  loadTracks: (id: string, request?: { scene?: number; detection?: number }) => Promise<void>;
   detectVideo: () => Promise<void>;
   cancelDetection: () => Promise<void>;
   setFrame: (index: number) => void;
@@ -87,7 +87,15 @@ export function getDeep(obj: any, path: string): any {
 
 let toastTimer: number | undefined;
 
-export const useStore = create<State>((set, get) => ({
+export const useStore = create<State>((set, get) => {
+  let sceneGeneration = 0;
+  let detectionGeneration = 0;
+
+  const isCurrentScene = (id: string, generation: number) => sceneGeneration === generation && get().imageId === id;
+  const isCurrentDetection = (id: string, scene: number, detection: number) =>
+    isCurrentScene(id, scene) && detectionGeneration === detection;
+
+  return {
   info: null,
   style: defaultStyle() as Style,
   activePreset: 'default',
@@ -170,6 +178,10 @@ export const useStore = create<State>((set, get) => ({
   },
 
   selectImage: async (id) => {
+    const scene = ++sceneGeneration;
+    // A source switch invalidates every in-flight detection, including a request
+    // for the same source that was selected again before the response arrived.
+    detectionGeneration += 1;
     const img = get().images.find((i) => i.id === id);
     const isVideo = img?.kind === 'video';
     set({
@@ -177,9 +189,10 @@ export const useStore = create<State>((set, get) => ({
       modelId: isVideo && get().yoloAvailable ? 'yolov8n.pt' : null,
       detections: [], frames: null, frameIndex: 0, fps: img?.fps ?? 24,
       hidden: new Set(), selected: null, selectedClass: null, playing: false,
+      detecting: false, job: null, error: null,
     });
     if (isVideo && img?.tracked) {
-      await get().loadTracks(id);
+      await get().loadTracks(id, { scene });
     } else if (img?.has_detections && !get().modelId) {
       await get().detect();
     } else if (get().modelId || get().yoloAvailable) {
@@ -198,10 +211,13 @@ export const useStore = create<State>((set, get) => ({
     }
     get().notify(`Removed ${displayName(img?.name) || id}`);
   },
-  loadTracks: async (id) => {
+  loadTracks: async (id, request) => {
+    const scene = request?.scene ?? sceneGeneration;
+    const detection = request?.detection ?? detectionGeneration;
+    const isCurrent = () => isCurrentScene(id, scene) && detectionGeneration === detection;
     try {
       const tracks = await api.tracks(id);
-      if (get().imageId !== id) return;
+      if (!isCurrent()) return;
       const fps = tracks.fps || get().fps;
       set({
         // the decoder's real frame count beats the container's estimate
@@ -212,25 +228,30 @@ export const useStore = create<State>((set, get) => ({
         syntheticTrails: false, // real trails replay from the stored tracks
       });
     } catch (e) {
-      set({ error: (e as Error).message });
+      if (isCurrent()) set({ error: (e as Error).message });
     }
   },
   detectVideo: async () => {
     const { imageId, modelId, conf } = get();
-    if (!imageId) return;
+    if (!imageId || get().detecting) return;
+    const scene = sceneGeneration;
+    const detection = ++detectionGeneration;
     set({ detecting: true, error: null, playing: false });
     try {
       let job = await api.detectVideo(imageId, modelId ?? 'yolov8n.pt', conf);
+      if (!isCurrentDetection(imageId, scene, detection)) return;
       set({ job });
       while (job.status === 'running') {
         await new Promise((resolve) => setTimeout(resolve, 400));
         job = await api.job(job.id);
-        if (get().imageId !== imageId) return; // the user moved on; the job finishes server-side
+        if (!isCurrentDetection(imageId, scene, detection)) return; // the user moved on; the job finishes server-side
         set({ job });
       }
+      if (!isCurrentDetection(imageId, scene, detection)) return;
       if (job.status === 'done') {
         set({ images: get().images.map((i) => (i.id === imageId ? { ...i, tracked: true, has_detections: true } : i)) });
-        await get().loadTracks(imageId);
+        await get().loadTracks(imageId, { scene, detection });
+        if (!isCurrentDetection(imageId, scene, detection)) return;
         get().notify(`Tracked ${job.total} frames · ${(job.ms / 1000).toFixed(1)} s`);
       } else if (job.status === 'error') {
         set({ error: job.error ?? 'Video detection failed' });
@@ -238,9 +259,9 @@ export const useStore = create<State>((set, get) => ({
         get().notify('Detection cancelled');
       }
     } catch (e) {
-      set({ error: (e as Error).message });
+      if (isCurrentDetection(imageId, scene, detection)) set({ error: (e as Error).message });
     } finally {
-      set({ detecting: false, job: null });
+      if (isCurrentDetection(imageId, scene, detection)) set({ detecting: false, job: null });
     }
   },
   cancelDetection: async () => {
@@ -281,7 +302,7 @@ export const useStore = create<State>((set, get) => ({
   setConf: (v) => set({ conf: v }),
   detect: async () => {
     const { imageId, modelId, conf, yoloAvailable, images } = get();
-    if (!imageId) return;
+    if (!imageId || get().detecting) return;
     const img = images.find((i) => i.id === imageId);
     if (img?.kind === 'video' && yoloAvailable) {
       await get().detectVideo();
@@ -293,13 +314,16 @@ export const useStore = create<State>((set, get) => ({
       set({ error: 'No detections available: upload a model or install visionstyle[yolo].' });
       return;
     }
+    const scene = sceneGeneration;
+    const detection = ++detectionGeneration;
     set({ detecting: true, error: null });
     try {
       const res = await api.detect(imageId, model, conf);
+      if (!isCurrentDetection(imageId, scene, detection)) return;
       set({ detections: res.detections, hidden: new Set(), selected: null, selectedClass: null, detecting: false });
       if (res.ms !== undefined) get().notify(`${res.detections.length} objects · ${res.ms.toFixed(0)} ms`);
     } catch (e) {
-      set({ detecting: false, error: (e as Error).message });
+      if (isCurrentDetection(imageId, scene, detection)) set({ detecting: false, error: (e as Error).message });
     }
   },
   toggleHidden: (i) => {
@@ -326,7 +350,8 @@ export const useStore = create<State>((set, get) => ({
   },
   setError: (msg) => set({ error: msg }),
   setRenderMs: (ms) => set({ renderMs: ms }),
-}));
+  };
+});
 
 /** Detections currently visible (respecting hidden set / selection isolate). */
 /** Identity used for hide/isolate: the track id when the scene is tracked, else the index in the frame. */

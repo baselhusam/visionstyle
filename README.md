@@ -136,12 +136,17 @@ visionstyle studio          # opens http://127.0.0.1:8420
 
 <p align="center"><img src="docs/images/studio.jpg" alt="The visionstyle Studio" width="100%"></p>
 
-* Upload an image or use the bundled samples; upload a `.pt` / `.onnx` model or use `yolo11n.pt`.
-* Every section above is a live control. The preview is rendered by the **Python package itself**, so
-  what you see is exactly what `annotate()` produces.
-* Toggle objects on/off, isolate one, play line animations, preview trails on a still image.
-* Export YAML (only changed values or everything), copy a Python snippet, or **Save as preset** into
-  the default directory or any folder (`visionstyle studio --presets-dir ./styles`).
+* **Source:** choose a bundled scene or upload an image or video, set the confidence threshold,
+  and run detection. The sample video includes tracks; new video tracking requires the YOLO extra.
+* **Design:** start with a preset, then adjust boxes, strokes, labels, effects, and trails beside
+  the preview. The **Python package itself** renders every change, matching `annotate()` output.
+* **Objects:** filter by class, hide objects, or isolate a track. Scrub video frames or play the
+  timeline; use the preview menu to save an annotated frame.
+* **Export:** copy or download YAML or a Python snippet, or **Save as preset** into the default
+  directory or any folder (`visionstyle studio --presets-dir ./styles`).
+
+Keyboard shortcuts: **Space** plays or pauses, **← / →** steps through video frames, **Shift +
+← / →** jumps ten frames, and **R** resets the style. Focused controls keep their own keyboard behavior.
 
 ## CLI
 

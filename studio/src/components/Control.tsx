@@ -6,7 +6,7 @@ import { ComponentChips } from './ComponentChips';
 import { PaletteInput, ClassColors } from './PaletteInput';
 
 function fmt(v: number, step: number | undefined, unit?: string) {
-  const digits = step && step < 1 ? (step < 0.1 ? 2 : 1) : 0;
+  const digits = step ? (String(step).split('.')[1]?.length ?? 0) : 0;
   return `${Number(v).toFixed(digits)}${unit ?? ''}`;
 }
 

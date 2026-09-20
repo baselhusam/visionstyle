@@ -30,7 +30,7 @@ export default function App() {
   const stepFrame = useStore((s) => s.stepFrame);
   const isVideo = useStore(selectIsVideo);
   const [panel, setPanel] = useState<StudioPanel>(panelFromUrl);
-  const editor = useRef<HTMLElement>(null);
+  const inspector = useRef<HTMLElement>(null);
 
   useEffect(() => {
     boot();
@@ -48,15 +48,15 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      // a range slider (the scrubber, style sliders) does not use Space or type text
-      const typing = Boolean(target.closest?.('input:not([type="range"]), select, textarea, [contenteditable="true"]'));
-      // arrows step the video unless a field needs them; buttons and links do not
-      if (isVideo && !typing && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      // Let native controls and tab/menu navigation retain their expected keyboard behavior.
+      // In particular, range inputs own ArrowLeft/ArrowRight for precise style and timeline edits.
+      const interactive = Boolean(target.closest?.('input, select, textarea, [contenteditable="true"], button, a, [role="switch"], [role="tab"], [role="menuitem"], [role="radio"]'));
+      if (isVideo && !interactive && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
         e.preventDefault();
         stepFrame((e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 10 : 1));
         return;
       }
-      if (typing || target.closest?.('button, a, [role="switch"]')) return;
+      if (interactive) return;
       if (e.code === "Space" && (isVideo || lineAnimated(useStore.getState().style))) {
         e.preventDefault();
         setPlaying(!useStore.getState().playing);
@@ -79,13 +79,17 @@ export default function App() {
       window.history.pushState({}, "", url);
     }
     setPanel(next);
-    editor.current?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
-      block: "start",
-    });
-    editor.current?.focus({ preventScroll: true });
+    if (window.matchMedia("(max-width: 780px)").matches) {
+      window.requestAnimationFrame(() => {
+        inspector.current?.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+          block: "start",
+        });
+        inspector.current?.focus({ preventScroll: true });
+      });
+    }
   };
   const deck = DECKS[panel];
   return (
@@ -94,20 +98,40 @@ export default function App() {
       <TopBar panel={panel} onPanelChange={openPanel} />
       <main className="studio-stage">
         <section
-          ref={editor}
-          id="style-controls"
+          id="editor-workspace"
           className="editor-workspace"
           tabIndex={-1}
           aria-label="Editing workspace"
         >
+          <WorkspaceHeading panel={panel} />
           <div className={`playground panel-${panel}`}>
+            <section
+              id="live-preview"
+              className="cinema playground-preview"
+              aria-label="Live preview"
+            >
+              <CinemaMeta onChangeSource={() => openPanel("media")} />
+              <div className="cinema-canvas">
+                <Preview onChangeSource={() => openPanel("media")} />
+                <span className="canvas-label">LIVE PREVIEW</span>
+              </div>
+              <div className="cinema-footer">
+                <Timeline />
+                <CinemaControls />
+                <DetectionShelf />
+              </div>
+            </section>
             <aside
+              id="style-controls"
+              ref={inspector}
               className="playground-controls"
-              aria-label="Configuration controls"
+              aria-label={`${deck.title} inspector`}
+              tabIndex={-1}
             >
               <div className="control-deck">
                 <div className="deck-toolbar">
                   <div>
+                    <p className="deck-index">{PANEL_STEPS[panel]}</p>
                     <h2>{deck.title}</h2>
                     <p className="hint">{deck.hint}</p>
                   </div>
@@ -116,7 +140,7 @@ export default function App() {
                       <PresetPicker />
                       <button
                         type="button"
-                        className="btn quiet"
+                        className="btn quiet reset-button"
                         onClick={resetStyle}
                         title="Reset to preset (R)"
                         aria-label="Reset style to preset"
@@ -128,7 +152,7 @@ export default function App() {
                   {panel === "export" && (
                     <button
                       type="button"
-                      className="btn"
+                      className="btn quiet inspector-back"
                       onClick={() => openPanel("style")}
                     >
                       <Icon name="back" /> Design
@@ -153,20 +177,6 @@ export default function App() {
                 </div>
               </div>
             </aside>
-            <section
-              id="live-preview"
-              className="cinema playground-preview"
-              aria-label="Live preview"
-            >
-              <CinemaMeta onChangeSource={() => openPanel("media")} />
-              <div className="cinema-canvas">
-                <Preview onChangeSource={() => openPanel("media")} />
-                <span className="canvas-label">LIVE PREVIEW</span>
-              </div>
-              <Timeline />
-              <CinemaControls />
-              <DetectionShelf />
-            </section>
           </div>
         </section>
       </main>
@@ -176,14 +186,47 @@ export default function App() {
 }
 
 const DECKS: Record<StudioPanel, { title: string; hint: string }> = {
-  style: { title: "Design", hint: "Every change renders live on the right." },
+  style: { title: "Design", hint: "Fine-tune annotations. Every change renders live." },
   media: { title: "Source", hint: "Pick a scene, then run detection." },
   objects: { title: "Objects", hint: "Hide or isolate detected objects." },
   export: { title: "Export", hint: "Save a preset or copy it into Python." },
 };
 
+const PANEL_STEPS: Record<StudioPanel, string> = {
+  media: "01 / SOURCE",
+  style: "02 / DESIGN",
+  objects: "03 / OBJECTS",
+  export: "04 / EXPORT",
+};
+
 function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boolean {
   return style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0;
+}
+
+function WorkspaceHeading({ panel }: { panel: StudioPanel }) {
+  const scene = useStore((s) => s.images.find((image) => image.id === s.imageId));
+  const count = useStore((s) => s.detections.length);
+  const hidden = useStore((s) => s.hidden.size);
+  const tracked = useStore((s) => s.frames !== null);
+  const kind = scene?.kind === "video" ? "Video scene" : scene ? "Image scene" : "No source selected";
+  return (
+    <header className="workspace-heading">
+      <div className="workspace-title">
+        <p className="workspace-kicker">visionstyle / annotation workspace</p>
+        <h1>{scene ? displayName(scene.name) : "Choose a scene"}</h1>
+        <p className="workspace-context">
+          <span>{PANEL_STEPS[panel]}</span>
+          <i aria-hidden="true" />
+          {kind}
+          {scene?.width && scene?.height ? <><i aria-hidden="true" />{scene.width} × {scene.height}</> : null}
+        </p>
+      </div>
+      <div className="scene-summary" aria-label="Scene summary">
+        <span><strong>{String(count).padStart(2, "0")}</strong> objects</span>
+        <span><strong>{tracked ? "Tracked" : hidden ? `${hidden} hidden` : "Live"}</strong> {tracked ? "scene" : "view"}</span>
+      </div>
+    </header>
+  );
 }
 
 function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {

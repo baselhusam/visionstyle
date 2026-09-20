@@ -20,7 +20,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const setFrame = useStore((s) => s.setFrame);
   const setRenderMs = useStore((s) => s.setRenderMs);
   const setError = useStore((s) => s.setError);
-  const [url, setUrl] = useState<string | null>(null);
+  const [rendered, setRendered] = useState<{ url: string; imageId: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [fit, setFit] = useState(true);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
@@ -32,6 +32,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const lastFrameRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
   const timer = useRef<number | undefined>(undefined);
+  const renderedUrlRef = useRef<string | null>(null);
   const animated = style.line?.animation !== 'none' && (style.line?.speed ?? 0) > 0;
   const media = useStore((s) => s.images.find((item) => item.id === s.imageId));
   const isVideo = media?.kind === 'video';
@@ -39,6 +40,8 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const frameCount = frames ? frames.length : (media?.frame_count ?? 0);
   // the frame number inside the file (differs from the position when tracks were sampled with a stride)
   const sourceFrame = frames ? (frames[frameIndex]?.index ?? 0) : frameIndex;
+  // Do not briefly show the previous source while the next scene is loading.
+  const renderedUrl = rendered?.imageId === imageId ? rendered.url : null;
 
   const dets = selected !== null
     ? detections.filter((detection, i) => detectionKey(detection, i, tracked) === selected)
@@ -48,7 +51,11 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const key = JSON.stringify({ style, imageId, dets, syntheticTrails, sourceFrame: isVideo ? sourceFrame : 0 });
 
   useEffect(() => {
-    if (!imageId) return;
+    if (!imageId) {
+      busyRef.current = false;
+      setBusy(false);
+      return;
+    }
     let cancelled = false;
     const run = async (t: number) => {
       abortRef.current?.abort();
@@ -73,14 +80,15 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
           URL.revokeObjectURL(res.url);
           return;
         }
-        setUrl((old) => {
-          if (old) URL.revokeObjectURL(old);
-          return res.url;
+        setRendered((old) => {
+          if (old?.url && old.url !== res.url) URL.revokeObjectURL(old.url);
+          renderedUrlRef.current = res.url;
+          return { url: res.url, imageId };
         });
         setRenderMs(res.ms);
         setError(null);
       } catch (e) {
-        if ((e as Error).name !== 'AbortError') setError((e as Error).message);
+        if (!cancelled && !ctrl.signal.aborted && (e as Error).name !== 'AbortError') setError((e as Error).message);
       } finally {
         if (!ctrl.signal.aborted) busyRef.current = false;
         if (!cancelled) setBusy(false);
@@ -114,6 +122,27 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, playing, animated, isVideo, fit]);
+
+  // A source change invalidates the old bitmap immediately. Keeping the image id beside the
+  // object URL also protects the first paint before this effect has had a chance to run.
+  useEffect(() => {
+    abortRef.current?.abort();
+    lastFrameRef.current = -1;
+    busyRef.current = false;
+    setBusy(Boolean(imageId));
+    setMenu(null);
+    setRendered((old) => {
+      if (old?.url) URL.revokeObjectURL(old.url);
+      renderedUrlRef.current = null;
+      return null;
+    });
+  }, [imageId]);
+
+  useEffect(() => () => {
+    abortRef.current?.abort();
+    window.clearTimeout(timer.current);
+    if (renderedUrlRef.current) URL.revokeObjectURL(renderedUrlRef.current);
+  }, []);
 
   // Playback clock: advance the playhead in real time, skipping frames the renderer cannot keep up with.
   // A timer rather than requestAnimationFrame so playback survives a backgrounded tab (rAF pauses there).
@@ -171,9 +200,9 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   };
 
   const downloadFrame = () => {
-    if (!url) return;
+    if (!renderedUrl) return;
     const anchor = document.createElement('a');
-    anchor.href = url;
+    anchor.href = renderedUrl;
     anchor.download = `${media?.name?.replace(/\.[^.]+$/, '') ?? 'visionstyle'}-frame.jpg`;
     anchor.click();
     setMenu(null);
@@ -181,8 +210,8 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
 
   return (
     <div ref={wrapRef} className={`stage-wrap ${fit ? 'fit' : 'actual'}`}>
-      {url ? <img className="stage" src={url} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} /> : <div className="stage placeholder">Select a source to begin.</div>}
-      {url && <button ref={menuButtonRef} type="button" className="stage-options" aria-label="Preview options" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={toggleMenu}><Icon name="options" /></button>}
+      {renderedUrl ? <img className="stage" src={renderedUrl} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} /> : <div className={`stage placeholder ${imageId ? 'loading' : 'empty'}`}><span>{imageId ? 'Rendering scene…' : 'Choose a source to begin.'}</span></div>}
+      {renderedUrl && <button ref={menuButtonRef} type="button" className="stage-options" aria-label="Preview options" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={toggleMenu}><Icon name="options" /></button>}
       {menu && <div ref={menuRef} className="stage-menu" role="menu" aria-label="Preview options" style={{ left: menu.x, top: menu.y }} onKeyDown={(event) => {
         if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();

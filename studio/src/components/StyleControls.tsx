@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { SECTIONS, type ControlDef } from "../controls/registry";
 import { getDeep, useStore } from "../store";
 import { Control } from "./Control";
@@ -55,12 +55,12 @@ export function StyleControls() {
       <div
         className="category-tabs"
         role="tablist"
-        aria-orientation="vertical"
+        aria-orientation="horizontal"
         aria-label="Style categories"
       >
         {categories.map((item, index) => (
-          <Fragment key={item.id}>
           <button
+            key={item.id}
             type="button"
             role="tab"
             aria-selected={category === item.id}
@@ -84,10 +84,9 @@ export function StyleControls() {
             }}
           >
             <CategoryIcon id={item.id} />
+            <span className="category-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
             <span className="category-title">{item.title}</span>
           </button>
-          {item.id === "presets" && <span className="rail-rule" aria-hidden="true" />}
-          </Fragment>
         ))}
       </div>
       <section
