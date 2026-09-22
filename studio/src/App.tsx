@@ -79,7 +79,7 @@ export default function App() {
       window.history.pushState({}, "", url);
     }
     setPanel(next);
-    if (window.matchMedia("(max-width: 780px)").matches) {
+    if (window.matchMedia("(max-width: 900px)").matches) {
       window.requestAnimationFrame(() => {
         inspector.current?.scrollIntoView({
           behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -103,7 +103,7 @@ export default function App() {
           tabIndex={-1}
           aria-label="Editing workspace"
         >
-          <WorkspaceHeading panel={panel} />
+          <WorkspaceHeading />
           <div className={`playground panel-${panel}`}>
             <section
               id="live-preview"
@@ -113,7 +113,6 @@ export default function App() {
               <CinemaMeta onChangeSource={() => openPanel("media")} />
               <div className="cinema-canvas">
                 <Preview onChangeSource={() => openPanel("media")} />
-                <span className="canvas-label">LIVE PREVIEW</span>
               </div>
               <div className="cinema-footer">
                 <Timeline />
@@ -203,7 +202,7 @@ function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boo
   return style.line?.animation !== "none" && (style.line?.speed ?? 0) > 0;
 }
 
-function WorkspaceHeading({ panel }: { panel: StudioPanel }) {
+function WorkspaceHeading() {
   const scene = useStore((s) => s.images.find((image) => image.id === s.imageId));
   const count = useStore((s) => s.detections.length);
   const hidden = useStore((s) => s.hidden.size);
@@ -215,9 +214,7 @@ function WorkspaceHeading({ panel }: { panel: StudioPanel }) {
         <p className="workspace-kicker">visionstyle / annotation workspace</p>
         <h1>{scene ? displayName(scene.name) : "Choose a scene"}</h1>
         <p className="workspace-context">
-          <span>{PANEL_STEPS[panel]}</span>
-          <i aria-hidden="true" />
-          {kind}
+          <span>{kind}</span>
           {scene?.width && scene?.height ? <><i aria-hidden="true" />{scene.width} × {scene.height}</> : null}
         </p>
       </div>

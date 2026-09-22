@@ -24,7 +24,7 @@ function Item({ name, description, origin }: { name: string; description: string
   return (
     <div className={`preset ${active ? 'active' : ''}`}>
       <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
-        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /><span className="art-caption">person 0.98</span></span>
+        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /></span>
         <span className="preset-text">
           <strong>{name}</strong>
           <small>{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</small>
