@@ -99,7 +99,6 @@ export function StyleControls() {
         <div className="category-heading">
           <div>
             <h3>{section?.title ?? "Style library"}</h3>
-            <p>{section?.intro ?? "Start from a look, then make it yours."}</p>
           </div>
           {section?.master && (
             <div className="category-enable">

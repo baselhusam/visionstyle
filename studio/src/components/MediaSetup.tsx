@@ -21,28 +21,17 @@ export function MediaSetup() {
   const tracked = frames !== null;
   const progress = job ? `${job.done} / ${job.total}` : null;
 
-  const videoNote = !isVideo
-    ? "Select the included video to preview the YOLOv8 Nano workflow."
-    : job
-      ? `Tracking every frame · ${progress}. You can keep editing while it runs.`
-      : tracked
-        ? `Tracked · ${frames.length} frames${current?.duration ? ` · ${current.duration.toFixed(1)}s` : ""}. Scrub the timeline or press play.`
-        : yolo
-          ? "Run detection to track every frame of this video with YOLOv8 Nano + ByteTrack."
-          : "Install visionstyle[yolo] to track uploaded videos; the sample ships with its tracks.";
+  // only say something when the user has to act on it
+  const note = isVideo && !tracked && !job && !yolo
+    ? "Install visionstyle[yolo] to track uploaded videos; the sample ships with its tracks."
+    : null;
 
   return (
     <div className="media-setup">
-      <div className="drawer-intro">
-        <p className="drawer-kicker">Source / 01</p>
-        <h2>Choose the scene.</h2>
-        <p>Use the included moving scene, or add your own image or video.</p>
-      </div>
-
       <div className="setup-group">
         <div className="setup-group-heading">
           <span className="setup-icon"><Icon name="source" /></span>
-          <div><strong>Scene</strong><small>Image or video input</small></div>
+          <strong>Scene</strong>
         </div>
         <SourcePicker />
         <button type="button" className="btn upload-button" onClick={() => imageInput.current?.click()}><Icon name="source" /> Upload media</button>
@@ -57,20 +46,19 @@ export function MediaSetup() {
         <div className="setup-group setup-model">
           <div className="setup-group-heading">
             <span className="setup-icon"><Icon name="model" /></span>
-            <div><strong>Detector</strong><small>Video analysis only</small></div>
+            <strong>Detector</strong>
           </div>
           <div className="model-lockup" aria-label="Active detector: YOLOv8 Nano with ByteTrack">
             <strong>YOLOv8 Nano</strong>
             <span>+ ByteTrack · every frame</span>
           </div>
-          <p className="setup-note">{yolo ? "Detections are tracked across the whole clip and stored next to it, so every frame keeps its own boxes and ids." : "Uses the tracks bundled with the sample."}</p>
         </div>
       )}
 
       <div className="setup-group setup-confidence">
         <div className="setup-group-heading">
           <span className="setup-icon"><Icon name="confidence" /></span>
-          <div><strong>Threshold</strong><small>Minimum object confidence</small></div>
+          <strong>Threshold</strong>
         </div>
         <div className="setup-label-row">
           <label className="setup-label" htmlFor="confidence">Confidence</label>
@@ -85,7 +73,7 @@ export function MediaSetup() {
         ) : (
           <button type="button" className="detect-wide" onClick={() => detect()} disabled={detecting || !imageId}><Icon name="detect" /> {detecting ? "Detecting…" : isVideo ? (tracked ? "Track again" : "Run detection") : "Run detection"}</button>
         )}
-        <p className="setup-note">{videoNote}</p>
+        {note && <p className="setup-note">{note}</p>}
       </div>
     </div>
   );

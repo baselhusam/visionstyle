@@ -30,7 +30,6 @@ interface State {
   selectedClass: string | null;
   detecting: boolean;
   job: JobStatus | null;
-  syntheticTrails: boolean;
   playing: boolean;
   openPanels: Set<PanelId>;
   toast: string | null;
@@ -61,7 +60,6 @@ interface State {
   setHidden: (indices: Set<number>) => void;
   select: (i: number | null) => void;
   selectClass: (className: string | null) => void;
-  setSyntheticTrails: (v: boolean) => void;
   setPlaying: (v: boolean) => void;
   togglePanel: (id: PanelId) => void;
   notify: (msg: string) => void;
@@ -116,7 +114,6 @@ export const useStore = create<State>((set, get) => {
   selectedClass: null,
   detecting: false,
   job: null,
-  syntheticTrails: true,
   playing: false,
   openPanels: new Set<PanelId>(['presets', 'box']),
   toast: null,
@@ -225,7 +222,6 @@ export const useStore = create<State>((set, get) => {
         frames: tracks.frames, fps, frameIndex: 0,
         detections: tracks.frames[0]?.detections ?? [],
         hidden: new Set(), selected: null, selectedClass: null,
-        syntheticTrails: false, // real trails replay from the stored tracks
       });
     } catch (e) {
       if (isCurrent()) set({ error: (e as Error).message });
@@ -335,7 +331,6 @@ export const useStore = create<State>((set, get) => {
   setHidden: (indices) => set({ hidden: new Set(indices), selected: null }),
   select: (i) => set({ selected: get().selected === i ? null : i, selectedClass: null }),
   selectClass: (className) => set({ selectedClass: get().selectedClass === className ? null : className, selected: null }),
-  setSyntheticTrails: (v) => set({ syntheticTrails: v }),
   setPlaying: (v) => set({ playing: v }),
   togglePanel: (id) => {
     const open = new Set(get().openPanels);

@@ -125,9 +125,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
           ))}
         </span>
       </div>
-      {tab === 'prompt' && (
-        <p className="export-note">Paste this into your AI coding tool (Claude Code, Cursor, Copilot…) to apply the style in your own project.</p>
-      )}
       <pre id="export-code" className={`code mono ${tab === 'prompt' ? 'wrap' : ''}`} role="tabpanel" aria-labelledby={`export-tab-${tab}`} aria-live="polite" tabIndex={0}>
         {text}
       </pre>
@@ -150,12 +147,14 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
           <span>Save as preset</span>
         </div>
         <div className="save-row">
-          <input name="preset-name" autoComplete="off" aria-label="Preset name" aria-invalid={!validName} aria-describedby="preset-name-help" maxLength={64} className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. my-style…" spellCheck={false} />
+          <input name="preset-name" autoComplete="off" aria-label="Preset name" aria-invalid={!validName} aria-describedby={validName ? undefined : 'preset-name-help'} maxLength={64} className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. my-style…" spellCheck={false} />
           <button type="button" className="btn primary" onClick={save} disabled={saving || !validName}>
             <Icon name="save" /> {saving ? 'Saving…' : 'Save preset'}
           </button>
         </div>
-        <p id="preset-name-help" className="muted small">Start with a letter or number. Use up to 64 letters, numbers, spaces, dots, hyphens or underscores.</p>
+        {!validName && (
+          <p id="preset-name-help" className="field-error">Start with a letter or number; use up to 64 letters, numbers, spaces, dots, hyphens or underscores.</p>
+        )}
         <input
           className="text-input mono small"
           name="preset-directory"
@@ -167,10 +166,11 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
           title="Directory to save into (leave blank for the default presets directory)"
           spellCheck={false}
         />
-        <p className="muted small">
-          Load it anywhere with <code className="mono">vs.Style.preset("{name || 'name'}")</code>
-          {dir.trim() ? <> (set <code className="mono">VISIONSTYLE_PRESETS_DIR</code> to the custom directory)</> : null}.
-        </p>
+        {dir.trim() && (
+          <p className="muted small">
+            Set <code className="mono">VISIONSTYLE_PRESETS_DIR</code> to this directory to load it by name.
+          </p>
+        )}
       </div>
     </section>
   );

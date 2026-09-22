@@ -12,7 +12,8 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const hidden = useStore((s) => s.hidden);
   const selected = useStore((s) => s.selected);
   const selectedClass = useStore((s) => s.selectedClass);
-  const syntheticTrails = useStore((s) => s.syntheticTrails);
+  // stills and untracked videos get a synthetic trail; tracked videos replay their real ones
+  const syntheticTrails = useStore((s) => s.frames === null);
   const playing = useStore((s) => s.playing);
   const frames = useStore((s) => s.frames);
   const frameIndex = useStore((s) => s.frameIndex);

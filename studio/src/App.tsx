@@ -122,7 +122,6 @@ export default function App() {
               </div>
               <div className="cinema-footer">
                 <Timeline />
-                <CinemaControls />
                 <DetectionShelf />
               </div>
             </section>
@@ -136,15 +135,9 @@ export default function App() {
               <div className="control-deck">
                 <div className="deck-toolbar">
                   {panel === "export" ? (
-                    <div>
-                      <h2>{deck.title}</h2>
-                      <p className="hint">{deck.hint}</p>
-                    </div>
+                    <h2>{deck.title}</h2>
                   ) : (
-                    <>
-                      <PanelTabs panel={panel} onChange={openPanel} />
-                      <p className="hint">{deck.hint}</p>
-                    </>
+                    <PanelTabs panel={panel} onChange={openPanel} />
                   )}
                   {panel === "style" && (
                     <div className="editor-actions">
@@ -163,10 +156,10 @@ export default function App() {
                   {panel === "export" && (
                     <button
                       type="button"
-                      className="btn quiet inspector-back"
+                      className="btn inspector-back"
                       onClick={() => openPanel("style")}
                     >
-                      <Icon name="back" /> Design
+                      <Icon name="back" /> Back to Design
                     </button>
                   )}
                 </div>
@@ -188,10 +181,7 @@ export default function App() {
                 </div>
                 {panel === "style" && (
                   <div className="deck-footer">
-                    <p>
-                      <strong>Happy with the look?</strong>
-                      <span>Take it into your project.</span>
-                    </p>
+                    <strong>Happy with the look?</strong>
                     <div className="deck-footer-actions">
                       <button type="button" className="btn" onClick={() => openExport("python")}>
                         <Icon name="code" /> Code
@@ -212,11 +202,11 @@ export default function App() {
   );
 }
 
-const DECKS: Record<StudioPanel, { title: string; hint: string }> = {
-  style: { title: "Design", hint: "Fine-tune annotations. Every change renders live." },
-  media: { title: "Source", hint: "Pick a scene, then run detection." },
-  objects: { title: "Objects", hint: "Hide or isolate detected objects." },
-  export: { title: "Export", hint: "Copy it as code, as a prompt for your AI tool, or save a preset." },
+const DECKS: Record<StudioPanel, { title: string }> = {
+  style: { title: "Design" },
+  media: { title: "Source" },
+  objects: { title: "Objects" },
+  export: { title: "Export" },
 };
 
 function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boolean {
@@ -225,24 +215,9 @@ function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boo
 
 function WorkspaceHeading() {
   const scene = useStore((s) => s.images.find((image) => image.id === s.imageId));
-  const count = useStore((s) => s.detections.length);
-  const hidden = useStore((s) => s.hidden.size);
-  const tracked = useStore((s) => s.frames !== null);
-  const kind = scene?.kind === "video" ? "Video scene" : scene ? "Image scene" : "No source selected";
   return (
     <header className="workspace-heading">
-      <div className="workspace-title">
-        <p className="workspace-kicker">visionstyle / annotation workspace</p>
-        <h1>{scene ? displayName(scene.name) : "Choose a scene"}</h1>
-        <p className="workspace-context">
-          <span>{kind}</span>
-          {scene?.width && scene?.height ? <><i aria-hidden="true" />{scene.width} × {scene.height}</> : null}
-        </p>
-      </div>
-      <div className="scene-summary" aria-label="Scene summary">
-        <span><strong>{String(count).padStart(2, "0")}</strong> objects</span>
-        <span><strong>{tracked ? "Tracked" : hidden ? `${hidden} hidden` : "Live"}</strong> {tracked ? "scene" : "view"}</span>
-      </div>
+      <h1>{scene ? displayName(scene.name) : "Choose a scene"}</h1>
     </header>
   );
 }
@@ -250,6 +225,9 @@ function WorkspaceHeading() {
 function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {
   const img = useStore((s) => s.images.find((i) => i.id === s.imageId));
   const renderMs = useStore((s) => s.renderMs);
+  const playing = useStore((s) => s.playing);
+  const setPlaying = useStore((s) => s.setPlaying);
+  const animated = useStore((s) => lineAnimated(s.style));
   const isVideo = img?.kind === "video";
   return (
     <div className="cinema-meta">
@@ -265,6 +243,17 @@ function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {
           <i />
           {renderMs ? `${renderMs.toFixed(0)} ms` : "Ready"}
         </span>
+        {/* videos play from the timeline; on stills this only drives an animated line style */}
+        {!isVideo && animated && (
+          <button
+            type="button"
+            className={`canvas-link playback ${playing ? "active" : ""}`}
+            onClick={() => setPlaying(!playing)}
+            title="Play or pause (Space)"
+          >
+            <Icon name={playing ? "pause" : "play"} /> {playing ? "Pause" : "Play motion"}
+          </button>
+        )}
         <button type="button" className="canvas-link" onClick={onChangeSource}>
           <Icon name="change" /> Change source
         </button>
@@ -273,55 +262,9 @@ function CinemaMeta({ onChangeSource }: { onChangeSource: () => void }) {
   );
 }
 
-function CinemaControls() {
-  const playing = useStore((s) => s.playing);
-  const setPlaying = useStore((s) => s.setPlaying);
-  const animated = useStore((s) => lineAnimated(s.style));
-  const synthetic = useStore((s) => s.syntheticTrails);
-  const setSynthetic = useStore((s) => s.setSyntheticTrails);
-  const imageId = useStore((s) => s.imageId);
-  const isVideo = useStore(selectIsVideo);
-  const tracked = useStore((s) => s.frames !== null);
-  const detect = useStore((s) => s.detect);
-  const detecting = useStore((s) => s.detecting);
-  return (
-    <div className="cinema-controls">
-      {/* video playback lives in the timeline; this button only drives line animation on stills */}
-      {!isVideo && (
-        <button
-          type="button"
-          className={`playback ${playing ? "active" : ""}`}
-          onClick={() => setPlaying(!playing)}
-          disabled={!animated}
-          title={animated ? "Play or pause (Space)" : "Choose an animation in Line to preview motion"}
-        >
-          <Icon name={playing ? "pause" : "play"} />
-          {playing ? "Pause" : "Play motion"}
-        </button>
-      )}
-      <label className={`stage-toggle ${synthetic ? "on" : ""}`} title="Preview the tracking trail without a tracked video">
-        <input type="checkbox" checked={synthetic} onChange={(e) => setSynthetic(e.target.checked)} />
-        <span />
-        {tracked ? "Synthetic trails" : "Trail preview"}
-      </label>
-      <span className="spacer" />
-      <button type="button" className="canvas-link detect" onClick={() => detect()} disabled={detecting || !imageId}>
-        <Icon name="detect" /> {detecting ? "Detecting…" : "Run detection"}
-      </button>
-    </div>
-  );
-}
-
 function ObjectsWorkspace() {
-  const count = useStore((s) => s.detections.length);
-  const frameNumber = useStore((s) => (s.frames ? (s.frames[s.frameIndex]?.index ?? 0) + 1 : null));
   return (
     <div className="workspace-surface objects-workspace">
-      <p className="section-description">
-        {frameNumber !== null
-          ? `${count} objects in frame ${frameNumber}. Hiding or isolating an object applies to its track in every frame.`
-          : `${count} objects in this scene. Toggle visibility or select an object to isolate it.`}
-      </p>
       <Detections />
     </div>
   );
