@@ -1000,6 +1000,21 @@ input[type="range"]::-moz-range-thumb { border-color: var(--accent); background:
 .reset-button { width: 34px; min-height: 34px; padding: 0; }
 .reset-button svg { width: 15px; height: 15px; }
 .inspector-back { align-self: center; }
+.deck-footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(135deg, rgb(217 255 77 / 5%), transparent 60%), var(--surface);
+}
+.deck-footer p { display: grid; min-width: 0; gap: 1px; margin: 0; }
+.deck-footer strong { color: var(--ink); font: 600 12px var(--sans); }
+.deck-footer span { overflow: hidden; color: var(--ink-3); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.deck-footer-actions { display: flex; flex: none; gap: 6px; }
+.deck-footer-actions .btn { padding: 0 10px; }
 .control-deck-body { min-height: 0; padding: 0; background: var(--surface); }
 .workspace-surface { padding: 13px; }
 .design-workspace-host { min-height: 0; }
@@ -1117,6 +1132,9 @@ input[type="range"]::-moz-range-thumb { border-color: var(--accent); background:
 .object-empty { border-color: var(--line-2); }
 
 .code { color: #dce3d5; border: 1px solid var(--canvas-line); border-radius: var(--r-1); background: #0c0f0c; }
+.code.wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.code:focus-visible { outline-offset: -2px; }
+.export-note { margin: -2px 0 10px; color: var(--ink-3); font-size: 11px; line-height: 1.5; }
 .tabs-inline { border-color: var(--line); background: var(--surface-3); }
 .tabs-inline button { color: var(--ink-3); }
 .tabs-inline button.active { color: #202711; background: var(--accent); box-shadow: none; }

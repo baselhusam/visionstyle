@@ -24,12 +24,14 @@ export type IconName =
   | "back"
   | "previous"
   | "next"
-  | "chevron";
+  | "chevron"
+  | "code";
 
 const paths: Record<IconName, JSX.Element> = {
   source: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m5.5 16 4.2-4.3 3.2 3.2 2.1-2.1 3.5 3.7M8 8.5h.01" /></>,
   design: <><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" /></>,
   objects: <><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" /><rect x="8" y="8" width="8" height="8" rx="1" /></>,
+  code: <path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14" />,
   export: <><path d="M12 15V3m0 0L8 7m4-4 4 4" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></>,
   reset: <><path d="M4 7v5h5" /><path d="M5.6 16a8 8 0 1 0 .2-8.2L4 12" /></>,
   change: <><path d="M7 7h12l-3-3m3 3-3 3M17 17H5l3 3m-3-3 3-3" /></>,

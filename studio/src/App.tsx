@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Detections } from "./components/Detections";
 import { DetectionShelf } from "./components/DetectionShelf";
-import { Export } from "./components/Export";
+import { Export, type ExportTab } from "./components/Export";
 import { MediaSetup } from "./components/MediaSetup";
 import { Icon } from "./components/Icon";
 import { PresetPicker } from "./components/PresetPicker";
@@ -30,6 +30,7 @@ export default function App() {
   const stepFrame = useStore((s) => s.stepFrame);
   const isVideo = useStore(selectIsVideo);
   const [panel, setPanel] = useState<StudioPanel>(panelFromUrl);
+  const [exportTab, setExportTab] = useState<ExportTab>("yaml");
   const inspector = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -90,6 +91,10 @@ export default function App() {
         inspector.current?.focus({ preventScroll: true });
       });
     }
+  };
+  const openExport = (tab: ExportTab) => {
+    setExportTab(tab);
+    openPanel("export");
   };
   const deck = DECKS[panel];
   return (
@@ -170,10 +175,26 @@ export default function App() {
                   {panel === "objects" && <ObjectsWorkspace />}
                   {panel === "export" && (
                     <div className="workspace-surface export-workspace">
-                      <Export />
+                      <Export initialTab={exportTab} />
                     </div>
                   )}
                 </div>
+                {panel === "style" && (
+                  <div className="deck-footer">
+                    <p>
+                      <strong>Happy with the look?</strong>
+                      <span>Take it into your project.</span>
+                    </p>
+                    <div className="deck-footer-actions">
+                      <button type="button" className="btn" onClick={() => openExport("python")}>
+                        <Icon name="code" /> Code
+                      </button>
+                      <button type="button" className="btn primary" onClick={() => openExport("prompt")}>
+                        <Icon name="design" /> AI prompt
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </aside>
           </div>
@@ -188,7 +209,7 @@ const DECKS: Record<StudioPanel, { title: string; hint: string }> = {
   style: { title: "Design", hint: "Fine-tune annotations. Every change renders live." },
   media: { title: "Source", hint: "Pick a scene, then run detection." },
   objects: { title: "Objects", hint: "Hide or isolate detected objects." },
-  export: { title: "Export", hint: "Save a preset or copy it into Python." },
+  export: { title: "Export", hint: "Copy it as code, as a prompt for your AI tool, or save a preset." },
 };
 
 const PANEL_STEPS: Record<StudioPanel, string> = {
