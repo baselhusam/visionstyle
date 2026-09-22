@@ -8,6 +8,7 @@ import { PresetPicker } from "./components/PresetPicker";
 import { Preview } from "./components/Preview";
 import { StyleControls } from "./components/StyleControls";
 import { Timeline } from "./components/Timeline";
+import { PanelTabs } from "./components/PanelTabs";
 import { TopBar, type StudioPanel } from "./components/TopBar";
 import { displayName } from "./api";
 import { useStore } from "./store";
@@ -134,11 +135,17 @@ export default function App() {
             >
               <div className="control-deck">
                 <div className="deck-toolbar">
-                  <div>
-                    <p className="deck-index">{PANEL_STEPS[panel]}</p>
-                    <h2>{deck.title}</h2>
-                    <p className="hint">{deck.hint}</p>
-                  </div>
+                  {panel === "export" ? (
+                    <div>
+                      <h2>{deck.title}</h2>
+                      <p className="hint">{deck.hint}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <PanelTabs panel={panel} onChange={openPanel} />
+                      <p className="hint">{deck.hint}</p>
+                    </>
+                  )}
                   {panel === "style" && (
                     <div className="editor-actions">
                       <PresetPicker />
@@ -210,13 +217,6 @@ const DECKS: Record<StudioPanel, { title: string; hint: string }> = {
   media: { title: "Source", hint: "Pick a scene, then run detection." },
   objects: { title: "Objects", hint: "Hide or isolate detected objects." },
   export: { title: "Export", hint: "Copy it as code, as a prompt for your AI tool, or save a preset." },
-};
-
-const PANEL_STEPS: Record<StudioPanel, string> = {
-  media: "01 / SOURCE",
-  style: "02 / DESIGN",
-  objects: "03 / OBJECTS",
-  export: "04 / EXPORT",
 };
 
 function lineAnimated(style: ReturnType<typeof useStore.getState>["style"]): boolean {

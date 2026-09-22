@@ -1,13 +1,7 @@
 import { useStore } from "../store";
-import { Icon, type IconName } from "./Icon";
+import { Icon } from "./Icon";
 
 export type StudioPanel = "media" | "style" | "objects" | "export";
-
-const WORKSPACES: { id: StudioPanel; label: string; icon: IconName; step: string }[] = [
-  { id: "media", label: "Source", icon: "source", step: "01" },
-  { id: "style", label: "Design", icon: "design", step: "02" },
-  { id: "objects", label: "Objects", icon: "objects", step: "03" },
-];
 
 interface TopBarProps {
   panel: StudioPanel;
@@ -34,21 +28,6 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
           visionstyle<small>Studio</small>
         </span>
       </a>
-      <nav className="workspace-nav" aria-label="Studio workspace">
-        {WORKSPACES.map((item) => (
-          <button
-            type="button"
-            key={item.id}
-            className={panel === item.id ? "active" : ""}
-            aria-current={panel === item.id ? "page" : undefined}
-            onClick={() => onPanelChange(item.id)}
-          >
-            <span className="nav-step" aria-hidden="true">{item.step}</span>
-            <Icon name={item.icon} />
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
       <div className="appbar-actions">
         <span className={`connection-status ${dirty ? "dirty" : ""}`}>
           <i className={info ? "ready" : ""} />
