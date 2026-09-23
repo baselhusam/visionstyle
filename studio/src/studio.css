@@ -327,6 +327,8 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 }
 .preset-art .glyph { width: 46px; height: 32px; color: #6f95ff; transition: transform 160ms ease; }
 .preset:hover .glyph { transform: scale(1.06); }
+.preset-art .thumb { display: block; width: 100%; height: 100%; transition: transform 160ms ease; }
+.preset:hover .thumb { transform: scale(1.04); }
 .art-cinematic .glyph { color: #ffd84d; }
 .art-confidence .glyph { border-image: linear-gradient(90deg, #f04b3c, #ffd84d, #3aaa65) 1; }
 .art-neon .glyph { color: #f4b6cb; }

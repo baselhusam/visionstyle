@@ -1,5 +1,6 @@
 import type { PresetInfo } from '../api';
 import { useStore } from '../store';
+import { PresetThumb } from './PresetThumb';
 
 const GLYPH: Record<string, string> = {
   default: 'rect',
@@ -16,16 +17,6 @@ const GLYPH: Record<string, string> = {
   confidence: 'conf',
 };
 
-/** Saved presets have no hand-drawn art, so draw theirs from the box shape and line pattern. */
-function glyphFor({ name, origin, style }: PresetInfo): string {
-  if (origin === 'builtin') return GLYPH[name] ?? 'rect';
-  const shape = style.box?.shape;
-  if (shape === 'corners') return 'corner';
-  if (shape === 'reticle') return 'hud';
-  if (shape === 'rounded') return 'round';
-  return style.line?.pattern === 'dashed' || style.line?.pattern === 'dotted' ? 'dash' : 'rect';
-}
-
 // Defined at module scope: a component created inside the render would be a new type every
 // render, remounting every card (and eating clicks) whenever the list re-renders.
 function Item(preset: PresetInfo) {
@@ -36,7 +27,7 @@ function Item(preset: PresetInfo) {
   return (
     <div className={`preset ${origin === 'builtin' ? 'builtin' : ''} ${active ? 'active' : ''}`}>
       <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
-        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${glyphFor(preset)}`} /></span>
+        <span className={`preset-art art-${name}`} aria-hidden="true">{origin === 'builtin' ? <span className={`glyph ${GLYPH[name] ?? 'rect'}`} /> : <PresetThumb style={preset.style} />}</span>
         <span className="preset-text">
           <strong>{name}</strong>
           <small>{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</small>
