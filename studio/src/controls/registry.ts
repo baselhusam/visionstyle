@@ -31,6 +31,10 @@ export interface ControlDef {
   unit?: string;
   /** Only show when this predicate holds for the current style. */
   when?: (style: any) => boolean;
+  /** The control `when` reads, so search can surface it next to a hidden match. */
+  dependsOn?: string;
+  /** Why the control is hidden, e.g. "Shape is Corners"; derived for `on`/`eq` conditions. */
+  whenText?: string;
 }
 
 export interface SectionDef {
@@ -44,6 +48,9 @@ export interface SectionDef {
 }
 
 type Spec = Partial<ControlDef> & { path: string; label: string };
+
+/** A `when` predicate that remembers which control it reads and how to describe itself. */
+type Condition = ((style: any) => boolean) & { dep?: string; values?: string[] };
 
 function control(spec: Spec): ControlDef {
   const node = schemaAt(spec.path);
@@ -73,13 +80,14 @@ function control(spec: Spec): ControlDef {
     options,
     specials: node?.specials,
     hint: spec.hint ?? node?.description,
+    dependsOn: (spec.when as Condition | undefined)?.dep,
     ...spec,
   } as ControlDef;
 }
 
 const g = (s: any, p: string) => p.split('.').reduce((o, k) => (o == null ? o : o[k]), s);
-const on = (p: string) => (s: any) => Boolean(g(s, p));
-const eq = (p: string, ...v: string[]) => (s: any) => v.includes(g(s, p));
+const on = (p: string): Condition => Object.assign((s: any) => Boolean(g(s, p)), { dep: p });
+const eq = (p: string, ...v: string[]): Condition => Object.assign((s: any) => v.includes(g(s, p)), { dep: p, values: v });
 
 export const SECTIONS: SectionDef[] = [
   {
@@ -140,9 +148,9 @@ export const SECTIONS: SectionDef[] = [
       control({ path: 'line.gap_length', label: 'Gap', max: 60, unit: 'px', when: eq('line.pattern', 'dashed', 'dotted') }),
       control({ path: 'line.dot_radius', label: 'Dot radius', max: 8, unit: 'px', when: eq('line.pattern', 'dotted') }),
       control({ path: 'line.multicolor', label: 'Multi-color' }),
-      control({ path: 'line.segment_colors', label: 'Colors', kind: 'colorlist', when: (s) => g(s, 'line.multicolor') !== 'none' }),
+      control({ path: 'line.segment_colors', label: 'Colors', kind: 'colorlist', when: (s) => g(s, 'line.multicolor') !== 'none', dependsOn: 'line.multicolor', whenText: 'Multi-color is on' }),
       control({ path: 'line.animation', label: 'Animation', optionLabels: { none: 'Off', march: 'March', hue_cycle: 'Hue', pulse: 'Pulse' } }),
-      control({ path: 'line.speed', label: 'Speed', max: 4, when: (s) => g(s, 'line.animation') !== 'none' }),
+      control({ path: 'line.speed', label: 'Speed', max: 4, when: (s) => g(s, 'line.animation') !== 'none', dependsOn: 'line.animation', whenText: 'Animation is on' }),
     ],
   },
   {
@@ -153,7 +161,7 @@ export const SECTIONS: SectionDef[] = [
     master: 'label.enabled',
     controls: [
       control({ path: 'label.components', label: 'Components', kind: 'components' }),
-      control({ path: 'label.custom_template', label: 'Custom template', kind: 'text', when: (s) => (g(s, 'label.components') ?? []).includes('custom') }),
+      control({ path: 'label.custom_template', label: 'Custom template', kind: 'text', when: (s) => (g(s, 'label.components') ?? []).includes('custom'), dependsOn: 'label.components', whenText: 'Components include Custom' }),
       control({ path: 'label.anchor', label: 'Anchor', kind: 'anchor' }),
       control({ path: 'label.placement', label: 'Placement' }),
       control({ path: 'label.orientation', label: 'Orientation', when: eq('label.anchor', 'left', 'right') }),
@@ -230,7 +238,7 @@ export const SECTIONS: SectionDef[] = [
       control({ path: 'trail.smoothing', label: 'Smoothing', max: 9 }),
       control({ path: 'trail.glow', label: 'Glow' }),
       control({ path: 'trail.show_points', label: 'Show points' }),
-      control({ path: 'trail.point_radius', label: 'Point radius', max: 10, unit: 'px', when: (s) => g(s, 'trail.show_points') || g(s, 'trail.line') === 'dotted' }),
+      control({ path: 'trail.point_radius', label: 'Point radius', max: 10, unit: 'px', when: (s) => g(s, 'trail.show_points') || g(s, 'trail.line') === 'dotted', dependsOn: 'trail.show_points', whenText: 'Show points is on' }),
       control({ path: 'trail.max_age', label: 'Keep lost tracks (frames)', max: 120 }),
     ],
   },
@@ -258,3 +266,11 @@ export const SECTIONS: SectionDef[] = [
 export const CONTROL_INDEX: Record<string, ControlDef> = Object.fromEntries(
   SECTIONS.flatMap((s) => s.controls.map((c) => [c.path, c])),
 );
+
+for (const c of Object.values(CONTROL_INDEX)) {
+  const cond = c.when as Condition | undefined;
+  const dep = cond?.dep ? CONTROL_INDEX[cond.dep] : undefined;
+  if (c.whenText || !cond?.dep || !dep) continue;
+  const name = (v: string) => dep.optionLabels?.[v] ?? v.replace('_', ' ').replace(/^./, (x) => x.toUpperCase());
+  c.whenText = cond.values ? `${dep.label} is ${cond.values.map(name).join(' or ')}` : `${dep.label} is on`;
+}

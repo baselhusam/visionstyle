@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SECTIONS, type ControlDef } from "../controls/registry";
 import { getDeep, useStore } from "../store";
+import { HighlightContext, Hl, revealer, searchSettings, searchTerms, type SearchResult } from "../search";
 import { Control } from "./Control";
+import { Icon } from "./Icon";
 import { PresetList } from "./PresetList";
 
 const CATEGORY_PATHS: Record<string, string> = {
@@ -43,16 +45,96 @@ export function StyleControls() {
   });
   const style = useStore((s) => s.style);
   const setPath = useStore((s) => s.setPath);
+  const presets = useStore((s) => s.presets);
+  const [query, setQuery] = useState("");
+  const searchInput = useRef<HTMLInputElement>(null);
   const section = SECTIONS.find((s) => s.id === category);
+  const searching = query.trim().length > 0;
+  const results = searchSettings(query, style, presets);
   const selectCategory = (next: string) => {
     setCategory(next);
     const url = new URL(window.location.href);
     url.searchParams.set("category", next);
     window.history.replaceState({}, "", url);
   };
+  // leave the search, open the setting's section, and flash it so the eye lands on it
+  const reveal = (sectionId: string, path?: string, fallback?: string) => {
+    setQuery("");
+    selectCategory(sectionId);
+    window.requestAnimationFrame(() => {
+      const root = document.getElementById("category-content");
+      const find = (p?: string) => (p ? root?.querySelector<HTMLElement>(`[data-path="${CSS.escape(p)}"]`) : null);
+      const target = find(path) ?? find(fallback);
+      if (!root) return;
+      if (!target) { root.scrollTop = 0; return; }
+      target.scrollIntoView({ block: "center", behavior: "smooth" });
+      target.classList.remove("search-flash");
+      void target.offsetWidth; // restart the animation when the same row is revealed twice
+      target.classList.add("search-flash");
+      window.setTimeout(() => target.classList.remove("search-flash"), 1800);
+    });
+  };
+  const openFirst = () => {
+    const group = results.groups[0];
+    const hit = group?.hits[0];
+    if (group && hit) reveal(group.section.id, hit.def.path, hit.def.dependsOn);
+    else if (results.presets.length) reveal("presets");
+  };
+  // "/" jumps to the search from anywhere in the Studio, like most editors
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (target.closest?.('input, select, textarea, [contenteditable="true"]')) return;
+      if (!searchInput.current?.offsetParent) return; // Design panel not showing
+      event.preventDefault();
+      searchInput.current.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   return (
-    <div className="design-workspace">
+    <div className={`design-workspace ${searching ? "searching" : ""}`}>
+      <div className="style-search" role="search">
+        <Icon name="search" />
+        <input
+          ref={searchInput}
+          type="search"
+          name="settings-search"
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="Search settings"
+          aria-controls="category-content"
+          placeholder="Search settings…"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.stopPropagation();
+              if (query) setQuery("");
+              else event.currentTarget.blur();
+            }
+            if (event.key === "Enter") {
+              event.preventDefault();
+              openFirst();
+            }
+          }}
+        />
+        {searching ? (
+          <>
+            <span className="style-search-count" aria-live="polite">
+              {results.count} {results.count === 1 ? "result" : "results"}
+            </span>
+            <button type="button" className="style-search-clear" aria-label="Clear search" onClick={() => { setQuery(""); searchInput.current?.focus(); }}>
+              ×
+            </button>
+          </>
+        ) : (
+          <kbd aria-hidden="true">/</kbd>
+        )}
+      </div>
       <div
+        hidden={searching}
         className="category-tabs"
         role="tablist"
         aria-orientation="horizontal"
@@ -93,9 +175,14 @@ export function StyleControls() {
         className={`category-content ${section?.master && !getDeep(style, section.master) ? "off" : ""}`}
         role="tabpanel"
         id="category-content"
-        aria-labelledby={`tab-${category}`}
+        aria-labelledby={searching ? undefined : `tab-${category}`}
+        aria-label={searching ? "Search results" : undefined}
         tabIndex={0}
       >
+        {searching ? (
+          <SearchResults query={query} results={results} onOpen={reveal} />
+        ) : (
+        <>
         <div className="category-heading">
           <div>
             <h3>{section?.title ?? "Style library"}</h3>
@@ -141,8 +228,75 @@ export function StyleControls() {
         ) : (
           <PresetList />
         )}
+        </>
+        )}
       </section>
     </div>
+  );
+}
+
+function SearchResults({ query, results, onOpen }: { query: string; results: SearchResult; onOpen: (section: string, path?: string, fallback?: string) => void }) {
+  const apply = useStore((s) => s.applyPreset);
+  if (!results.count) {
+    return (
+      <div className="search-empty">
+        <strong>No settings match “{query.trim()}”</strong>
+        <span>Try a word like glow, font, dash or trail.</span>
+      </div>
+    );
+  }
+  return (
+    <HighlightContext.Provider value={searchTerms(query)}>
+      <div className="search-results">
+        {results.presets.length > 0 && (
+          <section className="search-group">
+            <header>
+              <h3>Library</h3>
+              <button type="button" className="search-open" onClick={() => onOpen("presets")}>Open <Icon name="next" /></button>
+            </header>
+            <div className="search-presets">
+              {results.presets.map((preset) => (
+                <button type="button" key={preset.name} className="search-preset" onClick={() => apply(preset.name)}>
+                  <strong className={preset.origin === "builtin" ? "builtin" : undefined}><Hl text={preset.name} /></strong>
+                  {preset.description && <small><Hl text={preset.description} /></small>}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+        {results.groups.map((group) => {
+          const shown = new Set<string>();
+          return (
+            <section className="search-group" key={group.section.id}>
+              <header>
+                <h3><Hl text={group.section.title} /></h3>
+                <button type="button" className="search-open" onClick={() => onOpen(group.section.id, group.hits[0].def.path, group.hits[0].def.dependsOn)}>
+                  Open <Icon name="next" />
+                </button>
+              </header>
+              <div className="parameter-list">
+                {group.hits.map((hit) => {
+                  if (hit.visible) return <Control key={hit.def.path} def={hit.def} />;
+                  // a hidden match comes with the setting that reveals it, so it can be turned on right here
+                  const gate = revealer(hit, group);
+                  const showGate = gate && !shown.has(gate.path);
+                  if (gate) shown.add(gate.path);
+                  return (
+                    <div key={hit.def.path} className="search-hidden-pair">
+                      {showGate && <Control def={gate} />}
+                      <div className="field search-locked" data-path={hit.def.path}>
+                        <span className="field-label"><Hl text={hit.def.label} /></span>
+                        <span className="search-locked-why">Shown when {hit.def.whenText ?? "another option is set"}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </HighlightContext.Provider>
   );
 }
 

@@ -4,6 +4,7 @@ import { AnchorPicker } from './AnchorPicker';
 import { ColorInput, ColorList } from './ColorInput';
 import { ComponentChips } from './ComponentChips';
 import { PaletteInput, ClassColors } from './PaletteInput';
+import { Hl } from '../search';
 
 function fmt(v: number, step: number | undefined, unit?: string) {
   const digits = step ? (String(step).split('.')[1]?.length ?? 0) : 0;
@@ -11,7 +12,7 @@ function fmt(v: number, step: number | undefined, unit?: string) {
 }
 
 function FieldLabel({ def }: { def: ControlDef }) {
-  return <span className="field-label" title={def.hint}>{def.label}</span>;
+  return <span className="field-label" title={def.hint}><Hl text={def.label} /></span>;
 }
 
 export function Control({ def }: { def: ControlDef }) {
@@ -24,7 +25,7 @@ export function Control({ def }: { def: ControlDef }) {
   switch (def.kind) {
     case 'toggle':
       return (
-        <label className="field row toggle-row">
+        <label className="field row toggle-row" data-path={def.path}>
           <FieldLabel def={def} />
           <input type="checkbox" checked={Boolean(value)} onChange={(e) => set(e.target.checked)} />
           <span className="toggle" />
@@ -32,9 +33,9 @@ export function Control({ def }: { def: ControlDef }) {
       );
     case 'slider':
       return (
-        <div className="field">
+        <div className="field" data-path={def.path}>
           <div className="field-head">
-            <label className="field-label" title={def.hint}>{def.label}</label>
+            <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
             <output className="mono">{fmt(Number(value), def.step, def.unit)}</output>
           </div>
           <input
@@ -52,12 +53,12 @@ export function Control({ def }: { def: ControlDef }) {
       );
     case 'segment':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <div className="segment" role="radiogroup" aria-label={def.label}>
             {def.options?.map((o) => (
               <button key={o} type="button" role="radio" aria-checked={value === o} className={value === o ? 'active' : ''} onClick={() => set(o)}>
-                {def.optionLabels?.[o] ?? o.replace('_', ' ')}
+                <Hl text={def.optionLabels?.[o] ?? o.replace('_', ' ')} />
               </button>
             ))}
           </div>
@@ -66,8 +67,8 @@ export function Control({ def }: { def: ControlDef }) {
     case 'select':
     case 'font':
       return (
-        <div className="field row">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field row" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <select name={def.path} aria-label={def.label} value={def.options?.includes(value) ? value : def.options?.[0]} onChange={(e) => set(e.target.value)}>
             {def.options?.map((o) => (
               <option key={o} value={o}>
@@ -79,51 +80,51 @@ export function Control({ def }: { def: ControlDef }) {
       );
     case 'color':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <ColorInput value={String(value)} specials={def.specials} onChange={set} />
         </div>
       );
     case 'colorlist':
       return (
-        <div className="field">
-          <label className="field-label">{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label"><Hl text={def.label} /></label>
           <ColorList value={value as string[]} onChange={set} />
         </div>
       );
     case 'anchor':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <AnchorPicker value={String(value)} placement={String(getDeep(style, 'label.placement'))} onChange={set} />
         </div>
       );
     case 'components':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <ComponentChips value={value as string[]} onChange={set} />
         </div>
       );
     case 'palette':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <PaletteInput value={value} onChange={set} />
         </div>
       );
     case 'classcolors':
       return (
-        <div className="field">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <ClassColors value={(value ?? {}) as Record<string, string>} onChange={set} />
         </div>
       );
     case 'text':
     default:
       return (
-        <div className="field row">
-          <label className="field-label" title={def.hint}>{def.label}</label>
+        <div className="field row" data-path={def.path}>
+          <label className="field-label" title={def.hint}><Hl text={def.label} /></label>
           <input name={def.path} autoComplete="off" aria-label={def.label} className="text-input mono" value={String(value ?? '')} onChange={(e) => set(e.target.value)} spellCheck={false} />
         </div>
       );
