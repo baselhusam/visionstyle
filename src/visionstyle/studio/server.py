@@ -27,6 +27,7 @@ from visionstyle import __version__
 from visionstyle.detections import Detections
 from visionstyle.render.annotator import Annotator
 from visionstyle.style.presets import (
+    builtin_presets_dir,
     delete_preset,
     list_presets,
     load_preset,
@@ -373,6 +374,9 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
 
     @app.put("/api/presets/{name}")
     def put_preset(name: str, body: SavePresetRequest) -> dict[str, Any]:
+        # a user preset with a built-in's name would silently shadow it everywhere
+        if (builtin_presets_dir() / f"{name}.yaml").exists():
+            raise HTTPException(409, f"{name!r} is a built-in style; choose another name")
         try:
             style = Style.from_dict(body.style)
             path = save_preset(style, name, _presets_dir(body.directory))

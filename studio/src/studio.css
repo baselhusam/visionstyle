@@ -338,7 +338,9 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .art-tracking .glyph { color: #3aaa65; }
 .art-spotlight .glyph { color: #fff; box-shadow: 0 0 0 100px rgb(0 0 0 / 34%); }
 .preset-text { display: grid; gap: 2px; padding: 9px 10px 10px; }
-.preset-text strong { display: flex; align-items: center; justify-content: space-between; gap: 6px; font: 600 12px var(--sans); text-transform: capitalize; }
+.preset-text strong { display: flex; align-items: center; justify-content: space-between; gap: 6px; font: 600 12px var(--sans); }
+/* built-in names are shown as titles; saved names exactly as typed, since that is what code loads */
+.preset.builtin .preset-text strong { text-transform: capitalize; }
 .preset-text small { display: -webkit-box; overflow: hidden; color: var(--ink-3); font-size: 11px; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .preset.active .preset-text strong::after { content: ''; width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--accent); }
 .preset-delete {
@@ -375,7 +377,8 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .preset-picker-trigger:hover { border-color: var(--ink-3); }
 .preset-picker-trigger[aria-expanded="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
 .picker-caption { color: var(--ink-3); font: 500 11px var(--sans); }
-.preset-picker-trigger strong { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; font: 600 12px var(--sans); text-overflow: ellipsis; text-transform: capitalize; white-space: nowrap; }
+.preset-picker-trigger strong { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; font: 600 12px var(--sans); text-overflow: ellipsis; white-space: nowrap; }
+.preset-picker-trigger strong.builtin { text-transform: capitalize; }
 .preset-picker-trigger i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .preset-picker-trigger > svg { width: 14px; height: 14px; color: var(--ink-3); }
 .preset-popover {
@@ -383,7 +386,8 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
   border: 1px solid var(--line); border-radius: var(--r-2); background: var(--surface); box-shadow: var(--shadow-pop);
 }
 .preset-popover > input { width: 100%; height: 34px; }
-.preset-popover [role="menu"] { max-height: 340px; margin-top: 6px; overflow: auto; scrollbar-width: thin; }
+.preset-popover > input + [role="menu"] { margin-top: 6px; }
+.preset-popover [role="menu"] { max-height: 340px; overflow: auto; scrollbar-width: thin; }
 .picker-group { margin: 10px 8px 4px; color: var(--ink-3); font: 500 11px var(--sans); text-transform: uppercase; letter-spacing: .06em; }
 .preset-popover [role="menuitemradio"] {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 8px; color: var(--ink);
@@ -392,10 +396,10 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .preset-popover [role="menuitemradio"]:hover, .preset-popover [role="menuitemradio"]:focus-visible { background: var(--surface-2); outline: none; }
 .preset-popover [aria-checked="true"] { background: var(--accent-soft); }
 .preset-popover [aria-checked="true"] strong { color: var(--accent-ink); }
-.preset-popover strong { display: block; font: 600 12px var(--sans); text-transform: capitalize; }
+.preset-popover strong { display: block; font: 600 12px var(--sans); }
 .preset-popover small { display: -webkit-box; overflow: hidden; margin-top: 1px; color: var(--ink-3); font-size: 11px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .preset-popover [role="menuitemradio"] > span:last-child { color: var(--accent); }
-.picker-empty { margin: 14px 8px; color: var(--ink-3); font-size: 12px; text-align: center; }
+.picker-none { margin: 14px 8px; color: var(--ink-3); font-size: 12px; text-align: center; }
 
 /* Preview (right pane) */
 .cinema {
@@ -610,12 +614,6 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
   border-radius: var(--r-2); background: var(--canvas); font: 11.5px/1.7 var(--mono); white-space: pre; scrollbar-width: thin;
 }
 .export-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
-.save-box { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
-.save-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
-.save-box .text-input { width: 100%; }
-.save-box p { margin: 8px 0 12px; color: var(--ink-3); font-size: 11px; line-height: 1.55; }
-.save-box p:last-child { margin-bottom: 0; }
-.save-box .field-error { color: var(--danger); }
 
 /* Feedback */
 .toast {
@@ -905,10 +903,37 @@ input[type="range"]::-moz-range-thumb { border-color: var(--accent); background:
 .panel-tabs button.active { color: var(--ink); background: var(--surface-3); box-shadow: inset 0 0 0 1px var(--line-2); }
 .panel-step { color: var(--ink-3); font: 500 10px var(--mono); letter-spacing: .04em; }
 .panel-tabs button.active .panel-step { color: var(--accent); }
-.editor-actions { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) 34px; gap: 6px; width: 100%; }
+.editor-actions { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) 34px 34px; gap: 4px; width: 100%; }
 .editor-actions .preset-picker, .editor-actions .preset-picker-trigger { width: 100%; }
-.reset-button { width: 34px; min-height: 34px; padding: 0; }
-.reset-button svg { width: 15px; height: 15px; }
+.icon-button { width: 34px; min-height: 34px; padding: 0; }
+.icon-button svg { width: 15px; height: 15px; }
+.icon-button.active { color: var(--accent); border-color: rgb(217 255 77 / 40%); background: rgb(217 255 77 / 8%); }
+
+/* Save as preset: opens under the Style row */
+.save-preset {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: var(--surface-2);
+  animation: menu-in 120ms ease-out both;
+}
+.save-preset-field { display: grid; gap: 6px; }
+.save-preset-field > span { color: var(--ink-2); font: 500 11px var(--sans); }
+.save-preset-field em { margin-left: 4px; color: var(--ink-3); font-style: normal; }
+.save-preset-field .text-input { width: 100%; background: var(--surface); }
+.save-preset .field-error, .save-preset-note { margin: -2px 0 0; font-size: 11px; line-height: 1.45; }
+.save-preset .field-error { color: var(--danger); }
+.save-preset-note { color: var(--ink-3); }
+.save-preset-actions { display: flex; justify-content: flex-end; gap: 6px; }
+
+/* Empty Style dropdown */
+.picker-empty { display: grid; justify-items: center; gap: 4px; padding: 16px 12px 12px; text-align: center; }
+.picker-empty strong { color: var(--ink); font: 600 12px var(--sans); text-transform: none; }
+.picker-empty span { color: var(--ink-3); font-size: 11px; line-height: 1.45; }
+.picker-empty .btn { margin-top: 8px; }
 .deck-toolbar h2 + .inspector-back { align-self: center; }
 .inspector-back { gap: 7px; padding: 0 12px 0 10px; color: var(--ink); border-color: var(--line-2); background: var(--surface-3); font-weight: 600; }
 .inspector-back svg { color: var(--accent); transition: transform 140ms ease; }
@@ -1008,6 +1033,7 @@ input[type="range"]::-moz-range-thumb { border-color: var(--accent); background:
 .preset-popover { left: 0; width: auto; color: var(--ink); border-color: var(--line-2); background: #1b201b; box-shadow: var(--shadow-pop); }
 .preset-popover .text-input { background: var(--surface); }
 .picker-group { color: var(--accent); }
+.preset-popover [role="menu"] > .picker-group:first-child { margin-top: 4px; }
 .preset-popover [role="menuitemradio"] { color: var(--ink-2); }
 .preset-popover [role="menuitemradio"]:hover, .preset-popover [role="menuitemradio"][aria-checked="true"] { background: var(--surface-3); }
 .preset-popover small { color: var(--ink-3); }
@@ -1048,7 +1074,6 @@ input[type="range"]::-moz-range-thumb { border-color: var(--accent); background:
 .tabs-inline { border-color: var(--line); background: var(--surface-3); }
 .tabs-inline button { color: var(--ink-3); }
 .tabs-inline button.active { color: #202711; background: var(--accent); box-shadow: none; }
-.save-box { border-top-color: var(--line); }
 .export-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .export-actions .check { grid-column: 1 / -1; min-height: 22px; }
 .check { color: var(--ink-3); }

@@ -5,6 +5,7 @@ import { Export, type ExportTab } from "./components/Export";
 import { MediaSetup } from "./components/MediaSetup";
 import { Icon } from "./components/Icon";
 import { PresetPicker } from "./components/PresetPicker";
+import { SavePreset } from "./components/SavePreset";
 import { Preview } from "./components/Preview";
 import { StyleControls } from "./components/StyleControls";
 import { Timeline } from "./components/Timeline";
@@ -32,6 +33,7 @@ export default function App() {
   const isVideo = useStore(selectIsVideo);
   const [panel, setPanel] = useState<StudioPanel>(panelFromUrl);
   const [exportTab, setExportTab] = useState<ExportTab>("yaml");
+  const [saveOpen, setSaveOpen] = useState(false);
   const inspector = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -141,10 +143,20 @@ export default function App() {
                   )}
                   {panel === "style" && (
                     <div className="editor-actions">
-                      <PresetPicker />
+                      <PresetPicker onSave={() => setSaveOpen(true)} />
                       <button
                         type="button"
-                        className="btn quiet reset-button"
+                        className={`btn quiet icon-button ${saveOpen ? "active" : ""}`}
+                        onClick={() => setSaveOpen(!saveOpen)}
+                        title="Save as preset"
+                        aria-label="Save as preset"
+                        aria-expanded={saveOpen}
+                      >
+                        <Icon name="save" />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn quiet icon-button"
                         onClick={resetStyle}
                         title="Reset to preset (R)"
                         aria-label="Reset style to preset"
@@ -153,6 +165,7 @@ export default function App() {
                       </button>
                     </div>
                   )}
+                  {panel === "style" && saveOpen && <SavePreset onClose={() => setSaveOpen(false)} />}
                   {panel === "export" && (
                     <button
                       type="button"

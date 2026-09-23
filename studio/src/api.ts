@@ -97,11 +97,11 @@ const post = (url: string, body: unknown, signal?: AbortSignal) =>
 export const api = {
   info: () => fetch('/api/info').then((r) => json<Info>(r)),
   presets: () => fetch('/api/presets').then((r) => json<PresetInfo[]>(r)),
-  savePreset: (name: string, style: Style, directory?: string) =>
+  savePreset: (name: string, style: Style) =>
     fetch(`/api/presets/${encodeURIComponent(name)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ style, directory: directory || null }),
+      body: JSON.stringify({ style }),
     }).then((r) => json<{ name: string; path: string }>(r)),
   deletePreset: (name: string) =>
     fetch(`/api/presets/${encodeURIComponent(name)}`, { method: 'DELETE' }).then((r) => json<{ deleted: string }>(r)),

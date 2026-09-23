@@ -42,7 +42,7 @@ interface State {
   resetStyle: () => void;
   applyPreset: (name: string) => void;
   refreshPresets: () => Promise<void>;
-  savePreset: (name: string, directory?: string) => Promise<string>;
+  savePreset: (name: string, description: string) => Promise<string>;
   deletePreset: (name: string) => Promise<void>;
   selectImage: (id: string) => Promise<void>;
   uploadImage: (file: File) => Promise<void>;
@@ -156,15 +156,15 @@ export const useStore = create<State>((set, get) => {
     set({ style: structuredClone(p.style), activePreset: name, dirty: false });
   },
   refreshPresets: async () => set({ presets: await api.presets() }),
-  savePreset: async (name, directory) => {
-    const { style, presets, activePreset } = get();
-    const source = presets.find((p) => p.name === activePreset);
-    // a derivative of a built-in should not carry the original's description
-    const description = source && source.name !== name && source.description === style.description ? '' : style.description;
-    const res = await api.savePreset(name, { ...style, name, description }, directory);
+  savePreset: async (name, description) => {
+    const res = await api.savePreset(name, { ...get().style, name, description });
     await get().refreshPresets();
-    set({ activePreset: name, dirty: false, style: { ...get().style, name } });
-    get().notify(`Saved ${res.path}`);
+    set({ activePreset: name, dirty: false, style: { ...get().style, name, description } });
+    const info = get().info;
+    // the default folder is on the lookup path, so it loads by name; a --presets-dir folder loads by path
+    get().notify(info && info.presets_dir !== info.user_presets_dir
+      ? `Saved ${res.path}. Load it in Python with vs.Style.load("${res.path}")`
+      : `Saved “${name}”. Load it in Python with vs.Style.preset("${name}")`);
     return res.path;
   },
   deletePreset: async (name) => {

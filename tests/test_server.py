@@ -94,6 +94,8 @@ def test_preset_save_list_delete(client, tmp_path):
     )
     assert client.get("/api/presets/my-look").json()["name"] == "my-look"
     assert client.put("/api/presets/bad name!", json={"style": style}).status_code == 422
+    # built-in names are reserved so a saved preset can never hide one
+    assert client.put("/api/presets/neon", json={"style": style}).status_code == 409
     assert client.delete("/api/presets/my-look").status_code == 200
     assert client.delete("/api/presets/my-look").status_code == 404
     assert client.get("/api/presets/nope").status_code == 404

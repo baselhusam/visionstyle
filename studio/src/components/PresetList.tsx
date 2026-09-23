@@ -1,3 +1,4 @@
+import type { PresetInfo } from '../api';
 import { useStore } from '../store';
 
 const GLYPH: Record<string, string> = {
@@ -15,16 +16,27 @@ const GLYPH: Record<string, string> = {
   confidence: 'conf',
 };
 
+/** Saved presets have no hand-drawn art, so draw theirs from the box shape and line pattern. */
+function glyphFor({ name, origin, style }: PresetInfo): string {
+  if (origin === 'builtin') return GLYPH[name] ?? 'rect';
+  const shape = style.box?.shape;
+  if (shape === 'corners') return 'corner';
+  if (shape === 'reticle') return 'hud';
+  if (shape === 'rounded') return 'round';
+  return style.line?.pattern === 'dashed' || style.line?.pattern === 'dotted' ? 'dash' : 'rect';
+}
+
 // Defined at module scope: a component created inside the render would be a new type every
 // render, remounting every card (and eating clicks) whenever the list re-renders.
-function Item({ name, description, origin }: { name: string; description: string; origin: string }) {
+function Item(preset: PresetInfo) {
+  const { name, description, origin } = preset;
   const active = useStore((s) => s.activePreset === name);
   const apply = useStore((s) => s.applyPreset);
   const remove = useStore((s) => s.deletePreset);
   return (
-    <div className={`preset ${active ? 'active' : ''}`}>
+    <div className={`preset ${origin === 'builtin' ? 'builtin' : ''} ${active ? 'active' : ''}`}>
       <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
-        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${GLYPH[name] ?? 'rect'}`} /></span>
+        <span className={`preset-art art-${name}`} aria-hidden="true"><span className={`glyph ${glyphFor(preset)}`} /></span>
         <span className="preset-text">
           <strong>{name}</strong>
           <small>{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</small>

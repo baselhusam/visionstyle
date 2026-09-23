@@ -144,10 +144,18 @@ visionstyle studio          # opens http://127.0.0.1:8420
   and run detection. The sample video includes tracks; new video tracking requires the YOLO extra.
 * **Design:** start with a preset, then adjust boxes, strokes, labels, effects, and trails beside
   the preview. The **Python package itself** renders every change, matching `annotate()` output.
+  **Save** (next to the Style menu) stores the look as a named preset with an optional description;
+  the Style menu lists your saved presets, and built-ins stay in the Library.
 * **Objects:** filter by class, hide objects, or isolate a track. Scrub video frames or play the
   timeline; use the preview menu to save an annotated frame.
-* **Export:** copy or download YAML or a Python snippet, or **Save as preset** into the default
-  directory or any folder (`visionstyle studio --presets-dir ./styles`).
+* **Export:** copy or download the YAML, a self-contained Python snippet, or a prompt for AI
+  coding tools.
+
+Presets saved in the Studio go to `~/.visionstyle/presets` and load by name anywhere on that machine
+with `vs.Style.preset("my-look")`. To keep them with a project instead, start the Studio from the
+repo with `visionstyle studio --presets-dir ./styles`; each preset becomes `styles/<name>.yaml`,
+which you commit and load with `vs.Style.load("styles/my-look.yaml")` (or set
+`VISIONSTYLE_PRESETS_DIR=./styles` to load them by name).
 
 Keyboard shortcuts: **Space** plays or pauses, **← / →** steps through video frames, **Shift +
 ← / →** jumps ten frames, and **R** resets the style. Focused controls keep their own keyboard behavior.

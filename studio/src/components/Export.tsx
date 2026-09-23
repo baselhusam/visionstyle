@@ -17,8 +17,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
   const activePreset = useStore((s) => s.activePreset);
   const presets = useStore((s) => s.presets);
   const dirty = useStore((s) => s.dirty);
-  const info = useStore((s) => s.info);
-  const savePreset = useStore((s) => s.savePreset);
   const notify = useStore((s) => s.notify);
   const setError = useStore((s) => s.setError);
   const [tab, setTab] = useState<ExportTab>(initialTab);
@@ -27,10 +25,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
   const [fullYaml, setFullYaml] = useState<string | null>(null);
   const [yamlFailed, setYamlFailed] = useState(false);
   const [compact, setCompact] = useState(true);
-  const [name, setName] = useState(activePreset && activePreset !== 'default' ? activePreset : 'my-style');
-  const [dir, setDir] = useState('');
-  const [saving, setSaving] = useState(false);
-  const validName = /^[A-Za-z0-9][A-Za-z0-9_. -]{0,63}$/.test(name.trim());
 
   useEffect(() => {
     let cancelled = false;
@@ -49,10 +43,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
     return () => { cancelled = true; window.clearTimeout(id); };
   }, [style, compact]);
 
-  useEffect(() => {
-    if (activePreset && activePreset !== 'default') setName(activePreset);
-  }, [activePreset]);
-
   const origin = presets.find((p) => p.name === activePreset)?.origin;
   const source: ExportSource | null = compactYaml === null ? null : {
     yaml: compactYaml,
@@ -69,13 +59,13 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
       : tab === 'yaml'
         ? (compact ? source.yaml : fullYaml!)
         : tab === 'python' ? pythonSnippet(source) : aiPrompt(source);
-  const presetName = activePreset && !dirty ? activePreset : name;
+  const fileName = activePreset && !dirty ? activePreset : 'my-style';
 
   const download = () => {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${(presetName || 'my-style').replace(/[^a-zA-Z0-9._-]/g, '-')}${tab === 'prompt' ? '-prompt' : ''}.${current.ext}`;
+    link.download = `${fileName.replace(/[^a-zA-Z0-9._-]/g, '-')}${tab === 'prompt' ? '-prompt' : ''}.${current.ext}`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -88,18 +78,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
       notify(`${what} copied`);
     } catch {
       setError('Clipboard unavailable — select the text and copy manually.');
-    }
-  };
-
-  const save = async () => {
-    if (!validName) return;
-    setSaving(true);
-    try {
-      await savePreset(name.trim(), dir.trim() || undefined);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -142,36 +120,6 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
         </button>
       </div>
 
-      <div className="save-box">
-        <div className="section-label">
-          <span>Save as preset</span>
-        </div>
-        <div className="save-row">
-          <input name="preset-name" autoComplete="off" aria-label="Preset name" aria-invalid={!validName} aria-describedby={validName ? undefined : 'preset-name-help'} maxLength={64} className="text-input mono" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. my-style…" spellCheck={false} />
-          <button type="button" className="btn primary" onClick={save} disabled={saving || !validName}>
-            <Icon name="save" /> {saving ? 'Saving…' : 'Save preset'}
-          </button>
-        </div>
-        {!validName && (
-          <p id="preset-name-help" className="field-error">Start with a letter or number; use up to 64 letters, numbers, spaces, dots, hyphens or underscores.</p>
-        )}
-        <input
-          className="text-input mono small"
-          name="preset-directory"
-          autoComplete="off"
-          aria-label="Preset directory"
-          value={dir}
-          onChange={(e) => setDir(e.target.value)}
-          placeholder={info?.presets_dir ?? '~/.visionstyle/presets'}
-          title="Directory to save into (leave blank for the default presets directory)"
-          spellCheck={false}
-        />
-        {dir.trim() && (
-          <p className="muted small">
-            Set <code className="mono">VISIONSTYLE_PRESETS_DIR</code> to this directory to load it by name.
-          </p>
-        )}
-      </div>
     </section>
   );
 }
