@@ -19,7 +19,8 @@ def changed(a: np.ndarray, b: np.ndarray) -> float:
 
 
 # --------------------------------------------------------------------------- presets render
-@pytest.mark.parametrize("name", [p.name for p in list_presets()])
+# collected before the isolated_presets fixture runs, so filter out the developer's own presets
+@pytest.mark.parametrize("name", [p.name for p in list_presets() if p.origin == "builtin"])
 def test_every_preset_renders(name, frame, detections):
     out = vs.annotate(frame, detections, style=name, synthetic_trails=True)
     assert out.shape == frame.shape and out.dtype == np.uint8
