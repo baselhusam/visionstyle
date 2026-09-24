@@ -1,3 +1,4 @@
+import brandSymbol from "../assets/chroma-press-light-symbol-transparent-96.png";
 import { useStore } from "../store";
 import { Icon } from "./Icon";
 
@@ -19,7 +20,7 @@ export function TopBar({ panel, onPanelChange }: TopBarProps) {
       >
         <img
           className="brand-logo"
-          src="/chroma-press-light-symbol-transparent.png"
+          src={brandSymbol}
           alt=""
           width="32"
           height="32"
