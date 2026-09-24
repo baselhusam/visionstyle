@@ -29,7 +29,6 @@ The site is an application of the **Chroma Press** identity documented in [`docs
   ```
 
 - `docs/images/studio.jpg` is a 2× screenshot of the Studio at 1600 × 1000 with `night.jpg` loaded and the cinematic preset selected.
-- Install copy intentionally says "from source" until the first PyPI release; flip the default tab when `pip install visionstyle` works.
 
 ## Local preview
 

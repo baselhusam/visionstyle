@@ -294,22 +294,23 @@ visionstyle studio          <span class="c"># → http://127.0.0.1:8420</span></
             <p class="eyebrow">05 / Install</p>
             <h2>A few lines<br />from <em>beautiful.</em></h2>
             <p class="section-lead">Core depends on NumPy, OpenCV-headless, Pillow, Pydantic and PyYAML. Add extras for Ultralytics models or the Studio.</p>
-            <a class="text-link" href="https://github.com/baselhusam/visionstyle#install" target="_blank" rel="noreferrer">Read the README <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="https://github.com/baselhusam/visionstyle#install-options" target="_blank" rel="noreferrer">Read the README <span aria-hidden="true">↗</span></a>
           </header>
 
           <div class="install-panel reveal-on-scroll">
             <div class="segment tabs" role="tablist" aria-label="Installation options">
-              <button role="tab" class="active" aria-selected="true" aria-controls="tab-source" id="tabbtn-source" data-tab="source">From source</button>
+              <button role="tab" class="active" aria-selected="true" aria-controls="tab-pypi" id="tabbtn-pypi" data-tab="pypi">PyPI</button>
               <button role="tab" aria-selected="false" aria-controls="tab-extras" id="tabbtn-extras" data-tab="extras" tabindex="-1">Extras</button>
+              <button role="tab" aria-selected="false" aria-controls="tab-source" id="tabbtn-source" data-tab="source" tabindex="-1">From source</button>
               <button role="tab" aria-selected="false" aria-controls="tab-cli" id="tabbtn-cli" data-tab="cli" tabindex="-1">CLI</button>
             </div>
 
-            <div class="tab-panel" id="tab-source" role="tabpanel" aria-labelledby="tabbtn-source">
+            <div class="tab-panel" id="tab-pypi" role="tabpanel" aria-labelledby="tabbtn-pypi">
               <div class="code-panel">
-                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-source" aria-label="Copy install command">copy</button></div>
-<pre class="code" id="code-source"><code>pip install git+https://github.com/baselhusam/visionstyle.git</code></pre>
+                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-pypi" aria-label="Copy install command">copy</button></div>
+<pre class="code" id="code-pypi"><code>pip install visionstyle</code></pre>
               </div>
-              <p class="install-note">Installs the current development release (v0.1.0). <code>pip install visionstyle</code> becomes available with the first PyPI release.</p>
+              <p class="install-note">The latest release from PyPI. Python 3.10 – 3.13.</p>
             </div>
 
             <div class="tab-panel" id="tab-extras" role="tabpanel" aria-labelledby="tabbtn-extras" hidden>
@@ -319,7 +320,14 @@ visionstyle studio          <span class="c"># → http://127.0.0.1:8420</span></
 pip install <span class="s">"visionstyle[studio]"</span>    <span class="c"># + fastapi / uvicorn for the Studio</span>
 pip install <span class="s">"visionstyle[all]"</span></code></pre>
               </div>
-              <p class="install-note">Until the PyPI release, replace <code>visionstyle</code> with the git URL, e.g. <code>"visionstyle[all] @ git+https://github.com/baselhusam/visionstyle.git"</code>.</p>
+            </div>
+
+            <div class="tab-panel" id="tab-source" role="tabpanel" aria-labelledby="tabbtn-source" hidden>
+              <div class="code-panel">
+                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-source" aria-label="Copy install-from-source command">copy</button></div>
+<pre class="code" id="code-source"><code>pip install git+https://github.com/baselhusam/visionstyle.git</code></pre>
+              </div>
+              <p class="install-note">The unreleased development version from <code>main</code>.</p>
             </div>
 
             <div class="tab-panel" id="tab-cli" role="tabpanel" aria-labelledby="tabbtn-cli" hidden>
