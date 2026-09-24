@@ -83,6 +83,7 @@ ignore = ["RUF012", "B008"]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["T20", "E501"]
 "examples/*" = ["T20"]
+"docs/*" = ["T20"]
 "src/visionstyle/cli.py" = ["T20"]
 
 [tool.mypy]

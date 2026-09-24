@@ -22,7 +22,7 @@
 <p align="center">
   <a href="https://baselhusam.github.io/visionstyle/"><b>Website</b></a> ·
   <a href="https://github.com/baselhusam/visionstyle#quickstart">Quickstart</a> ·
-  <a href="https://github.com/baselhusam/visionstyle#presets">Presets</a> ·
+  <a href="https://github.com/baselhusam/visionstyle#what-it-can-draw">Styles</a> ·
   <a href="https://github.com/baselhusam/visionstyle#studio">Studio</a> ·
   <a href="https://github.com/baselhusam/visionstyle#python-api">Python API</a> ·
   <a href="https://github.com/baselhusam/visionstyle#cli">CLI</a> ·
@@ -82,11 +82,19 @@ Python 3.10 – 3.13.
 - **A Studio to design in.** Tune a style visually on your own image or video. The Python package
   renders every preview, so what you see is exactly what `annotate()` produces.
 
-## Presets
+## What it can draw
 
-Every preset is a plain YAML file you can copy and edit.
+Nine looks, each built to show off a different part of `Style`: box shapes, line patterns, fills,
+label treatments, effects and trails. Every tile is rendered by the package itself, and the style
+behind each one is in [`docs/showcase.py`](https://github.com/baselhusam/visionstyle/blob/main/docs/showcase.py)
+if you want to borrow it.
 
-<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg" alt="The twelve built-in presets rendered on the same night street in Osaka" width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/showcase.jpg" alt="Nine annotation styles in a 3 by 3 grid: corner brackets with center marks, a reticle HUD with hatch fill, rounded boxes with gradient fill and glow, multicolor dashed outlines, frosted glass, neon gradient outlines, tracking trails, a spotlight that dims the background, and confidence-colored boxes with vertical tags" width="100%"></p>
+
+### Presets
+
+Twelve ready-made looks to start from. Each one is a plain YAML file you can copy and edit
+([see all twelve on the same scene](https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg)).
 
 | Preset | Look | Preset | Look |
 |---|---|---|---|
