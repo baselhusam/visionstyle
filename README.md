@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-chroma-press-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="docs/images/hero-chroma-press-light.png">
-    <img src="docs/images/hero-chroma-press-light.png" alt="visionstyle — expressive computer-vision styling" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/hero-chroma-press-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/hero-chroma-press-light.png">
+    <img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/hero-chroma-press-light.png" alt="visionstyle — expressive computer-vision styling" width="100%">
   </picture>
 </p>
 
@@ -25,7 +25,7 @@ frame = vs.annotate(frame, dets, style="cinematic")
 
 **[Explore visionstyle on GitHub Pages →](https://baselhusam.github.io/visionstyle/)**
 
-The site deploys through GitHub Actions. Its static source and update notes live in [`site/README.md`](site/README.md).
+The site deploys through GitHub Actions. Its static source and update notes live in [`site/README.md`](https://github.com/baselhusam/visionstyle/blob/main/site/README.md).
 
 ---
 
@@ -42,7 +42,7 @@ pip install "visionstyle[all]"
 
 Twelve built-in looks. Every one is a plain YAML file you can copy and edit.
 
-<p align="center"><img src="docs/images/gallery.jpg" alt="Gallery of the built-in presets" width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg" alt="Gallery of the built-in presets" width="100%"></p>
 
 | Preset | Look |
 |---|---|
@@ -138,7 +138,7 @@ pip install "visionstyle[studio,yolo]"
 visionstyle studio          # opens http://127.0.0.1:8420
 ```
 
-<p align="center"><img src="docs/images/studio.jpg" alt="The visionstyle Studio" width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/studio.jpg" alt="The visionstyle Studio" width="100%"></p>
 
 * **Source:** choose a bundled scene or upload an image or video, set the confidence threshold,
   and run detection. The sample video includes tracks; new video tracking requires the YOLO extra.
@@ -194,10 +194,13 @@ uv run visionstyle schema -o studio/schema.json && (cd studio && npm run gen:typ
 Releases: bump `__version__` in `src/visionstyle/__init__.py`, update `CHANGELOG.md`, tag `vX.Y.Z`
 and push. `release.yml` builds the frontend + wheel, publishes to PyPI via trusted publishing (register
 the `pypi` environment / publisher once on pypi.org) and creates a GitHub release.
+For a dry run first, start the `TestPyPI` workflow from the Actions tab: it publishes the current
+commit as `X.Y.Z.devN` to test.pypi.org (environment `testpypi`), installs it into a clean venv and
+smoke-tests the CLI and the Studio.
 
 ## Credits
 
-Sample photos: see [`src/visionstyle/assets/samples/CREDITS.md`](src/visionstyle/assets/samples/CREDITS.md).
+Sample photos: see [`src/visionstyle/assets/samples/CREDITS.md`](https://github.com/baselhusam/visionstyle/blob/main/src/visionstyle/assets/samples/CREDITS.md).
 Fonts: [Inter](https://rsms.me/inter/) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/), both under the SIL Open Font License.
 
 MIT © Basel Mather

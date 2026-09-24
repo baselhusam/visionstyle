@@ -15,7 +15,6 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -23,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Image Recognition",
   "Topic :: Multimedia :: Graphics",
+  "Typing :: Typed",
 ]
 dependencies = [
   "numpy>=1.24",
@@ -43,7 +43,9 @@ visionstyle = "visionstyle.cli:main"
 [project.urls]
 Homepage = "https://github.com/baselhusam/visionstyle"
 Repository = "https://github.com/baselhusam/visionstyle"
+Documentation = "https://baselhusam.github.io/visionstyle/"
 Issues = "https://github.com/baselhusam/visionstyle/issues"
+Changelog = "https://github.com/baselhusam/visionstyle/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
@@ -67,7 +69,7 @@ artifacts = ["src/visionstyle/studio/static/**"]
 packages = ["src/visionstyle"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/visionstyle", "README.md", "LICENSE", "CHANGELOG.md"]
+include = ["/src/visionstyle", "/README.md", "/LICENSE", "/CHANGELOG.md"]
 
 [tool.ruff]
 line-length = 100
