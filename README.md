@@ -19,6 +19,7 @@ dets = vs.Detections(xyxy=boxes, class_id=classes, confidence=scores, track_id=i
 frame = vs.annotate(frame, dets, style="cinematic")
 ```
 
+[![PyPI](https://img.shields.io/pypi/v/visionstyle)](https://pypi.org/project/visionstyle/)
 [![CI](https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml/badge.svg)](https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
