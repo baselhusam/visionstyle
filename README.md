@@ -194,9 +194,6 @@ uv run visionstyle schema -o studio/schema.json && (cd studio && npm run gen:typ
 Releases: bump `__version__` in `src/visionstyle/__init__.py`, update `CHANGELOG.md`, tag `vX.Y.Z`
 and push. `release.yml` builds the frontend + wheel, publishes to PyPI via trusted publishing (register
 the `pypi` environment / publisher once on pypi.org) and creates a GitHub release.
-For a dry run first, start the `TestPyPI` workflow from the Actions tab: it publishes the current
-commit as `X.Y.Z.devN` to test.pypi.org (environment `testpypi`), installs it into a clean venv and
-smoke-tests the CLI and the Studio.
 
 ## Credits
 
