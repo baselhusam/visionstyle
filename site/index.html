@@ -29,6 +29,7 @@
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+    <p class="sr-only" aria-live="polite" data-announcer></p>
 
     <header class="topbar" data-topbar>
       <div class="topbar-inner">
@@ -43,10 +44,29 @@
           <a href="#install">Install</a>
         </nav>
         <div class="topbar-actions">
-          <span class="status" aria-label="Version 0.1.0, MIT licensed"><i></i>v0.1.0 · MIT</span>
-          <a class="btn btn-ink" href="https://github.com/baselhusam/visionstyle" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          <a class="status" href="https://pypi.org/project/visionstyle/" target="_blank" rel="noreferrer" aria-label="visionstyle 0.1.0 on PyPI, MIT licensed"><i></i>v0.1.0 · MIT</a>
+          <a class="btn btn-ink" href="https://github.com/baselhusam/visionstyle" target="_blank" rel="noreferrer">
+            <svg class="gh" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z" /></svg>
+            <span class="gh-label">GitHub</span>
+          </a>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open section menu" data-menu><i></i><i></i></button>
         </div>
       </div>
+      <nav class="sheet" id="sheet" aria-label="Sections" data-sheet hidden>
+        <div class="sheet-inner">
+          <a href="#idea"><span>01</span>Idea</a>
+          <a href="#presets"><span>02</span>Presets</a>
+          <a href="#configure"><span>03</span>Configure</a>
+          <a href="#studio"><span>04</span>Studio</a>
+          <a href="#install"><span>05</span>Install</a>
+          <div class="sheet-foot">
+            <a href="https://pypi.org/project/visionstyle/" target="_blank" rel="noreferrer">PyPI <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/baselhusam/visionstyle/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">Changelog <span aria-hidden="true">↗</span></a>
+            <a href="docs/brand-guidelines.html">Brand <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </nav>
+      <div class="topbar-progress" aria-hidden="true"><i></i></div>
     </header>
 
     <main id="main">
@@ -70,8 +90,15 @@
               tuned live in the Studio, saved as YAML, rendered with one call.
             </p>
             <div class="hero-actions reveal d3">
-              <a class="btn btn-primary" href="#install">Install visionstyle <span aria-hidden="true">↓</span></a>
-              <a class="btn btn-ghost" href="#studio">Meet the Studio <span aria-hidden="true">→</span></a>
+              <a class="btn btn-primary" href="#install">Get started <span aria-hidden="true">↓</span></a>
+              <button class="cmd" type="button" data-copy-text="pip install visionstyle" aria-label="Copy the install command: pip install visionstyle">
+                <span class="cmd-prompt" aria-hidden="true">$</span>
+                <code>pip install visionstyle</code>
+                <span class="cmd-icon" aria-hidden="true">
+                  <svg class="i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5" /></svg>
+                  <svg class="i-done" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7" /></svg>
+                </span>
+              </button>
             </div>
             <ul class="facts reveal d4" aria-label="At a glance">
               <li><b>12</b><span>built-in presets</span></li>
@@ -85,14 +112,19 @@
             <div class="board-bar">
               <img class="board-brand" src="images/visionstyle-lockup-dark.png" alt="" width="1774" height="887" aria-hidden="true" />
               <span class="board-status"><i class="live"></i>live preview · night.jpg · yolo11n.pt</span>
-              <div class="segment" role="tablist" aria-label="Hero preset">
-                <button role="tab" aria-selected="true" class="active" data-hero-preset="cinematic">Cinematic</button>
-                <button role="tab" aria-selected="false" data-hero-preset="neon">Neon</button>
+              <div class="segment" role="group" aria-label="Hero preset">
+                <button type="button" aria-pressed="true" class="active" data-hero-preset="cinematic">Cinematic</button>
+                <button type="button" aria-pressed="false" data-hero-preset="neon">Neon</button>
               </div>
             </div>
-            <div class="board-canvas">
+            <div class="board-canvas compare" data-compare>
               <img class="hero-frame is-on" src="images/hero-cinematic.jpg" alt="A rainy Manhattan street at night annotated with the cinematic preset: rounded amber frames, pill labels and glow around pedestrians, a bus and cars." width="1600" height="1057" data-frame="cinematic" />
               <img class="hero-frame" src="images/night-neon.jpg" alt="The same scene annotated with the neon preset: glowing cyan and lime outlines." width="1600" height="1057" data-frame="neon" loading="lazy" />
+              <div class="compare-raw" aria-hidden="true"><img src="images/night-raw.jpg" alt="" width="1600" height="1057" /></div>
+              <span class="compare-tag is-raw" aria-hidden="true">raw frame</span>
+              <span class="compare-tag is-styled" aria-hidden="true" data-hero-tag>cinematic</span>
+              <div class="compare-handle" aria-hidden="true"><i><svg viewBox="0 0 20 12"><path d="M6 1 1 6l5 5M14 1l5 5-5 5" /></svg></i></div>
+              <input class="compare-range" type="range" min="0" max="100" step="1" value="50" aria-label="Compare the raw frame with the styled render" aria-valuetext="50% raw frame" data-compare-range />
               <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i><i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
               <div class="legend" aria-hidden="true">
                 <span class="chip" style="--chip:#f2b04a">person · 0.77</span>
@@ -102,7 +134,7 @@
             </div>
             <figcaption class="board-foot">
               <code data-hero-code>vs.annotate(frame, dets, style="cinematic")</code>
-              <span>night.jpg · 1600 × 1057</span>
+              <span class="board-hint"><span aria-hidden="true">↔</span> drag to compare</span>
             </figcaption>
           </figure>
         </div>
@@ -119,27 +151,31 @@
             <p class="section-lead">Most pipelines stop at a rectangle. visionstyle starts there — then gives you a complete, composable system for shape, label, colour, motion, texture and tracking, all described by one object.</p>
           </header>
 
-          <div class="pillars reveal-on-scroll">
-            <article class="card pillar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" /><rect x="8" y="8" width="8" height="8" /></svg>
+          <div class="pillars">
+            <article class="card pillar reveal-on-scroll" style="--signal: var(--red)">
+              <span class="pillar-index" aria-hidden="true">01</span>
+              <span class="pillar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" /><rect x="8" y="8" width="8" height="8" /></svg></span>
               <p class="small-label">Describe</p>
               <h3>One typed Style</h3>
               <p>Box, stroke, fill, line, label, effects and trail live in a single Pydantic model. Every choice is inspectable, portable, and saves as plain YAML.</p>
             </article>
-            <article class="card pillar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h12M19 6h2M3 12h4M11 12h10M3 18h14M21 18h0" /><circle cx="17" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="19" cy="18" r="2" /></svg>
+            <article class="card pillar reveal-on-scroll" style="--signal: var(--blue)">
+              <span class="pillar-index" aria-hidden="true">02</span>
+              <span class="pillar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h12M19 6h2M3 12h4M11 12h10M3 18h14M21 18h0" /><circle cx="17" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="19" cy="18" r="2" /></svg></span>
               <p class="small-label">Tune</p>
               <h3>By eye, in the Studio</h3>
               <p>Your image, your model, live controls. The preview is rendered by the Python package itself, so what you see is exactly what <code>annotate()</code> produces.</p>
             </article>
-            <article class="card pillar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c4 0 5-9 9-9s5 6 9 6" stroke-dasharray="2.4 2.6" /><circle cx="21" cy="15" r="2" fill="currentColor" stroke="none" /></svg>
+            <article class="card pillar reveal-on-scroll" style="--signal: var(--green)">
+              <span class="pillar-index" aria-hidden="true">03</span>
+              <span class="pillar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c4 0 5-9 9-9s5 6 9 6" stroke-dasharray="2.4 2.6" /><circle cx="21" cy="15" r="2" class="solid" /></svg></span>
               <p class="small-label">Track</p>
               <h3>Let it move</h3>
               <p>Keep one <code>Annotator</code> per stream and trails, marching dashes, hue cycles and pulses carry across frames — on video or a live webcam.</p>
             </article>
-            <article class="card pillar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" /><rect x="7" y="7" width="10" height="10" /><path d="M3 12h4M17 12h4M12 3v4M12 17v4" /></svg>
+            <article class="card pillar reveal-on-scroll" style="--signal: var(--yellow)">
+              <span class="pillar-index" aria-hidden="true">04</span>
+              <span class="pillar-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" /><rect x="7" y="7" width="10" height="10" /><path d="M3 12h4M17 12h4M12 3v4M12 17v4" /></svg></span>
               <p class="small-label">Render</p>
               <h3>Any resolution</h3>
               <p>Sizes are reference pixels at ~1080p and scale automatically, so one style looks identical on a webcam frame and a 4K deliverable.</p>
@@ -158,28 +194,28 @@
           </header>
 
           <div class="preset-explorer reveal-on-scroll" data-explorer>
-            <div class="preset-list" role="tablist" aria-label="Built-in presets" aria-orientation="vertical">
-              <button role="tab" class="active" aria-selected="true" data-preset="cinematic"><b>cinematic</b><span>Amber / teal rounded frames, pill labels, soft glow, filmic grade</span></button>
-              <button role="tab" aria-selected="false" data-preset="confidence"><b>confidence</b><span>Stroke and tag colour follow the score</span></button>
-              <button role="tab" aria-selected="false" data-preset="corners"><b>corners</b><span>Thin L-brackets, monospace tag</span></button>
-              <button role="tab" aria-selected="false" data-preset="dashed"><b>dashed</b><span>Dashed perimeter with marching ants</span></button>
-              <button role="tab" aria-selected="false" data-preset="default"><b>default</b><span>Clean rectangle, solid tag</span></button>
-              <button role="tab" aria-selected="false" data-preset="glass"><b>glass</b><span>Frosted-glass fill and label</span></button>
-              <button role="tab" aria-selected="false" data-preset="hud"><b>hud</b><span>Double frame, reticle marks, dotted trails</span></button>
-              <button role="tab" aria-selected="false" data-preset="minimal"><b>minimal</b><span>Hairline outline, bare text</span></button>
-              <button role="tab" aria-selected="false" data-preset="neon"><b>neon</b><span>Glowing hue-cycling gradient outlines</span></button>
-              <button role="tab" aria-selected="false" data-preset="rounded"><b>rounded</b><span>Rounded corners, gradient tint, pill label</span></button>
-              <button role="tab" aria-selected="false" data-preset="spotlight"><b>spotlight</b><span>Dims everything outside the detections</span></button>
-              <button role="tab" aria-selected="false" data-preset="tracking"><b>tracking</b><span>Bold per-track trails, id-first labels</span></button>
+            <div class="preset-list" role="tablist" aria-label="Built-in presets" data-preset-list>
+              <button role="tab" class="active" aria-selected="true" aria-controls="preset-window" data-preset="cinematic"><img src="images/presets/thumbs/cinematic.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>cinematic</b><span>Amber / teal rounded frames, pill labels, soft glow, filmic grade</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="confidence"><img src="images/presets/thumbs/confidence.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>confidence</b><span>Stroke and tag colour follow the score</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="corners"><img src="images/presets/thumbs/corners.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>corners</b><span>Thin L-brackets, monospace tag</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="dashed"><img src="images/presets/thumbs/dashed.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>dashed</b><span>Dashed perimeter with marching ants</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="default"><img src="images/presets/thumbs/default.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>default</b><span>Clean rectangle, solid tag</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="glass"><img src="images/presets/thumbs/glass.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>glass</b><span>Frosted-glass fill and label</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="hud"><img src="images/presets/thumbs/hud.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>hud</b><span>Double frame, reticle marks, dotted trails</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="minimal"><img src="images/presets/thumbs/minimal.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>minimal</b><span>Hairline outline, bare text</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="neon"><img src="images/presets/thumbs/neon.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>neon</b><span>Glowing hue-cycling gradient outlines</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="rounded"><img src="images/presets/thumbs/rounded.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>rounded</b><span>Rounded corners, gradient tint, pill label</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="spotlight"><img src="images/presets/thumbs/spotlight.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>spotlight</b><span>Dims everything outside the detections</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="tracking"><img src="images/presets/thumbs/tracking.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>tracking</b><span>Bold per-track trails, id-first labels</span></span></button>
             </div>
 
             <figure class="board board-night preset-board">
               <div class="board-bar">
                 <span class="board-status"><i class="live"></i>preset / <b data-preset-name>cinematic</b></span>
                 <span class="board-meta">street.jpg · <b data-preset-index>01</b> / 12</span>
-                <button class="autoplay" type="button" data-autoplay aria-pressed="true" title="Toggle auto-advance"><i></i><span>auto</span></button>
+                <button class="autoplay" type="button" data-autoplay aria-pressed="true"><i></i><span>auto-play</span></button>
               </div>
-              <div class="board-canvas preset-window" role="tabpanel" aria-live="polite">
+              <div class="board-canvas preset-window" id="preset-window" role="tabpanel" aria-live="polite" data-preset-window>
                 <img class="preset-frame is-on" src="images/presets/cinematic.jpg" alt="A neon-lit street at night with taxis and pedestrians, rendered with the cinematic preset." width="1400" height="907" data-preset-frame="cinematic" />
                 <img class="preset-frame" data-src="images/presets/confidence.jpg" alt="" width="1400" height="907" data-preset-frame="confidence" />
                 <img class="preset-frame" data-src="images/presets/corners.jpg" alt="" width="1400" height="907" data-preset-frame="corners" />
@@ -193,11 +229,14 @@
                 <img class="preset-frame" data-src="images/presets/spotlight.jpg" alt="" width="1400" height="907" data-preset-frame="spotlight" />
                 <img class="preset-frame" data-src="images/presets/tracking.jpg" alt="" width="1400" height="907" data-preset-frame="tracking" />
                 <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i><i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
+                <button class="step-btn prev" type="button" data-step="-1" aria-label="Previous preset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
+                <button class="step-btn next" type="button" data-step="1" aria-label="Next preset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg></button>
+                <p class="preset-caption" data-preset-desc>Amber / teal rounded frames, pill labels, soft glow, filmic grade</p>
                 <div class="progress" aria-hidden="true"><i data-progress></i></div>
               </div>
               <figcaption class="board-foot">
                 <code data-preset-code>style = vs.Style.preset("cinematic")</code>
-                <button class="copy" type="button" data-copy="[data-preset-code]" aria-label="Copy preset code">copy</button>
+                <button class="copy" type="button" data-copy="[data-preset-code]" aria-label="Copy preset code"><span>copy</span></button>
               </figcaption>
             </figure>
           </div>
@@ -220,9 +259,16 @@
           </header>
 
           <div class="configure-grid">
-            <div class="code-panel reveal-on-scroll">
-              <div class="code-bar"><span>python</span><span class="dots"><i></i><i></i><i></i></span><button class="copy" type="button" data-copy="#api-code" aria-label="Copy Python example">copy</button></div>
-<pre class="code" id="api-code"><code><span class="c"># detections: boxes in pixels, everything else optional</span>
+            <div class="code-panel api-panel reveal-on-scroll">
+              <div class="code-bar">
+                <div class="segment mini" role="tablist" aria-label="Example format" data-tabs>
+                  <button role="tab" class="active" aria-selected="true" aria-controls="api-py" id="tabbtn-api-py">python</button>
+                  <button role="tab" aria-selected="false" aria-controls="api-yaml" id="tabbtn-api-yaml" tabindex="-1">yaml</button>
+                </div>
+                <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <button class="copy" type="button" data-copy="#api-py:not([hidden]) code, #api-yaml:not([hidden]) code" aria-label="Copy the visible example"><span>copy</span></button>
+              </div>
+<pre class="code" id="api-py" role="tabpanel" aria-labelledby="tabbtn-api-py" tabindex="0"><code><span class="c"># detections: boxes in pixels, everything else optional</span>
 dets = vs.Detections(
     xyxy=[[590, 650, 720, 1040], [1060, 660, 1520, 1000]],
     class_name=[<span class="s">"person"</span>, <span class="s">"car"</span>],
@@ -239,17 +285,32 @@ annotator = vs.Annotator(style)   <span class="c"># one per stream</span>
 out = annotator.annotate(frame, dets)
 
 style.save_preset(<span class="s">"my-look"</span>)      <span class="c"># ~/.visionstyle/presets/my-look.yaml</span></code></pre>
+<pre class="code" id="api-yaml" role="tabpanel" aria-labelledby="tabbtn-api-yaml" tabindex="0" hidden><code><span class="c"># src/visionstyle/presets/cinematic.yaml (excerpt)</span>
+<span class="k">name</span>: cinematic
+<span class="k">palette</span>: {colors: cinematic, by: class}
+<span class="k">box</span>: {shape: rounded, corner_radius: <span class="n">10</span>}
+<span class="k">stroke</span>: {thickness: <span class="n">2</span>}
+<span class="k">fill</span>: {enabled: true, opacity: <span class="n">0.1</span>, mode: gradient}
+<span class="k">label</span>:
+  components: [text, confidence]
+  background: pill
+  font_weight: <span class="n">600</span>
+<span class="k">effects</span>:
+  glow: {enabled: true, radius: <span class="n">10</span>, intensity: <span class="n">0.55</span>}
+  vignette: {enabled: true, strength: <span class="n">0.5</span>, radius: <span class="n">0.9</span>}
+  grain: {enabled: true, amount: <span class="n">0.04</span>}
+<span class="k">trail</span>: {enabled: true, length: <span class="n">36</span>, line: ribbon, glow: true}</code></pre>
             </div>
 
             <dl class="matrix reveal-on-scroll">
-              <div><dt>Box</dt><dd><i>rectangle</i><i>rounded</i><i>corners</i><i>reticle</i><i>none</i><i>double line</i><i>center mark</i></dd></div>
-              <div><dt>Stroke</dt><dd><i>thickness</i><i>opacity</i><i>palette</i><i>confidence ramp</i><i>any hex / rgb / name</i></dd></div>
-              <div><dt>Fill</dt><dd><i>solid</i><i>gradient · 5 directions</i><i>hatch</i><i>opacity</i></dd></div>
-              <div><dt>Line</dt><dd><i>solid</i><i>dashed</i><i>dotted</i><i>segments</i><i>perimeter gradient</i><i>march</i><i>hue_cycle</i><i>pulse</i></dd></div>
-              <div><dt>Label</dt><dd><i>text</i><i>confidence</i><i>track_id</i><i>custom template</i><i>9 anchors × in / out</i><i>vertical tags</i><i>Inter · JetBrains Mono · your .ttf</i><i>solid</i><i>pill</i><i>glass</i><i>underline</i></dd></div>
-              <div><dt>Effects</dt><dd><i>glow</i><i>shadow</i><i>frosted glass</i><i>spotlight</i><i>vignette</i><i>film grain</i><i>colour grade</i></dd></div>
-              <div><dt>Tracking</dt><dd><i>trail length</i><i>feet / center / top</i><i>solid</i><i>dotted</i><i>dashed</i><i>ribbon</i><i>fade &amp; taper</i><i>smoothing</i><i>points</i></dd></div>
-              <div><dt>Global</dt><dd><i>palette</i><i>per-class overrides</i><i>confidence threshold</i><i>scale = auto</i><i>fps</i></dd></div>
+              <div style="--signal: var(--blue)"><dt>Box</dt><dd><i>rectangle</i><i>rounded</i><i>corners</i><i>reticle</i><i>none</i><i>double line</i><i>center mark</i></dd></div>
+              <div style="--signal: var(--red)"><dt>Stroke</dt><dd><i>thickness</i><i>opacity</i><i>palette</i><i>confidence ramp</i><i>any hex / rgb / name</i></dd></div>
+              <div style="--signal: var(--yellow)"><dt>Fill</dt><dd><i>solid</i><i>gradient · 5 directions</i><i>hatch</i><i>opacity</i></dd></div>
+              <div style="--signal: var(--pink)"><dt>Line</dt><dd><i>solid</i><i>dashed</i><i>dotted</i><i>segments</i><i>perimeter gradient</i><i>march</i><i>hue_cycle</i><i>pulse</i></dd></div>
+              <div style="--signal: var(--green)"><dt>Label</dt><dd><i>text</i><i>confidence</i><i>track_id</i><i>custom template</i><i>9 anchors × in / out</i><i>vertical tags</i><i>Inter · JetBrains Mono · your .ttf</i><i>solid</i><i>pill</i><i>glass</i><i>underline</i></dd></div>
+              <div style="--signal: var(--blue)"><dt>Effects</dt><dd><i>glow</i><i>shadow</i><i>frosted glass</i><i>spotlight</i><i>vignette</i><i>film grain</i><i>colour grade</i></dd></div>
+              <div style="--signal: var(--red)"><dt>Tracking</dt><dd><i>trail length</i><i>feet / center / top</i><i>solid</i><i>dotted</i><i>dashed</i><i>ribbon</i><i>fade &amp; taper</i><i>smoothing</i><i>points</i></dd></div>
+              <div style="--signal: var(--yellow)"><dt>Global</dt><dd><i>palette</i><i>per-class overrides</i><i>confidence threshold</i><i>scale = auto</i><i>fps</i></dd></div>
             </dl>
           </div>
 
@@ -273,16 +334,19 @@ style.save_preset(<span class="s">"my-look"</span>)      <span class="c"># ~/.vi
               <li><span class="small-label">Export</span><p>YAML with only changed values or everything, a clean Python snippet, or <b>Save as preset</b> straight into your presets directory.</p></li>
             </ul>
             <div class="code-panel compact">
-              <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#studio-code" aria-label="Copy Studio command">copy</button></div>
-<pre class="code" id="studio-code"><code>pip install <span class="s">"visionstyle[studio,yolo]"</span>
-visionstyle studio          <span class="c"># → http://127.0.0.1:8420</span></code></pre>
+              <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#studio-code" aria-label="Copy Studio command"><span>copy</span></button></div>
+<pre class="code" id="studio-code" tabindex="0"><code>pip install <span class="s">"visionstyle[studio,yolo]"</span>
+visionstyle studio   <span class="c"># → http://127.0.0.1:8420</span></code></pre>
             </div>
             <a class="btn btn-saffron" href="https://github.com/baselhusam/visionstyle#studio" target="_blank" rel="noreferrer">Studio documentation <span aria-hidden="true">↗</span></a>
           </div>
 
           <figure class="studio-shell reveal-on-scroll">
             <div class="studio-bar"><i></i><i></i><i></i><span>visionstyle studio — 127.0.0.1:8420</span><b><i class="live"></i>server live</b></div>
-            <img src="images/studio.jpg" alt="The visionstyle Studio: a live annotated preview of the tracked street-video sample with its timeline on the left, the style library and design sections on the right." width="2400" height="1500" loading="lazy" />
+            <button class="zoom" type="button" aria-haspopup="dialog" aria-label="Enlarge the Studio screenshot" data-lightbox-open>
+              <img src="images/studio.jpg" alt="The visionstyle Studio: a live annotated preview of the tracked street-video sample with its timeline on the left, the style library and design sections on the right." width="2400" height="1500" loading="lazy" />
+              <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9" /></svg>enlarge</span>
+            </button>
           </figure>
         </div>
       </section>
@@ -290,57 +354,80 @@ visionstyle studio          <span class="c"># → http://127.0.0.1:8420</span></
       <!-- ============================== INSTALL ============================== -->
       <section class="section install" id="install">
         <div class="shell install-grid">
-          <header class="reveal-on-scroll">
+          <header class="install-head reveal-on-scroll">
             <p class="eyebrow">05 / Install</p>
             <h2>A few lines<br />from <em>beautiful.</em></h2>
             <p class="section-lead">Core depends on NumPy, OpenCV-headless, Pillow, Pydantic and PyYAML. Add extras for Ultralytics models or the Studio.</p>
-            <a class="text-link" href="https://github.com/baselhusam/visionstyle#install-options" target="_blank" rel="noreferrer">Read the README <span aria-hidden="true">↗</span></a>
+            <div class="install-links">
+              <a class="text-link" href="https://github.com/baselhusam/visionstyle#install-options" target="_blank" rel="noreferrer">Read the README <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://pypi.org/project/visionstyle/" target="_blank" rel="noreferrer">visionstyle on PyPI <span aria-hidden="true">↗</span></a>
+            </div>
           </header>
 
-          <div class="install-panel reveal-on-scroll">
-            <div class="segment tabs" role="tablist" aria-label="Installation options">
-              <button role="tab" class="active" aria-selected="true" aria-controls="tab-pypi" id="tabbtn-pypi" data-tab="pypi">PyPI</button>
-              <button role="tab" aria-selected="false" aria-controls="tab-extras" id="tabbtn-extras" data-tab="extras" tabindex="-1">Extras</button>
-              <button role="tab" aria-selected="false" aria-controls="tab-source" id="tabbtn-source" data-tab="source" tabindex="-1">From source</button>
-              <button role="tab" aria-selected="false" aria-controls="tab-cli" id="tabbtn-cli" data-tab="cli" tabindex="-1">CLI</button>
-            </div>
-
-            <div class="tab-panel" id="tab-pypi" role="tabpanel" aria-labelledby="tabbtn-pypi">
-              <div class="code-panel">
-                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-pypi" aria-label="Copy install command">copy</button></div>
-<pre class="code" id="code-pypi"><code>pip install visionstyle</code></pre>
+          <ol class="install-steps">
+            <li class="install-step reveal-on-scroll">
+              <p class="step-label"><b>1</b>Install the package</p>
+              <div class="segment tabs" role="tablist" aria-label="Installation options" data-tabs>
+                <button role="tab" class="active" aria-selected="true" aria-controls="tab-pypi" id="tabbtn-pypi">PyPI</button>
+                <button role="tab" aria-selected="false" aria-controls="tab-extras" id="tabbtn-extras" tabindex="-1">Extras</button>
+                <button role="tab" aria-selected="false" aria-controls="tab-source" id="tabbtn-source" tabindex="-1">Source</button>
+                <button role="tab" aria-selected="false" aria-controls="tab-cli" id="tabbtn-cli" tabindex="-1">CLI</button>
               </div>
-              <p class="install-note">The latest release from PyPI. Python 3.10 – 3.13.</p>
-            </div>
 
-            <div class="tab-panel" id="tab-extras" role="tabpanel" aria-labelledby="tabbtn-extras" hidden>
-              <div class="code-panel">
-                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-extras" aria-label="Copy extras commands">copy</button></div>
-<pre class="code" id="code-extras"><code>pip install <span class="s">"visionstyle[yolo]"</span>      <span class="c"># + ultralytics for demos / CLI models</span>
+              <div class="tab-panel" id="tab-pypi" role="tabpanel" aria-labelledby="tabbtn-pypi">
+                <div class="code-panel">
+                  <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-pypi" aria-label="Copy install command"><span>copy</span></button></div>
+<pre class="code" id="code-pypi" tabindex="0"><code>pip install visionstyle</code></pre>
+                </div>
+                <p class="install-note">The latest release from PyPI. Python 3.10 – 3.13.</p>
+              </div>
+
+              <div class="tab-panel" id="tab-extras" role="tabpanel" aria-labelledby="tabbtn-extras" hidden>
+                <div class="code-panel">
+                  <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-extras" aria-label="Copy extras commands"><span>copy</span></button></div>
+<pre class="code" id="code-extras" tabindex="0"><code>pip install <span class="s">"visionstyle[yolo]"</span>      <span class="c"># + ultralytics for demos / CLI models</span>
 pip install <span class="s">"visionstyle[studio]"</span>    <span class="c"># + fastapi / uvicorn for the Studio</span>
 pip install <span class="s">"visionstyle[all]"</span></code></pre>
+                </div>
               </div>
-            </div>
 
-            <div class="tab-panel" id="tab-source" role="tabpanel" aria-labelledby="tabbtn-source" hidden>
-              <div class="code-panel">
-                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-source" aria-label="Copy install-from-source command">copy</button></div>
-<pre class="code" id="code-source"><code>pip install git+https://github.com/baselhusam/visionstyle.git</code></pre>
+              <div class="tab-panel" id="tab-source" role="tabpanel" aria-labelledby="tabbtn-source" hidden>
+                <div class="code-panel">
+                  <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-source" aria-label="Copy install-from-source command"><span>copy</span></button></div>
+<pre class="code" id="code-source" tabindex="0"><code>pip install git+https://github.com/baselhusam/visionstyle.git</code></pre>
+                </div>
+                <p class="install-note">The unreleased development version from <code>main</code>.</p>
               </div>
-              <p class="install-note">The unreleased development version from <code>main</code>.</p>
-            </div>
 
-            <div class="tab-panel" id="tab-cli" role="tabpanel" aria-labelledby="tabbtn-cli" hidden>
-              <div class="code-panel">
-                <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-cli" aria-label="Copy CLI examples">copy</button></div>
-<pre class="code" id="code-cli"><code>visionstyle render photo.jpg -s neon --model yolo11n.pt -o out.jpg
+              <div class="tab-panel" id="tab-cli" role="tabpanel" aria-labelledby="tabbtn-cli" hidden>
+                <div class="code-panel">
+                  <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-cli" aria-label="Copy CLI examples"><span>copy</span></button></div>
+<pre class="code" id="code-cli" tabindex="0"><code>visionstyle render photo.jpg -s neon --model yolo11n.pt -o out.jpg
 visionstyle render clip.mp4  -s tracking --model yolo11n.pt --track -o out.mp4
 visionstyle render 0         -s hud --model yolo11n.pt --track -o webcam.mp4
 visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
+                </div>
+                <p class="install-note">Render stills, videos or a webcam index; <code>gallery</code> renders every preset at once.</p>
               </div>
-              <p class="install-note">Render stills, videos or a webcam index; <code>gallery</code> renders every preset at once.</p>
-            </div>
-          </div>
+            </li>
+
+            <li class="install-step reveal-on-scroll">
+              <p class="step-label"><b>2</b>Style your first frame</p>
+              <div class="code-panel">
+                <div class="code-bar"><span>python</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><button class="copy" type="button" data-copy="#code-first" aria-label="Copy the first-frame example"><span>copy</span></button></div>
+<pre class="code" id="code-first" tabindex="0"><code><span class="k">import</span> cv2
+<span class="k">import</span> visionstyle <span class="k">as</span> vs
+<span class="k">from</span> ultralytics <span class="k">import</span> YOLO
+
+frame = cv2.imread(<span class="s">"street.jpg"</span>)
+result = YOLO(<span class="s">"yolo11n.pt"</span>)(frame)[<span class="n">0</span>]
+
+dets = vs.Detections.from_ultralytics(result)
+cv2.imwrite(<span class="s">"out.jpg"</span>, vs.annotate(frame, dets, style=<span class="s">"cinematic"</span>))</code></pre>
+              </div>
+              <p class="install-note">Needs the <code>[yolo]</code> extra. No model handy? <code>visionstyle render sample -s neon -o out.jpg</code> renders a bundled photo with its shipped detections.</p>
+            </li>
+          </ol>
         </div>
       </section>
     </main>
@@ -349,12 +436,13 @@ visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
       <div class="accent-rail thin" role="presentation"></div>
       <div class="shell footer-grid">
         <div class="footer-brand">
-          <a class="lockup" href="#top" aria-label="Back to top"><img src="images/visionstyle-lockup.png" alt="visionstyle" width="1774" height="887" /></a>
+          <a class="lockup" href="#top" aria-label="Back to top"><img src="images/visionstyle-lockup.png" alt="visionstyle" width="1774" height="887" loading="lazy" /></a>
           <p>Object detection,<br />with a point of view.</p>
         </div>
         <nav class="footer-links" aria-label="Project">
           <p class="small-label">Project</p>
           <a href="https://github.com/baselhusam/visionstyle" target="_blank" rel="noreferrer">GitHub repository</a>
+          <a href="https://pypi.org/project/visionstyle/" target="_blank" rel="noreferrer">PyPI package</a>
           <a href="https://github.com/baselhusam/visionstyle#python-api" target="_blank" rel="noreferrer">Python API</a>
           <a href="https://github.com/baselhusam/visionstyle/tree/main/src/visionstyle/presets" target="_blank" rel="noreferrer">Preset YAML</a>
           <a href="https://github.com/baselhusam/visionstyle/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">Changelog</a>
@@ -368,11 +456,19 @@ visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
         <div class="footer-meta">
           <p class="small-label">Colophon</p>
           <p>Set in Georgia, Inter and JetBrains Mono — the same fonts the package ships. Type licensed under the SIL OFL.</p>
-          <p>MIT © Basel Mather</p>
+          <p>MIT © <a class="author-link" href="https://baselhusam.com" target="_blank" rel="noreferrer">Basel Mather <span aria-hidden="true">↗</span></a></p>
         </div>
       </div>
       <div class="shell footer-line"><span>visionstyle · v0.1.0 · MIT</span><a href="#top">Back to top <span aria-hidden="true">↑</span></a></div>
     </footer>
+
+    <dialog class="lightbox" aria-label="Studio screenshot" data-lightbox>
+      <div class="lightbox-bar">
+        <span>visionstyle studio — city-walkthrough.mp4 · cinematic</span>
+        <form method="dialog"><button class="lightbox-close" type="submit" aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 3.5 9 9m0-9-9 9" /></svg></button></form>
+      </div>
+      <img src="images/studio.jpg" alt="The visionstyle Studio at full size." width="2400" height="1500" loading="lazy" />
+    </dialog>
 
     <script src="script.js" defer></script>
   </body>

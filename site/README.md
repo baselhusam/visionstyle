@@ -14,9 +14,11 @@ The site is an application of the **Chroma Press** identity documented in [`docs
 
 ## Interactions (`script.js`)
 
-- Hero board switches between the real `cinematic` and `neon` renders.
-- The preset explorer crossfades between `docs/images/presets/<name>.jpg` — one genuine render per preset, produced with `visionstyle render` on the bundled `street.jpg` (Osaka taxi alley) and its shipped detections; the hero uses `night.jpg` (rainy Manhattan). Frames are fetched on demand (current + next). It auto-advances until the visitor interacts, pauses on hover / when the tab is hidden, and is keyboard navigable (arrows, Home, End).
-- Install tabs, copy buttons, scroll-spy navigation and scroll reveals. Everything degrades gracefully with `prefers-reduced-motion`.
+- **Hero board** — a before / after slider over the untouched `night.jpg` (rainy Manhattan) and its real `cinematic` / `neon` renders. Drag anywhere on the frame with a mouse, drag horizontally on touch (vertical swipes still scroll the page), or focus it and use the arrow keys. On load the style wipes in over the raw frame and settles at the midpoint.
+- **Preset explorer** — crossfades between `docs/images/presets/<name>.jpg`: one genuine render per preset, produced with `visionstyle render` on the bundled `street.jpg` (Osaka taxi alley) and its shipped detections. The picker shows a thumbnail per preset (`docs/images/presets/thumbs/`); below 980 px it becomes a swipeable film strip. Frames are fetched on demand (current + next). It auto-advances while on screen until the visitor interacts, pauses on hover / when the tab is hidden, and is navigable with the arrows on the frame, a swipe, or the keyboard (arrows, Home, End).
+- **Navigation** — scroll-spy pill nav on desktop, a section sheet behind the menu button below 980 px (closes on Escape, outside tap or navigation), and a reading-progress colour rail under the top bar.
+- **Code** — Python / YAML tabs on the Configure example, install tabs, copy buttons (the hero command copies on click) with an `aria-live` confirmation, and a lightbox for the Studio screenshot.
+- Everything degrades gracefully with `prefers-reduced-motion`.
 
 ## Updating the site
 
@@ -26,6 +28,17 @@ The site is an application of the **Chroma Press** identity documented in [`docs
 
   ```bash
   uv run visionstyle render src/visionstyle/assets/samples/street.jpg -s neon -d src/visionstyle/assets/samples/street.detections.json -o /tmp/neon.png
+  ```
+
+- The picker thumbnails are 288 × 180 crops of those renders (the people, umbrellas and taxi). Regenerate them after re-rendering the presets:
+
+  ```bash
+  uv run --with pillow python -c "
+  from PIL import Image; import glob, os
+  for p in glob.glob('docs/images/presets/*.jpg'):
+      im = Image.open(p); s = im.width / 1600
+      im.crop(tuple(round(v * s) for v in (360, 330, 1360, 955))).resize((288, 180), Image.LANCZOS).save(
+          'docs/images/presets/thumbs/' + os.path.basename(p), quality=78, optimize=True, progressive=True)"
   ```
 
 - `docs/images/studio.jpg` is a 1.5× screenshot (2400 × 1500) of the Studio at 1600 × 1000: the `city-walkthrough.mp4` sample at frame 91 with the cinematic preset and the Design library open. Still images get synthetic preview trails in the Studio, so the video sample shows real tracks instead.
