@@ -6,64 +6,144 @@
   </picture>
 </p>
 
-# visionstyle
+<p align="center">
+  <b>Beautiful, fully configurable bounding boxes for object detection.</b><br>
+  Boxes, labels, fills, glow, glass, film grain and tracking trails, described by one <code>Style</code>,<br>
+  tuned live in the Studio, saved as YAML and rendered with one call.
+</p>
 
-**Beautiful, fully configurable bounding boxes for object detection.**
-Boxes, labels, fills, glow, glass, film grain and tracking trails — described by one `Style`,
-tuned live in the Studio, saved as YAML, rendered with one call.
+<p align="center">
+  <a href="https://pypi.org/project/visionstyle/"><img src="https://img.shields.io/pypi/v/visionstyle" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/visionstyle/"><img src="https://img.shields.io/pypi/pyversions/visionstyle" alt="Python versions"></a>
+  <a href="https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml"><img src="https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/baselhusam/visionstyle/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/visionstyle" alt="License"></a>
+</p>
 
-```python
-import visionstyle as vs
+<p align="center">
+  <a href="https://baselhusam.github.io/visionstyle/"><b>Website</b></a> ·
+  <a href="https://github.com/baselhusam/visionstyle#quickstart">Quickstart</a> ·
+  <a href="https://github.com/baselhusam/visionstyle#presets">Presets</a> ·
+  <a href="https://github.com/baselhusam/visionstyle#studio">Studio</a> ·
+  <a href="https://github.com/baselhusam/visionstyle#python-api">Python API</a> ·
+  <a href="https://github.com/baselhusam/visionstyle#cli">CLI</a> ·
+  <a href="https://github.com/baselhusam/visionstyle/blob/main/CHANGELOG.md">Changelog</a>
+</p>
 
-dets = vs.Detections(xyxy=boxes, class_id=classes, confidence=scores, track_id=ids, names=model.names)
-frame = vs.annotate(frame, dets, style="cinematic")
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/hero-cinematic.jpg" alt="A rainy Manhattan street at night annotated with the cinematic preset: amber and teal rounded frames with pill labels around pedestrians, a bus and cars" width="100%">
+  <br><sub>YOLO11n detections on a rainy Manhattan crossing, rendered with <code>style="cinematic"</code>.</sub>
+</p>
 
-[![PyPI](https://img.shields.io/pypi/v/visionstyle)](https://pypi.org/project/visionstyle/)
-[![CI](https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml/badge.svg)](https://github.com/baselhusam/visionstyle/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-**[Explore visionstyle on GitHub Pages →](https://baselhusam.github.io/visionstyle/)**
-
-The site deploys through GitHub Actions. Its static source and update notes live in [`site/README.md`](https://github.com/baselhusam/visionstyle/blob/main/site/README.md).
-
----
-
-## Install
+## Quickstart
 
 ```bash
-pip install visionstyle              # core: numpy, opencv-headless, pillow, pydantic, pyyaml
-pip install "visionstyle[yolo]"      # + ultralytics for the demos / CLI model support
-pip install "visionstyle[studio]"    # + fastapi/uvicorn for the Studio web app
-pip install "visionstyle[all]"
+pip install "visionstyle[yolo]"
 ```
+
+```python
+import cv2
+import visionstyle as vs
+from ultralytics import YOLO
+
+frame = cv2.imread("street.jpg")
+result = YOLO("yolo11n.pt")(frame)[0]
+
+dets = vs.Detections.from_ultralytics(result)
+cv2.imwrite("out.jpg", vs.annotate(frame, dets, style="cinematic"))
+```
+
+No model handy? `visionstyle render sample -s neon -o out.jpg` renders a bundled photo with its
+shipped detections.
+
+visionstyle only draws, so any detector works: pass boxes as lists, NumPy arrays or torch tensors
+(see [Python API](https://github.com/baselhusam/visionstyle#python-api)).
+
+### Install options
+
+| Command | Adds |
+|---|---|
+| `pip install visionstyle` | The renderer: NumPy, OpenCV (headless), Pillow, pydantic, PyYAML |
+| `pip install "visionstyle[yolo]"` | Ultralytics YOLO for `from_ultralytics`, the CLI `--model` flag and video tracking |
+| `pip install "visionstyle[studio]"` | FastAPI + Uvicorn for the Studio web app |
+| `pip install "visionstyle[all]"` | Everything above |
+
+Python 3.10 – 3.13.
+
+## Why visionstyle
+
+- **One object describes the look.** A `Style` covers boxes, strokes, fills, line patterns,
+  labels, effects and trails. Every option is a typed, validated attribute, and the whole thing
+  round-trips to YAML.
+- **Twelve presets to start from.** Use one by name, or copy its YAML and make it yours.
+- **Looks the same at any resolution.** Sizes are in reference pixels and scale with the frame, and
+  each object's outline and label scale with its size, so distant objects stay light.
+- **Built for video.** Keep one `Annotator` per stream and you get tracking trails, marching
+  dashes, hue cycling and pulses that carry across frames.
+- **A Studio to design in.** Tune a style visually on your own image or video. The Python package
+  renders every preview, so what you see is exactly what `annotate()` produces.
 
 ## Presets
 
-Twelve built-in looks. Every one is a plain YAML file you can copy and edit.
+Every preset is a plain YAML file you can copy and edit.
 
-<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg" alt="Gallery of the built-in presets" width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg" alt="The twelve built-in presets rendered on the same night street in Osaka" width="100%"></p>
 
-| Preset | Look |
-|---|---|
-| `default` | Clean rectangle, solid tag |
-| `minimal` | Hairline outline, bare text |
-| `corners` | Thin L-brackets, monospace tag |
-| `rounded` | Rounded corners, gradient tint, pill label |
-| `dashed` | Dashed perimeter with marching ants |
-| `glass` | Frosted-glass fill and label |
-| `neon` | Glowing hue-cycling gradient outlines |
-| `hud` | Double frame, reticle marks, inside mono labels, dotted trails |
-| `cinematic` | Rounded amber/teal frames, gradient fill, pill labels, glow, filmic grade |
-| `tracking` | Bold per-track trails, id-first labels |
-| `spotlight` | Dims everything outside the detections |
-| `confidence` | Stroke and tag color follow the confidence score |
+| Preset | Look | Preset | Look |
+|---|---|---|---|
+| `default` | Clean rectangle, solid tag | `neon` | Glowing hue-cycling gradient outlines |
+| `minimal` | Hairline outline, bare text | `hud` | Double frame, reticle marks, inside mono labels, dotted trails |
+| `corners` | Thin L-brackets, monospace tag | `cinematic` | Rounded amber/teal frames, gradient fill, pill labels, glow, filmic grade |
+| `rounded` | Rounded corners, gradient tint, pill label | `tracking` | Bold per-track trails, id-first labels |
+| `dashed` | Dashed perimeter with marching ants | `spotlight` | Dims everything outside the detections |
+| `glass` | Frosted-glass fill and label | `confidence` | Stroke and tag color follow the confidence score |
 
 ```bash
 visionstyle presets list
 visionstyle presets show cinematic
+visionstyle presets export cinematic -o my-look.yaml
 ```
+
+## Studio
+
+Design a style visually on your own image, video and model, then save it as a preset the package
+loads by name.
+
+```bash
+pip install "visionstyle[studio,yolo]"
+visionstyle studio          # opens http://127.0.0.1:8420
+```
+
+<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/studio.jpg" alt="The visionstyle Studio: a tracked street video with the cinematic preset in the preview, the timeline below it, and the style library and design sections on the right" width="100%"></p>
+
+1. **Source.** Pick a bundled scene or upload an image or video, set the confidence threshold and
+   run detection. Videos are tracked, so trails show up as you scrub. The sample video ships with
+   its tracks; tracking a new video needs the `yolo` extra.
+2. **Design.** Start from a preset, then adjust box, stroke, fill, line, label, effects, tracking
+   and global settings, or search for any setting by name. **Save** next to the Style menu stores
+   the look as a named preset.
+3. **Objects.** Filter by class, hide objects or isolate a single track. Scrub or play the timeline,
+   and save the annotated frame from the preview menu.
+4. **Export.** Copy or download the YAML, a self-contained Python snippet, or a prompt for AI
+   coding tools.
+
+Saved presets go to `~/.visionstyle/presets` and load by name anywhere on that machine with
+`vs.Style.preset("my-look")`. To keep them in a project instead, run
+`visionstyle studio --presets-dir ./styles`, commit `styles/<name>.yaml`, and load it with
+`vs.Style.load("styles/my-look.yaml")` (or set `VISIONSTYLE_PRESETS_DIR=./styles` to load by name).
+
+<details>
+<summary><b>Keyboard shortcuts</b></summary>
+
+| Key | Action |
+|---|---|
+| <kbd>Space</kbd> | Play / pause |
+| <kbd>←</kbd> / <kbd>→</kbd> | Previous / next frame |
+| <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> | Jump ten frames |
+| <kbd>R</kbd> | Reset the style |
+
+Focused controls keep their own keyboard behavior.
+
+</details>
 
 ## Python API
 
@@ -73,7 +153,7 @@ import visionstyle as vs
 
 frame = cv2.imread("street.jpg")
 
-# 1. detections: boxes in pixels, everything else optional
+# 1. Detections: boxes in pixels, everything else optional
 dets = vs.Detections(
     xyxy=[[590, 650, 720, 1040], [1060, 660, 1520, 1000]],
     class_name=["person", "car"],
@@ -82,42 +162,47 @@ dets = vs.Detections(
 )
 # or: dets = vs.Detections.from_ultralytics(model.predict(frame)[0])
 
-# 2. a style: preset name, YAML path, or built in code
+# 2. A style: preset name, YAML path, or built in code
 style = vs.Style.preset("cinematic")
 style.label.components = ["track_id", "text"]   # every option is a typed attribute
 style.trail.enabled = True
 
-# 3. render. Keep one Annotator per video stream so trails/animations carry across frames.
+# 3. Render. Keep one Annotator per video stream so trails and animations carry across frames.
 annotator = vs.Annotator(style)
 out = annotator.annotate(frame, dets)
 
-# one-liner for stills
+# One-liner for stills
 out = vs.annotate(frame, dets, style="minimal")
 ```
 
-`Detections` accepts lists, NumPy arrays or torch tensors; `xyxy` is pixel `x1, y1, x2, y2`
-(`Detections.from_xywh`, `from_xywh_topleft`, `from_dicts` also exist). Frames are BGR uint8 like
-OpenCV; pass `rgb=True` for RGB arrays.
+`xyxy` is pixel `x1, y1, x2, y2`; `Detections.from_xywh`, `from_xywh_topleft` and `from_dicts`
+cover other formats. Frames are BGR `uint8` like OpenCV; pass `rgb=True` for RGB arrays.
 
 ### What you can configure
 
 | Section | Options |
 |---|---|
 | **Box** | `rectangle`, `rounded` (radius), `corners` (bracket length, curved elbows), `reticle`, `none`; double line; center mark |
-| **Stroke** | thickness, opacity, color (`palette` per class/track, `confidence` ramp, or any hex/rgb/name) |
-| **Fill** | on/off, opacity, color, `solid` / `gradient` (5 directions) / `hatch` |
-| **Line** | `solid` / `dashed` / `dotted`, dash & gap sizes, multi-color `segments` or perimeter `gradient`, animation `march` / `hue_cycle` / `pulse` |
-| **Label** | ordered components (`text`, `confidence`, `track_id`, `class_id`, `custom` template), 9 anchors × inside/outside, vertical tags on the sides, fonts (Inter, JetBrains Mono or your `.ttf`), size, weight, uppercase, `solid` / `pill` / `glass` / `underline` / `none` backgrounds, border, padding, formats |
-| **Effects** | glow, shadow, frosted glass, spotlight dimming, vignette, film grain, color grade |
-| **Tracking** | trail length, anchor (feet/center/top), `solid` / `dotted` / `dashed` / `ribbon`, fade & taper, smoothing, glow, points |
-| **Global** | palette (built-in or custom list), per-class color overrides, confidence threshold, resolution scaling, per-object scaling (strength, clamps, box/label), fps |
+| **Stroke** | Thickness, opacity, color (`palette` per class/track, `confidence` ramp, or any hex/rgb/name) |
+| **Fill** | On/off, opacity, color, `solid` / `gradient` (5 directions) / `hatch` |
+| **Line** | `solid` / `dashed` / `dotted`, dash and gap sizes, multi-color `segments` or perimeter `gradient`, animation `march` / `hue_cycle` / `pulse` |
+| **Label** | Ordered components (`text`, `confidence`, `track_id`, `class_id`, `custom` template), 9 anchors × inside/outside, vertical tags on the sides, fonts (Inter, JetBrains Mono or your `.ttf`), size, weight, uppercase, `solid` / `pill` / `glass` / `underline` / `none` backgrounds, border, padding, formats |
+| **Effects** | Glow, shadow, frosted glass, spotlight dimming, vignette, film grain, color grade |
+| **Tracking** | Trail length, anchor (feet/center/top), `solid` / `dotted` / `dashed` / `ribbon`, fade and taper, smoothing, glow, points |
+| **Global** | Palette (built-in or custom list), per-class color overrides, confidence threshold, resolution scaling, per-object scaling, fps |
 
-All sizes are in *reference pixels* at ~1080p and scale automatically with the frame size
+<details>
+<summary><b>How sizes scale</b></summary>
+
+All sizes are in *reference pixels* at about 1080p and scale automatically with the frame
 (`style.scale = "auto"`), so one style looks the same on a webcam and a 4K photo.
+
 On top of that, strokes and label tags scale with each detected object's size
 (`style.object_scale`, on by default): far-away objects get thin outlines and small tags, close-up
-ones get heavier outlines and larger text. Tune `strength`, `min_factor` / `max_factor`, or restrict
-it with `apply_to: box | label`; set `enabled: false` for constant sizes.
+ones get heavier outlines and larger text. Tune `strength` and `min_factor` / `max_factor`,
+restrict it with `apply_to: box | label`, or set `enabled: false` for constant sizes.
+
+</details>
 
 ### Save and share styles
 
@@ -128,38 +213,8 @@ vs.Style.preset("my-look")                  # found by name from now on
 vs.presets.list()                           # built-in + yours
 ```
 
-Lookup order: `$VISIONSTYLE_PRESETS_DIR` → `~/.visionstyle/presets` → built-ins → file path.
-
-## Studio
-
-Design a style visually, on your own image and model, and save it as a preset the package loads by name.
-
-```bash
-pip install "visionstyle[studio,yolo]"
-visionstyle studio          # opens http://127.0.0.1:8420
-```
-
-<p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/studio.jpg" alt="The visionstyle Studio" width="100%"></p>
-
-* **Source:** choose a bundled scene or upload an image or video, set the confidence threshold,
-  and run detection. The sample video includes tracks; new video tracking requires the YOLO extra.
-* **Design:** start with a preset, then adjust boxes, strokes, labels, effects, and trails beside
-  the preview. The **Python package itself** renders every change, matching `annotate()` output.
-  **Save** (next to the Style menu) stores the look as a named preset with an optional description;
-  the Style menu lists your saved presets, and built-ins stay in the Library.
-* **Objects:** filter by class, hide objects, or isolate a track. Scrub video frames or play the
-  timeline; use the preview menu to save an annotated frame.
-* **Export:** copy or download the YAML, a self-contained Python snippet, or a prompt for AI
-  coding tools.
-
-Presets saved in the Studio go to `~/.visionstyle/presets` and load by name anywhere on that machine
-with `vs.Style.preset("my-look")`. To keep them with a project instead, start the Studio from the
-repo with `visionstyle studio --presets-dir ./styles`; each preset becomes `styles/<name>.yaml`,
-which you commit and load with `vs.Style.load("styles/my-look.yaml")` (or set
-`VISIONSTYLE_PRESETS_DIR=./styles` to load them by name).
-
-Keyboard shortcuts: **Space** plays or pauses, **← / →** steps through video frames, **Shift +
-← / →** jumps ten frames, and **R** resets the style. Focused controls keep their own keyboard behavior.
+Presets are looked up in `$VISIONSTYLE_PRESETS_DIR`, then `~/.visionstyle/presets`, then the
+built-ins, then as a file path.
 
 ## CLI
 
@@ -182,7 +237,7 @@ uv sync --all-extras --group dev
 uv run pytest && uv run ruff check . && uv run mypy src
 
 cd studio && npm install
-npm run dev            # Vite dev server on :5173 proxying /api to :8420
+npm run dev            # Vite dev server on :5173, proxying /api to :8420
 npm run build          # -> src/visionstyle/studio/static (bundled into the wheel)
 ```
 
@@ -192,13 +247,27 @@ When `src/visionstyle/style/schema.py` changes, regenerate the frontend schema a
 uv run visionstyle schema -o studio/schema.json && (cd studio && npm run gen:types)
 ```
 
-Releases: bump `__version__` in `src/visionstyle/__init__.py`, update `CHANGELOG.md`, tag `vX.Y.Z`
-and push. `release.yml` builds the frontend + wheel, publishes to PyPI via trusted publishing (register
-the `pypi` environment / publisher once on pypi.org) and creates a GitHub release.
+<details>
+<summary><b>Releasing and the website</b></summary>
+
+**Releases.** Bump `__version__` in `src/visionstyle/__init__.py`, add a section to
+`CHANGELOG.md`, then tag `vX.Y.Z` and push the tag. `release.yml` builds the Studio and the wheel,
+checks them, publishes to PyPI through trusted publishing and creates a GitHub release.
+
+**Website.** The [project site](https://baselhusam.github.io/visionstyle/) deploys from `site/`
+through GitHub Actions on every push to `main`; see
+[`site/README.md`](https://github.com/baselhusam/visionstyle/blob/main/site/README.md).
+
+</details>
 
 ## Credits
 
-Sample photos: see [`src/visionstyle/assets/samples/CREDITS.md`](https://github.com/baselhusam/visionstyle/blob/main/src/visionstyle/assets/samples/CREDITS.md).
-Fonts: [Inter](https://rsms.me/inter/) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/), both under the SIL Open Font License.
+Sample photos: see [`CREDITS.md`](https://github.com/baselhusam/visionstyle/blob/main/src/visionstyle/assets/samples/CREDITS.md).
+Fonts: [Inter](https://rsms.me/inter/) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/),
+both under the SIL Open Font License.
 
-MIT © Basel Mather
+## Author
+
+Built by **Basel Mather**. See more of my work at **[baselhusam.com](https://baselhusam.com)**.
+
+Released under the [MIT License](https://github.com/baselhusam/visionstyle/blob/main/LICENSE).

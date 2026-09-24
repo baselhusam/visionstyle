@@ -28,7 +28,7 @@ The site is an application of the **Chroma Press** identity documented in [`docs
   uv run visionstyle render src/visionstyle/assets/samples/street.jpg -s neon -d src/visionstyle/assets/samples/street.detections.json -o /tmp/neon.png
   ```
 
-- `docs/images/studio.jpg` is a 2× screenshot of the Studio at 1600 × 1000 with `night.jpg` loaded and the cinematic preset selected.
+- `docs/images/studio.jpg` is a 1.5× screenshot (2400 × 1500) of the Studio at 1600 × 1000: the `city-walkthrough.mp4` sample at frame 91 with the cinematic preset and the Design library open. Still images get synthetic preview trails in the Studio, so the video sample shows real tracks instead.
 
 ## Local preview
 
