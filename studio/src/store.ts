@@ -21,6 +21,8 @@ interface State {
   detections: DetectionItem[];
   /** Per-frame detections for a tracked video; null for stills and untracked videos. */
   frames: VideoFrame[] | null;
+  /** The confidence a tracked video was detected down to; the slider filters within it. */
+  trackedConf: number | null;
   fps: number;
   /** Position in `frames` (or the raw frame number for an untracked video). */
   frameIndex: number;
@@ -30,6 +32,7 @@ interface State {
   selectedClass: string | null;
   detecting: boolean;
   job: JobStatus | null;
+  trimming: boolean;
   playing: boolean;
   openPanels: Set<PanelId>;
   toast: string | null;
@@ -50,6 +53,7 @@ interface State {
   loadTracks: (id: string, request?: { scene?: number; detection?: number }) => Promise<void>;
   detectVideo: () => Promise<void>;
   cancelDetection: () => Promise<void>;
+  trimVideo: () => Promise<void>;
   setFrame: (index: number) => void;
   stepFrame: (delta: number) => void;
   uploadModel: (file: File) => Promise<void>;
@@ -107,6 +111,7 @@ export const useStore = create<State>((set, get) => {
   conf: 0.3,
   detections: [],
   frames: null,
+  trackedConf: null,
   fps: 24,
   frameIndex: 0,
   hidden: new Set(),
@@ -114,6 +119,7 @@ export const useStore = create<State>((set, get) => {
   selectedClass: null,
   detecting: false,
   job: null,
+  trimming: false,
   playing: false,
   openPanels: new Set<PanelId>(['presets', 'box']),
   toast: null,
@@ -184,11 +190,14 @@ export const useStore = create<State>((set, get) => {
     set({
       imageId: id,
       modelId: isVideo && get().yoloAvailable ? 'yolo26n.pt' : null,
-      detections: [], frames: null, frameIndex: 0, fps: img?.fps ?? 24,
+      detections: [], frames: null, trackedConf: null, frameIndex: 0, fps: img?.fps ?? 24,
       hidden: new Set(), selected: null, selectedClass: null, playing: false,
       detecting: false, job: null, error: null,
     });
-    if (isVideo && img?.tracked) {
+    if (img?.too_long) {
+      // nothing to detect until it is trimmed; the preview shows the trim prompt instead
+      return;
+    } else if (isVideo && img?.tracked) {
       await get().loadTracks(id, { scene });
     } else if (img?.has_detections && !get().modelId) {
       await get().detect();
@@ -219,8 +228,8 @@ export const useStore = create<State>((set, get) => {
       set({
         // the decoder's real frame count beats the container's estimate
         images: get().images.map((i) => (i.id === id ? { ...i, fps, frame_count: tracks.frame_count, duration: tracks.frame_count / fps } : i)),
-        frames: tracks.frames, fps, frameIndex: 0,
-        detections: tracks.frames[0]?.detections ?? [],
+        frames: tracks.frames, trackedConf: tracks.conf ?? null, fps, frameIndex: 0,
+        detections: aboveThreshold(tracks.frames[0]?.detections ?? [], get().conf),
         hidden: new Set(), selected: null, selectedClass: null,
       });
     } catch (e) {
@@ -264,12 +273,27 @@ export const useStore = create<State>((set, get) => {
     const job = get().job;
     if (job) await api.cancelJob(job.id).catch(() => undefined);
   },
+  trimVideo: async () => {
+    const { imageId, images } = get();
+    const img = images.find((i) => i.id === imageId);
+    if (!imageId || !img?.too_long || get().trimming) return;
+    set({ trimming: true, error: null });
+    try {
+      const clip = await api.trimImage(imageId);
+      // the trimmed clip replaces the long upload in place
+      set({ images: get().images.map((i) => (i.id === imageId ? clip : i)), trimming: false });
+      if (get().imageId === imageId) await get().selectImage(clip.id);
+      get().notify('Trimmed to the first minute');
+    } catch (e) {
+      set({ trimming: false, error: `Could not trim ${displayName(img.name)}: ${(e as Error).message}` });
+    }
+  },
   setFrame: (index) => {
     const { frames, images, imageId } = get();
     const count = frames ? frames.length : (images.find((i) => i.id === imageId)?.frame_count ?? 0);
     if (count <= 0) return;
     const next = ((index % count) + count) % count;
-    set(frames ? { frameIndex: next, detections: frames[next].detections } : { frameIndex: next });
+    set(frames ? { frameIndex: next, detections: aboveThreshold(frames[next].detections, get().conf) } : { frameIndex: next });
   },
   stepFrame: (delta) => get().setFrame(get().frameIndex + delta),
   uploadImage: async (file) => {
@@ -295,11 +319,16 @@ export const useStore = create<State>((set, get) => {
     }
   },
   setModel: (id) => set({ modelId: id }),
-  setConf: (v) => set({ conf: v }),
+  // a tracked video filters its stored detections live; stills apply it on the next detection run
+  setConf: (v) => {
+    const { frames, frameIndex } = get();
+    set(frames ? { conf: v, detections: aboveThreshold(frames[frameIndex]?.detections ?? [], v) } : { conf: v });
+  },
   detect: async () => {
     const { imageId, modelId, conf, yoloAvailable, images } = get();
     if (!imageId || get().detecting) return;
     const img = images.find((i) => i.id === imageId);
+    if (img?.too_long) return;
     if (img?.kind === 'video' && yoloAvailable) {
       await get().detectVideo();
       return;
@@ -356,6 +385,11 @@ export function detectionKey(det: DetectionItem, index: number, tracked: boolean
 
 export function visibleDetections(dets: DetectionItem[], hidden: Set<number>, tracked = false): DetectionItem[] {
   return dets.filter((det, i) => !hidden.has(detectionKey(det, i, tracked)));
+}
+
+/** Detections at or above the confidence threshold (detections without a score always pass). */
+export function aboveThreshold(dets: DetectionItem[], conf: number): DetectionItem[] {
+  return dets.filter((det) => det.confidence === null || det.confidence === undefined || det.confidence >= conf - 1e-6);
 }
 
 export function formatTime(seconds: number): string {

@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../api';
-import { detectionKey, useStore, visibleDetections } from '../store';
+import { api, displayName } from '../api';
+import { detectionKey, formatTime, useStore, visibleDetections } from '../store';
 import { Icon } from './Icon';
 
 const FRAME_MS = 90;
+// Every preview request carries this tab's id and a growing number, so the server can drop
+// frames this tab has already moved past instead of queueing them behind the current one.
+const CLIENT_ID = Math.random().toString(36).slice(2, 12);
+let renderSeq = 0;
 
 export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const style = useStore((s) => s.style);
@@ -17,6 +21,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const playing = useStore((s) => s.playing);
   const frames = useStore((s) => s.frames);
   const frameIndex = useStore((s) => s.frameIndex);
+  const conf = useStore((s) => s.conf);
   const fps = useStore((s) => s.fps);
   const setFrame = useStore((s) => s.setFrame);
   const setRenderMs = useStore((s) => s.setRenderMs);
@@ -37,6 +42,11 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
   const animated = style.line?.animation !== 'none' && (style.line?.speed ?? 0) > 0;
   const media = useStore((s) => s.images.find((item) => item.id === s.imageId));
   const isVideo = media?.kind === 'video';
+  const tooLong = Boolean(media?.too_long);
+  // While the whole video is being tracked there are no boxes to style yet, and every preview
+  // would compete with the detector for the CPU, so the stage waits for the stored tracks.
+  const job = useStore((s) => (s.job?.image_id === s.imageId ? s.job : null));
+  const waiting = tooLong || job !== null;
   const tracked = frames !== null;
   const frameCount = frames ? frames.length : (media?.frame_count ?? 0);
   // the frame number inside the file (differs from the position when tracks were sampled with a stride)
@@ -49,10 +59,12 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
     : selectedClass
       ? detections.filter((detection, i) => !hidden.has(detectionKey(detection, i, tracked)) && (detection.class_name ?? `class ${detection.class_id ?? '—'}`) === selectedClass)
       : visibleDetections(detections, hidden, tracked);
-  const key = JSON.stringify({ style, imageId, dets, syntheticTrails, sourceFrame: isVideo ? sourceFrame : 0 });
+  // a tracked video's trail history is filtered by the threshold too, so it is part of the key
+  const minConfidence = tracked ? conf : 0;
+  const key = JSON.stringify({ style, imageId, dets, syntheticTrails, sourceFrame: isVideo ? sourceFrame : 0, minConfidence });
 
   useEffect(() => {
-    if (!imageId) {
+    if (!imageId || waiting) {
       busyRef.current = false;
       setBusy(false);
       return;
@@ -69,7 +81,8 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
         const box = wrapRef.current;
         const dpr = window.devicePixelRatio || 1;
         const maxSize = fit && box ? Math.min(1600, Math.max(640, Math.round(Math.max(box.clientWidth, box.clientHeight) * dpr))) : 1600;
-        const res = await api.render({ image_id: imageId, style, detections: dets, t, frame_index: isVideo ? sourceFrame : undefined, max_size: maxSize, synthetic_trails: syntheticTrails }, ctrl.signal);
+        const res = await api.render({ image_id: imageId, style, detections: dets, t, frame_index: isVideo ? sourceFrame : undefined, max_size: maxSize, synthetic_trails: syntheticTrails, min_confidence: minConfidence, client: CLIENT_ID, seq: ++renderSeq }, ctrl.signal);
+        if (!res) return; // superseded by a newer request, which will paint instead
         if (!cancelled && !ctrl.signal.aborted) {
           // Decode off the main thread before swapping so playback never flashes or stalls.
           // Chrome defers decode() in a background tab, so never wait on it for long.
@@ -122,7 +135,7 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
       if (raf) cancelAnimationFrame(raf);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, playing, animated, isVideo, fit]);
+  }, [key, playing, animated, isVideo, fit, waiting]);
 
   // A source change invalidates the old bitmap immediately. Keeping the image id beside the
   // object URL also protects the first paint before this effect has had a chance to run.
@@ -130,13 +143,14 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
     abortRef.current?.abort();
     lastFrameRef.current = -1;
     busyRef.current = false;
-    setBusy(Boolean(imageId));
+    setBusy(Boolean(imageId) && !waiting);
     setMenu(null);
     setRendered((old) => {
       if (old?.url) URL.revokeObjectURL(old.url);
       renderedUrlRef.current = null;
       return null;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageId]);
 
   useEffect(() => () => {
@@ -211,7 +225,9 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
 
   return (
     <div ref={wrapRef} className={`stage-wrap ${fit ? 'fit' : 'actual'}`}>
-      {renderedUrl ? <img className="stage" src={renderedUrl} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} /> : <div className={`stage placeholder ${imageId ? 'loading' : 'empty'}`}><span>{imageId ? 'Rendering scene…' : 'Choose a source to begin.'}</span></div>}
+      {renderedUrl ? <img className="stage" src={renderedUrl} alt="Annotated preview" width={media?.width} height={media?.height} draggable={false} onContextMenu={openMenu} />
+        : waiting && imageId ? <img className="stage backdrop" src={api.thumbnailUrl(imageId)} alt="" width={media?.width} height={media?.height} draggable={false} />
+        : <div className={`stage placeholder ${imageId ? 'loading' : 'empty'}`}><span>{imageId ? 'Rendering scene…' : 'Choose a source to begin.'}</span></div>}
       {renderedUrl && <button ref={menuButtonRef} type="button" className="stage-options" aria-label="Preview options" aria-haspopup="menu" aria-expanded={Boolean(menu)} onClick={toggleMenu}><Icon name="options" /></button>}
       {menu && <div ref={menuRef} className="stage-menu" role="menu" aria-label="Preview options" style={{ left: menu.x, top: menu.y }} onKeyDown={(event) => {
         if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
@@ -228,7 +244,40 @@ export function Preview({ onChangeSource }: { onChangeSource?: () => void }) {
         <button type="button" role="menuitem" onClick={() => { setMenu(null); onChangeSource?.(); }}><Icon name="change" /> Change source</button>
         <button type="button" role="menuitem" onClick={downloadFrame}><Icon name="download" /> Save frame</button>
       </div>}
+      {tooLong && media && <TrimPrompt name={displayName(media.name)} duration={media.duration ?? 0} />}
+      {!tooLong && job && (
+        <div className="stage-notice tracking" role="status">
+          <strong>Detecting objects in every frame…</strong>
+          <span>This runs once. The detections are saved with the video, so styling it afterwards replays them instead of running the model again.</span>
+        </div>
+      )}
       <div className={`busy ${busy ? 'show' : ''}`} aria-hidden="true" />
+    </div>
+  );
+}
+
+/** Shown instead of the preview for a video longer than Studio will track. */
+function TrimPrompt({ name, duration }: { name: string; duration: number }) {
+  const limit = useStore((s) => s.info?.max_video_seconds ?? 60);
+  const trimming = useStore((s) => s.trimming);
+  const trimVideo = useStore((s) => s.trimVideo);
+  const imageId = useStore((s) => s.imageId);
+  const deleteImage = useStore((s) => s.deleteImage);
+  return (
+    <div className="stage-notice trim" role="alertdialog" aria-labelledby="trim-title" aria-describedby="trim-body">
+      <span className="stage-notice-icon" aria-hidden="true"><Icon name="play" /></span>
+      <strong id="trim-title">This video is {formatTime(duration).replace(/\.\d+$/, '')} long</strong>
+      <p id="trim-body">
+        Studio detects objects once per video and replays them while you style, which works for clips up to {limit / 60 === 1 ? 'one minute' : `${limit} seconds`}.
+        Trim <em>{name}</em> to its first minute to continue.
+      </p>
+      <div className="stage-notice-actions">
+        <button type="button" className="btn primary" onClick={() => trimVideo()} disabled={trimming} autoFocus>
+          {trimming ? 'Trimming…' : 'Use the first minute'}
+        </button>
+        <button type="button" className="btn" onClick={() => imageId && deleteImage(imageId)} disabled={trimming}>Remove video</button>
+      </div>
+      <small>Trimming keeps 00:00–01:00 as a new clip without audio; the long upload is removed.</small>
     </div>
   );
 }

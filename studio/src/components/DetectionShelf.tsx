@@ -19,7 +19,7 @@ export function DetectionShelf() {
     return { visible, entries: [...counted.entries()].sort(([a], [b]) => a.localeCompare(b)) };
   }, [detections, hidden, tracked]);
   const visible = groups.visible;
-  if (!detections.length) return <div className="detection-shelf empty"><span>Run detection to see classes here.</span></div>;
+  if (!detections.length) return <div className="detection-shelf empty"><span>{tracked ? 'No objects above the confidence threshold in this frame.' : 'Run detection to see classes here.'}</span></div>;
   return <div className="detection-shelf" aria-label="Filter detections by class">
     <span className="shelf-label">Show boxes</span>
     <button type="button" className={!selectedClass ? 'active' : ''} onClick={() => selectClass(null)}>all <b>{visible}</b></button>

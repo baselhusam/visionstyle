@@ -144,8 +144,10 @@ visionstyle studio          # opens http://127.0.0.1:8420
 <p align="center"><img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/studio.jpg" alt="The visionstyle Studio: a tracked street video with the cinematic preset in the preview, the timeline below it, and the style library and design sections on the right" width="100%"></p>
 
 1. **Source.** Pick a bundled scene or upload an image or video, set the confidence threshold and
-   run detection. Videos are tracked, so trails show up as you scrub. The sample video ships with
-   its tracks; tracking a new video needs the `yolo` extra.
+   run detection. Videos are tracked once, up to a minute long, and the detections are saved with
+   the video, so restyling, scrubbing and moving the confidence slider replay them without
+   running the model again. Longer uploads can be trimmed to their first minute. The sample video
+   ships with its tracks; tracking a new video needs the `yolo` extra.
 2. **Design.** Start from a preset, then adjust box, stroke, fill, line, label, effects, tracking
    and global settings, or search for any setting by name. **Save** next to the Style menu stores
    the look as a named preset.

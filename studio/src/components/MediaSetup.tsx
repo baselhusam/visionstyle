@@ -15,16 +15,24 @@ export function MediaSetup() {
   const job = useStore((s) => s.job);
   const cancelDetection = useStore((s) => s.cancelDetection);
   const frames = useStore((s) => s.frames);
+  const trackedConf = useStore((s) => s.trackedConf);
   const imageInput = useRef<HTMLInputElement>(null);
   const current = images.find((image) => image.id === imageId);
   const isVideo = current?.kind === "video";
+  const tooLong = Boolean(current?.too_long);
   const tracked = frames !== null;
   const progress = job ? `${job.done} / ${job.total}` : null;
 
   // only say something when the user has to act on it
-  const note = isVideo && !tracked && !job && !yolo
-    ? "Install visionstyle[yolo] to track uploaded videos; the sample ships with its tracks."
-    : null;
+  // below the stored floor the slider cannot bring anything back without tracking again
+  const belowTracked = tracked && trackedConf !== null && conf < trackedConf - 1e-6;
+  const note = tooLong
+    ? "This video is longer than a minute. Trim it from the preview before running detection."
+    : belowTracked
+      ? `This video was tracked down to ${trackedConf.toFixed(2)}. ${yolo ? "Track again" : "Install visionstyle[yolo] and track again"} to see objects below that.`
+      : isVideo && !tracked && !job && !yolo
+        ? "Install visionstyle[yolo] to track uploaded videos; the sample ships with its tracks."
+        : null;
 
   return (
     <div className="media-setup">
@@ -71,7 +79,7 @@ export function MediaSetup() {
         {job ? (
           <button type="button" className="detect-wide cancel" onClick={() => cancelDetection()}><Icon name="detect" /> Cancel · {progress}</button>
         ) : (
-          <button type="button" className="detect-wide" onClick={() => detect()} disabled={detecting || !imageId}><Icon name="detect" /> {detecting ? "Detecting…" : isVideo ? (tracked ? "Track again" : "Run detection") : "Run detection"}</button>
+          <button type="button" className="detect-wide" onClick={() => detect()} disabled={detecting || !imageId || tooLong}><Icon name="detect" /> {detecting ? "Detecting…" : isVideo ? (tracked ? "Track again" : "Run detection") : "Run detection"}</button>
         )}
         {note && <p className="setup-note">{note}</p>}
       </div>

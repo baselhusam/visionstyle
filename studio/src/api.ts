@@ -21,6 +21,8 @@ export interface ImageInfo {
   fps?: number | null;
   frame_count?: number;
   tracked?: boolean;
+  /** Longer than Studio will track (`Info.max_video_seconds`); it has to be trimmed first. */
+  too_long?: boolean;
 }
 
 export interface VideoFrame {
@@ -70,6 +72,7 @@ export interface Info {
   yolo_available: boolean;
   presets_dir: string;
   user_presets_dir: string;
+  max_video_seconds: number;
 }
 
 /** Uploads are stored as `<stem>-<sha1[:10]>.<ext>`; show the name the user actually chose. */
@@ -122,6 +125,8 @@ export const api = {
     post('/api/detect/video', { image_id, model_id, conf }).then((r) => json<JobStatus>(r)),
   job: (id: string) => fetch(`/api/jobs/${id}`).then((r) => json<JobStatus>(r)),
   cancelJob: (id: string) => fetch(`/api/jobs/${id}`, { method: 'DELETE' }).then((r) => json<JobStatus>(r)),
+  trimImage: (image_id: string, seconds?: number) =>
+    post(`/api/images/${encodeURIComponent(image_id)}/trim`, seconds === undefined ? {} : { seconds }).then((r) => json<ImageInfo>(r)),
   uploadImage: (file: File) => {
     const fd = new FormData();
     fd.append('file', file);
@@ -140,12 +145,14 @@ export const api = {
       if (!r.ok) throw new Error(await r.text());
       return r.text();
     }),
+  /** Resolves to null when the server skipped the frame because a newer preview request replaced it. */
   render: async (
-    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; media_time?: number; frame_index?: number; max_size: number; synthetic_trails: boolean },
+    body: { image_id: string; style: Style; detections: DetectionItem[]; t: number; media_time?: number; frame_index?: number; max_size: number; synthetic_trails: boolean; min_confidence?: number; client?: string; seq?: number },
     signal?: AbortSignal,
-  ): Promise<{ url: string; ms: number }> => {
+  ): Promise<{ url: string; ms: number } | null> => {
     const res = await post('/api/render', body, signal);
     if (!res.ok) throw new Error(await res.text());
+    if (res.status === 204) return null;
     const blob = await res.blob();
     return { url: URL.createObjectURL(blob), ms: parseFloat(res.headers.get('X-Render-Ms') ?? '0') };
   },

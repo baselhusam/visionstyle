@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { formatTime, useStore } from '../store';
+import { aboveThreshold, formatTime, useStore } from '../store';
 import { Icon } from './Icon';
 
 /** Scrubber under the preview: step frames, drag the playhead, and watch whole-video detection progress. */
@@ -15,9 +15,11 @@ export function Timeline() {
   const job = useStore((s) => s.job);
   const cancelDetection = useStore((s) => s.cancelDetection);
   const resume = useRef(false);
-  const tracks = useMemo(() => (frames ? new Set(frames.flatMap((frame) => frame.detections.map((d) => d.track_id))).size : 0), [frames]);
+  const conf = useStore((s) => s.conf);
+  const tracks = useMemo(() => (frames ? new Set(frames.flatMap((frame) => aboveThreshold(frame.detections, conf).map((d) => d.track_id))).size : 0), [frames, conf]);
 
-  if (media?.kind !== 'video') return null;
+  // an over-long video has nothing to scrub until it is trimmed (the stage says so)
+  if (media?.kind !== 'video' || media.too_long) return null;
 
   const count = frames ? frames.length : (media.frame_count ?? 0);
   const sourceFrame = frames ? (frames[frameIndex]?.index ?? 0) : frameIndex;

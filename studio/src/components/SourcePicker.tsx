@@ -48,6 +48,7 @@ export function SourcePicker() {
                   <span className={`source-tag ${image.kind}`}>{image.kind === 'video' ? 'Video' : 'Image'}</span>
                   {image.sample && <span className="source-tag">Sample</span>}
                   {image.kind === 'video' && image.tracked && <span className="source-tag tracked">Tracked</span>}
+                  {image.kind === 'video' && image.too_long && <span className="source-tag">Over 1 min · trim</span>}
                 </span>
               </span>
             </button>

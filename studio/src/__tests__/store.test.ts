@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CONTROL_INDEX, SECTIONS } from '../controls/registry';
 import { defaultStyle, schemaAt } from '../schema';
-import { getDeep, setDeep } from '../store';
+import { aboveThreshold, getDeep, setDeep, useStore } from '../store';
 
 describe('schema helpers', () => {
   it('builds a full default style with every section', () => {
@@ -43,5 +43,30 @@ describe('deep set/get', () => {
     expect(getDeep(b, 'effects.glow.radius')).toBe(30);
     expect(getDeep(a, 'effects.glow.radius')).toBe(12);
     expect(b).not.toBe(a);
+  });
+});
+
+describe('confidence threshold on a tracked video', () => {
+  const det = (track_id: number, confidence: number | null) => ({ xyxy: [0, 0, 1, 1] as [number, number, number, number], class_id: 0, class_name: 'car', confidence, track_id });
+
+  it('keeps detections at or above the threshold and those without a score', () => {
+    const kept = aboveThreshold([det(1, 0.12), det(2, 0.3), det(3, 0.55), det(4, null)], 0.3);
+    expect(kept.map((d) => d.track_id)).toEqual([2, 3, 4]);
+  });
+
+  it('filters the stored frame live as the slider moves, without detecting again', () => {
+    const frames = [
+      { index: 0, time: 0, detections: [det(1, 0.15), det(2, 0.8)] },
+      { index: 1, time: 0.1, detections: [det(1, 0.45), det(2, 0.8)] },
+    ];
+    useStore.setState({ frames, frameIndex: 0, conf: 0.3, detections: [], imageId: null });
+    useStore.getState().setFrame(0);
+    expect(useStore.getState().detections.map((d) => d.track_id)).toEqual([2]);
+    useStore.getState().setConf(0.1);
+    expect(useStore.getState().detections.map((d) => d.track_id)).toEqual([1, 2]);
+    useStore.getState().setConf(0.5);
+    useStore.getState().setFrame(1);
+    expect(useStore.getState().detections.map((d) => d.track_id)).toEqual([2]);
+    expect(useStore.getState().detecting).toBe(false);
   });
 });

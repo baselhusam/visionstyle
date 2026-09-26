@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 
 import cv2
 import numpy as np
@@ -255,3 +256,104 @@ def test_delete_video_removes_stored_tracks(client, tmp_path):
     assert len(client.get(f"/api/images/{info['id']}/tracks").json()["frames"]) == 2
     assert client.delete(f"/api/images/{info['id']}").status_code == 200
     assert not sidecar.exists()
+
+
+def _upload_clip(client, tmp_path, frames: int, fps: float) -> dict:
+    video_path = tmp_path / "long.avi"
+    writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), fps, (96, 64))
+    for i in range(frames):
+        writer.write(np.full((64, 96, 3), (i * 3) % 255, np.uint8))
+    writer.release()
+    with video_path.open("rb") as video:
+        response = client.post(
+            "/api/images", files={"file": ("long.avi", video, "video/x-msvideo")}
+        )
+    assert response.status_code == 200
+    return response.json()
+
+
+def test_long_video_is_flagged_refused_and_trimmed(client, tmp_path, monkeypatch):
+    from visionstyle.studio import server
+
+    assert client.get("/api/info").json()["max_video_seconds"] == 60
+    info = _upload_clip(client, tmp_path, frames=130, fps=2)  # 65 s
+    assert info["too_long"] and info["duration"] == pytest.approx(65)
+    listed = next(i for i in client.get("/api/images").json() if i["id"] == info["id"])
+    assert listed["too_long"]
+
+    monkeypatch.setattr(server, "_ultralytics_available", lambda: True)
+    refused = client.post("/api/detect/video", json={"image_id": info["id"]})
+    assert refused.status_code == 413 and "Trim" in refused.json()["detail"]
+
+    trimmed = client.post(f"/api/images/{info['id']}/trim", json={})
+    assert trimmed.status_code == 200
+    clip = trimmed.json()
+    assert clip["kind"] == "video" and not clip["too_long"]
+    assert clip["frame_count"] == 120 and clip["duration"] == pytest.approx(60)
+    assert clip["name"].startswith("long (first 60s)-") and clip["name"].endswith(".mp4")
+    ids = {i["id"] for i in client.get("/api/images").json()}
+    assert clip["id"] in ids and info["id"] not in ids
+    assert not (server.studio_home() / "images" / info["name"]).exists()
+
+    assert client.post("/api/images/sample:city-walkthrough/trim", json={}).status_code == 403
+    assert client.post("/api/images/sample:street/trim", json={}).status_code == 403
+    too_far = client.post(f"/api/images/{clip['id']}/trim", json={"seconds": 90})
+    assert too_far.status_code == 422
+
+
+def test_short_video_is_not_flagged(client, tmp_path):
+    info = _upload_clip(client, tmp_path, frames=120, fps=2)  # exactly a minute
+    assert info["too_long"] is False
+
+
+def test_render_skips_superseded_preview_requests(client):
+    body = {"image_id": "sample:street", "style": {}, "detections": [], "max_size": 320}
+    tab = {**body, "client": "tab-a"}
+    assert client.post("/api/render", json={**tab, "seq": 5}).status_code == 200
+    # the tab already moved on to request 5, so request 3 is not worth drawing
+    assert client.post("/api/render", json={**tab, "seq": 3}).status_code == 204
+    assert client.post("/api/render", json={**tab, "seq": 6}).status_code == 200
+    # another tab (or a reload, which picks a new id) counts from scratch
+    assert client.post("/api/render", json={**body, "client": "tab-b", "seq": 0}).status_code == 200
+    # requests without a sequence number (exports, scripts) always render
+    assert client.post("/api/render", json=body).status_code == 200
+
+
+def test_trail_replay_respects_the_confidence_threshold(client, tmp_path):
+    from visionstyle.studio.server import studio_home
+
+    info = _upload_clip(client, tmp_path, frames=6, fps=10)
+    low = [  # a low-confidence object walking left to right, gone by frame 5
+        {
+            "index": i,
+            "time": i / 10,
+            "detections": [
+                {"xyxy": [5 + 12 * i, 20, 20 + 12 * i, 50], "confidence": 0.2, "track_id": 7}
+            ],
+        }
+        for i in range(5)
+    ]
+    current = {"xyxy": [60, 10, 90, 40], "confidence": 0.9, "track_id": 9}
+    frames = [*low, {"index": 5, "time": 0.5, "detections": [current]}]
+    sidecar = studio_home() / "images" / f"{info['id']}.detections.json"
+    sidecar.write_text(json.dumps({"fps": 10, "frame_count": 6, "conf": 0.1, "frames": frames}))
+
+    def render(threshold: float) -> bytes:
+        response = client.post(
+            "/api/render",
+            json={
+                "image_id": info["id"],
+                "style": {"trail": {"enabled": True, "length": 10, "max_age": 10}},
+                "detections": [current],
+                "frame_index": 5,
+                "synthetic_trails": False,
+                "min_confidence": threshold,
+                "format": "png",
+            },
+        )
+        assert response.status_code == 200
+        return response.content
+
+    # the 0.2 object's trail is drawn at a 0.1 threshold and filtered out above it
+    assert render(0.1) != render(0.5)
+    assert render(0.5) == render(0.95)
