@@ -77,6 +77,14 @@ export function displayName(name: string | undefined): string {
   return (name ?? '').replace(/-[0-9a-f]{10}(?=\.[^.]+$)/, '');
 }
 
+// Built-in preset names are title-cased by CSS; these need more than a capital first letter.
+const PRESET_TITLES: Record<string, string> = { cctv: 'CCTV', 'high-contrast': 'High contrast' };
+
+/** Display title for a built-in preset name (saved presets are shown exactly as typed). */
+export function presetTitle(name: string): string {
+  return PRESET_TITLES[name] ?? name;
+}
+
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let detail = res.statusText;

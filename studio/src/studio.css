@@ -541,6 +541,16 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .art-rounded .glyph { color: #6f95ff; background: rgb(111 149 255 / 22%); }
 .art-tracking .glyph { color: #3aaa65; }
 .art-spotlight .glyph { color: #fff; box-shadow: 0 0 0 100px rgb(0 0 0 / 34%); }
+.art-target .glyph { color: #ff2e3f; box-shadow: 0 0 0 100px rgb(0 0 0 / 40%); }
+.art-redact .glyph { color: rgb(244 241 232 / 45%); }
+.art-review .glyph { color: #4c9be8; }
+.art-safety .glyph { color: #ffc400; }
+.art-broadcast .glyph { color: #ff2bd6; }
+.art-cctv .glyph { color: #3dff7a; }
+.art-traffic .glyph { color: #ffb000; }
+.art-documentary .glyph { color: #f3e6c8; }
+.art-blueprint .glyph { color: #9fe3ff; }
+.art-high-contrast .glyph { color: #ffe600; }
 .preset-text { display: grid; gap: 3px; padding: 8px 4px 4px; }
 .preset-text strong { display: flex; align-items: center; justify-content: space-between; gap: 6px; font: 600 12px var(--sans); color: var(--ink); }
 /* built-in names are shown as titles; saved names exactly as typed, since that is what code loads */
@@ -562,6 +572,17 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .glyph.spot { background: transparent; }
 .glyph.conf { border-radius: 0; }
 .glyph.trail { border-left: 0; border-bottom: 0; border-radius: 0 3px 0 0; }
+.glyph.blur { border-width: 1px; background: repeating-linear-gradient(90deg, rgb(244 241 232 / 26%) 0 5px, rgb(244 241 232 / 14%) 5px 10px); }
+.glyph.tint { border-width: 1.5px; border-radius: 0; background: color-mix(in srgb, currentColor 22%, transparent); }
+.glyph.tape { border: 3px solid; border-image: repeating-linear-gradient(45deg, #ffc400 0 4px, #141414 4px 8px) 3; background: repeating-linear-gradient(45deg, rgb(255 196 0 / 16%) 0 1px, transparent 1px 6px); }
+.glyph.ribbon { border: 0; border-bottom: 3px solid currentColor; border-radius: 0 0 50% 50% / 0 0 100% 100%; filter: drop-shadow(0 0 3px currentColor); }
+.glyph.scan { border-width: 1.5px; border-radius: 0; background: repeating-linear-gradient(0deg, rgb(61 255 122 / 16%) 0 1px, transparent 1px 3px); }
+.glyph.double { outline: 1px solid color-mix(in srgb, currentColor 45%, transparent); outline-offset: -6px; border-radius: 0; }
+.glyph.bold { border-width: 4px; border-radius: 0; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #000; }
+.glyph.cross::after {
+  content: ''; position: absolute; inset: 0; margin: auto; width: 8px; height: 8px;
+  background: linear-gradient(currentColor, currentColor) center/100% 1.5px no-repeat, linear-gradient(currentColor, currentColor) center/1.5px 100% no-repeat;
+}
 .glyph.hud, .glyph.corner {
   border-color: transparent;
   background:

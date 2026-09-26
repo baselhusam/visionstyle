@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { presetTitle } from "../api";
 import { SECTIONS, type ControlDef } from "../controls/registry";
 import { getDeep, useStore } from "../store";
 import { HighlightContext, Hl, revealer, searchSettings, searchTerms, type SearchResult } from "../search";
@@ -257,7 +258,7 @@ function SearchResults({ query, results, onOpen }: { query: string; results: Sea
             <div className="search-presets">
               {results.presets.map((preset) => (
                 <button type="button" key={preset.name} className="search-preset" onClick={() => apply(preset.name)}>
-                  <strong className={preset.origin === "builtin" ? "builtin" : undefined}><Hl text={preset.name} /></strong>
+                  <strong className={preset.origin === "builtin" ? "builtin" : undefined}><Hl text={preset.origin === "builtin" ? presetTitle(preset.name) : preset.name} /></strong>
                   {preset.description && <small><Hl text={preset.description} /></small>}
                 </button>
               ))}

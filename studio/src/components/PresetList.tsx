@@ -1,4 +1,4 @@
-import type { PresetInfo } from '../api';
+import { presetTitle, type PresetInfo } from '../api';
 import { useStore } from '../store';
 import { PresetThumb } from './PresetThumb';
 
@@ -15,6 +15,16 @@ const GLYPH: Record<string, string> = {
   tracking: 'trail',
   spotlight: 'spot',
   confidence: 'conf',
+  target: 'corner cross',
+  redact: 'blur',
+  review: 'tint',
+  safety: 'tape',
+  broadcast: 'ribbon',
+  cctv: 'scan',
+  traffic: 'double',
+  documentary: 'corner',
+  blueprint: 'hair dash cross',
+  'high-contrast': 'bold',
 };
 
 // Defined at module scope: a component created inside the render would be a new type every
@@ -29,7 +39,7 @@ function Item(preset: PresetInfo) {
       <button type="button" className="preset-main" aria-pressed={active} onClick={() => apply(name)}>
         <span className={`preset-art art-${name}`} aria-hidden="true">{origin === 'builtin' ? <span className={`glyph ${GLYPH[name] ?? 'rect'}`} /> : <PresetThumb style={preset.style} />}</span>
         <span className="preset-text">
-          <strong>{name}</strong>
+          <strong>{origin === 'builtin' ? presetTitle(name) : name}</strong>
           <small>{description || (origin === 'builtin' ? 'Built-in style' : 'Saved preset')}</small>
         </span>
       </button>

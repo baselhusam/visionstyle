@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { presetTitle } from '../api';
 import { useStore } from '../store';
 import { Icon } from './Icon';
 
@@ -35,7 +36,7 @@ export function PresetPicker({ onSave }: { onSave: () => void }) {
       options[next]?.focus();
     }
   }}>
-    <button type="button" ref={trigger} className="preset-picker-trigger" aria-haspopup="menu" aria-expanded={open} aria-controls={open ? 'preset-options' : undefined} onClick={() => { setOpen(!open); setQuery(''); }}><span className="picker-caption">Style</span><strong className={builtin ? 'builtin' : undefined}>{active ?? 'Custom'}{dirty && <i title="Modified" aria-label="modified" />}</strong><Icon name="chevron" /></button>
+    <button type="button" ref={trigger} className="preset-picker-trigger" aria-haspopup="menu" aria-expanded={open} aria-controls={open ? 'preset-options' : undefined} onClick={() => { setOpen(!open); setQuery(''); }}><span className="picker-caption">Style</span><strong className={builtin ? 'builtin' : undefined}>{active ? (builtin ? presetTitle(active) : active) : 'Custom'}{dirty && <i title="Modified" aria-label="modified" />}</strong><Icon name="chevron" /></button>
     {open && <div className="preset-popover">
       {searchable && <input ref={search} className="text-input" name="style-search" autoComplete="off" aria-label="Search your presets" placeholder="Search your presets…" value={query} onChange={(event) => setQuery(event.target.value)} />}
       <div id="preset-options" role="menu" aria-label="Your presets">
