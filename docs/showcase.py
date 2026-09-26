@@ -2,7 +2,7 @@
 
 Each tile crops one of the bundled samples tightly around a few objects and renders them with a
 style built to show one capability, so the differences stay visible at README width. Detections
-are the samples' real YOLO11n output. The objects in the sample video barely move, so the trails
+are the samples' real YOLO26n output. The objects in the sample video barely move, so the trails
 tile scripts plausible paths (pedestrians crossing the street) ending at the real boxes and
 feeds them through the real trail renderer.
 
@@ -222,7 +222,7 @@ TILES: list[dict[str, Any]] = [
         "crop": (700, 470, 1440, 963),
         "only": ["person", "car"],
         # scripted start offsets (source px) per track id; paths end at the real boxes
-        "motion": {3: (-230, 30), 4: (260, 40), 6: (230, -10), 7: (110, 6), 8: (-100, 4)},
+        "motion": {3: (-230, 30), 7: (260, 40), 5: (230, -10), 10: (110, 6), 9: (-100, 4)},
         "style": {
             "palette": {"colors": "neon", "by": "track"},
             "box": {"shape": "corners", "corner_length": 0.24},
