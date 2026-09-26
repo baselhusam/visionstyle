@@ -1,0 +1,32 @@
+schema_version: 1
+name: broadcast
+description: TV-graphics style. No boxes, a glowing path at each player's feet and a jersey-style number underneath.
+palette: {colors: neon, by: track}
+object_scale: {apply_to: box}
+box: {shape: none}
+label:
+  components: [track_id]
+  anchor: bottom_center
+  placement: outside
+  attached: false
+  offset: 8
+  background: pill
+  background_color: '#ffffff'
+  text_color: '#0b0d12'
+  font_size: 16
+  font_weight: 800
+  uppercase: true
+  padding_x: 10
+  padding_y: 4
+  track_id_format: '{id}'
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 3, blur: 8, opacity: 0.5}
+  grade: {enabled: true, contrast: 1.1, saturation: 1.1}
+trail:
+  enabled: true
+  length: 45
+  line: ribbon
+  thickness: 7
+  opacity: 0.95
+  glow: true
+  smoothing: 4

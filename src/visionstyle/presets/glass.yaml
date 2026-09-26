@@ -2,6 +2,7 @@ schema_version: 1
 name: glass
 description: Frosted-glass fill and label with a bright hairline edge.
 palette: {colors: mono, by: single}
+object_scale: {apply_to: box}
 box: {shape: rounded, corner_radius: 12}
 stroke: {thickness: 1.5, opacity: 0.85}
 fill: {enabled: false}

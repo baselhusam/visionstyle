@@ -1,0 +1,21 @@
+schema_version: 1
+name: high-contrast
+description: Maximum legibility. Thick yellow outlines with a dark halo and large black-on-yellow tags, for projectors and low vision.
+palette: {colors: ['#ffe600'], by: single}
+object_scale: {apply_to: box, strength: 0.3}
+box: {shape: rectangle}
+stroke: {thickness: 4}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 0
+  text_color: '#000000'
+  font_size: 18
+  font_weight: 800
+  padding_x: 8
+  padding_y: 4
+  confidence_format: '92%'
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 0, blur: 3, opacity: 1.0}

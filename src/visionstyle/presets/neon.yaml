@@ -2,6 +2,7 @@ schema_version: 1
 name: neon
 description: Glowing gradient outlines that cycle hue over time.
 palette: {colors: neon, by: class}
+object_scale: {apply_to: box}
 box: {shape: rounded, corner_radius: 8}
 stroke: {thickness: 2.5}
 line:

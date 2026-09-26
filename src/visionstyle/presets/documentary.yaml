@@ -1,0 +1,23 @@
+schema_version: 1
+name: documentary
+description: Quiet and filmic. Thin cream brackets, underlined names and a warm grade that let the footage lead.
+palette: {colors: ['#f3e6c8'], by: single}
+object_scale: {apply_to: box}
+box: {shape: corners, corner_length: 0.12}
+stroke: {thickness: 1.2, opacity: 0.9}
+label:
+  components: [text]
+  anchor: bottom_left
+  placement: outside
+  attached: false
+  offset: 6
+  background: underline
+  text_color: '#f3e6c8'
+  font_size: 16
+  font_weight: 500
+  padding_x: 0
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 1, blur: 4, opacity: 0.6}
+  grade: {enabled: true, contrast: 1.06, saturation: 0.82, temperature: 0.25, lift: 0.02}
+  vignette: {enabled: true, strength: 0.45, radius: 0.9}
+  grain: {enabled: true, amount: 0.06}

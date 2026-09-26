@@ -1,0 +1,24 @@
+schema_version: 1
+name: safety
+description: Hazard-tape outline in amber and black with a loud alert tag. For safety, PPE and intrusion alerts.
+palette: {colors: ['#ffc400'], by: single}
+object_scale: {apply_to: box}
+box: {shape: rectangle}
+stroke: {thickness: 4}
+line: {pattern: dashed, dash_length: 14, gap_length: 1, multicolor: segments, segment_colors: ['#ffc400', '#141414'], animation: march, speed: 0.6}
+fill: {enabled: true, opacity: 0.12, mode: hatch, hatch_spacing: 12, hatch_angle: 45, hatch_thickness: 1.5}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 0
+  border: true
+  text_color: '#141414'
+  font: mono
+  font_size: 13
+  font_weight: 700
+  uppercase: true
+  confidence_format: '92%'
+effects:
+  shadow: {enabled: true, offset_x: 0, offset_y: 2, blur: 4, opacity: 0.6}

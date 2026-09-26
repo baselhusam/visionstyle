@@ -1,0 +1,26 @@
+schema_version: 1
+name: blueprint
+description: Engineering-drawing look. Cool desaturated frame, fine dashed boxes, center marks and bracketed class ids.
+palette: {colors: ['#9fe3ff'], by: single}
+object_scale: {apply_to: box}
+box: {shape: rectangle, center_mark: true}
+stroke: {thickness: 1.2}
+line: {pattern: dashed, dash_length: 6, gap_length: 4}
+fill: {enabled: true, opacity: 0.08}
+label:
+  components: [class_id, text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 3
+  background: none
+  text_color: inherit
+  font: mono
+  font_size: 13
+  font_weight: 600
+  uppercase: true
+  separator: ' '
+  class_id_format: '[{id}]'
+  confidence_format: '.92'
+effects:
+  grade: {enabled: true, saturation: 0.25, temperature: -0.6, contrast: 0.95, lift: -0.02}

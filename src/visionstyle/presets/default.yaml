@@ -4,6 +4,7 @@ description: Clean, legible boxes with a solid tag. A sensible starting point.
 palette:
   colors: default
   by: class
+object_scale: {apply_to: box}
 box:
   shape: rectangle
 stroke:

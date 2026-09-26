@@ -2,6 +2,7 @@ schema_version: 1
 name: tracking
 description: Track-first - bold trails colored per track, id leads the label.
 palette: {colors: default, by: track}
+object_scale: {apply_to: box}
 box: {shape: rectangle}
 stroke: {thickness: 2}
 label:

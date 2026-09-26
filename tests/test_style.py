@@ -57,22 +57,49 @@ def test_copy_with_nested_update_does_not_mutate():
     assert a.box.shape == "rectangle" and b.box.shape == "rounded" and b.name == "b"
 
 
+BUILTIN_PRESETS = {
+    # looks
+    "default",
+    "minimal",
+    "corners",
+    "rounded",
+    "dashed",
+    "glass",
+    "neon",
+    "hud",
+    "cinematic",
+    "tracking",
+    "spotlight",
+    "confidence",
+    # focus, tasks, domains, audiences
+    "target",
+    "redact",
+    "review",
+    "safety",
+    "broadcast",
+    "cctv",
+    "traffic",
+    "documentary",
+    "blueprint",
+    "high-contrast",
+}
+
+
 def test_all_builtin_presets_load():
     names = [p.name for p in list_presets()]
-    assert {
-        "default",
-        "cinematic",
-        "minimal",
-        "corners",
-        "neon",
-        "hud",
-        "tracking",
-        "glass",
-    } <= set(names)
+    assert set(names) >= BUILTIN_PRESETS
     for name in names:
         style = Style.preset(name)
         assert style.name == name
         assert style.description
+
+
+@pytest.mark.parametrize("name", sorted(BUILTIN_PRESETS))
+def test_builtin_tags_keep_a_constant_size(name):
+    # With object scaling on labels, tags on distant boxes shrink to ~7 px on a 1600 px frame.
+    # Built-ins scale the box only, so every tag stays readable.
+    s = Style.preset(name).object_scale
+    assert not s.enabled or s.apply_to == "box"
 
 
 def test_user_preset_shadowing_and_env_dir(tmp_path, monkeypatch):

@@ -1,0 +1,21 @@
+schema_version: 1
+name: redact
+description: Blurs what's inside each box and marks it. For anonymizing faces, people or plates.
+palette: {colors: ['#f4f1e8'], by: single}
+object_scale: {apply_to: box}
+box: {shape: rounded, corner_radius: 4}
+stroke: {thickness: 1, opacity: 0.35}
+label:
+  components: [custom]
+  custom_template: REDACTED
+  anchor: center
+  placement: inside
+  background: solid
+  background_color: '#101010'
+  background_opacity: 0.85
+  text_color: '#f4f1e8'
+  font: mono
+  font_size: 11
+  radius: 2
+effects:
+  glass: {enabled: true, blur: 38, opacity: 1.0, tint: '#1a1a1a', tint_opacity: 0.25, apply_to: fill, brighten: 0}

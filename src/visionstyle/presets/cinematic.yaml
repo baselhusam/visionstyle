@@ -2,6 +2,7 @@ schema_version: 1
 name: cinematic
 description: Rounded amber/teal frames, gradient fill, pill labels, soft glow and a filmic grade.
 palette: {colors: cinematic, by: class}
+object_scale: {apply_to: box}
 box: {shape: rounded, corner_radius: 10}
 stroke: {thickness: 2}
 fill: {enabled: true, opacity: 0.1, mode: gradient, gradient_direction: up, gradient_start: 1, gradient_end: 0}

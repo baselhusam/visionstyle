@@ -1,0 +1,22 @@
+schema_version: 1
+name: traffic
+description: Vehicles in amber, people in cyan, two-wheelers in lime. Road users readable at a glance, with mono tags.
+palette:
+  colors: ['#f4f1e8']
+  by: class
+  class_colors: {car: '#ffb000', truck: '#ff7a00', bus: '#ff5a36', motorcycle: '#c8ff00', bicycle: '#c8ff00', person: '#39d5ff'}
+object_scale: {apply_to: box}
+box: {shape: rectangle, double_line: true, double_gap: 3, double_opacity: 0.4}
+stroke: {thickness: 2}
+label:
+  components: [text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 0
+  text_color: '#0b0d12'
+  font: mono
+  font_size: 12
+  font_weight: 700
+  uppercase: true
+  confidence_format: '92%'

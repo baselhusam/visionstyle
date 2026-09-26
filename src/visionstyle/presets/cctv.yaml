@@ -1,0 +1,28 @@
+schema_version: 1
+name: cctv
+description: Security-monitor look. Grayscale grainy frame, phosphor-green boxes and ID tags.
+palette: {colors: ['#3dff7a'], by: single}
+object_scale: {apply_to: box}
+box: {shape: rectangle}
+stroke: {thickness: 1.5}
+label:
+  components: [track_id, text, confidence]
+  anchor: top_left
+  placement: inside
+  attached: true
+  background: solid
+  radius: 0
+  text_color: '#06140a'
+  font: mono
+  font_size: 11
+  font_weight: 700
+  uppercase: true
+  separator: ' '
+  track_id_format: 'ID{id}'
+  confidence_format: '92%'
+  padding_x: 4
+  padding_y: 2
+effects:
+  grade: {enabled: true, monochrome: true, contrast: 1.2, lift: 0.02}
+  grain: {enabled: true, amount: 0.14}
+  vignette: {enabled: true, strength: 0.55, radius: 0.95}

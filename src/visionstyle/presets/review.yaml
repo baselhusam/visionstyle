@@ -1,0 +1,22 @@
+schema_version: 1
+name: review
+description: Label-tool look for auditing datasets. Class id, name and score on every box, uniform sizes, tinted fill.
+palette: {colors: tab10, by: class}
+object_scale: {enabled: false}
+box: {shape: rectangle}
+stroke: {thickness: 1.5}
+fill: {enabled: true, opacity: 0.2}
+label:
+  components: [class_id, text, confidence]
+  anchor: top_left
+  placement: outside
+  background: solid
+  radius: 0
+  padding_x: 4
+  padding_y: 2
+  font: mono
+  font_size: 11
+  font_weight: 500
+  separator: ' '
+  class_id_format: '{id}'
+  confidence_format: '.92'

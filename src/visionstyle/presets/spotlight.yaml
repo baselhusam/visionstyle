@@ -2,6 +2,7 @@ schema_version: 1
 name: spotlight
 description: Dims everything outside the detections and labels from below.
 palette: {colors: mono, by: single}
+object_scale: {apply_to: box}
 box: {shape: rounded, corner_radius: 6}
 stroke: {thickness: 1.5, opacity: 0.95}
 label:

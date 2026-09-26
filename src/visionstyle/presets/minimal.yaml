@@ -2,6 +2,7 @@ schema_version: 1
 name: minimal
 description: Hairline outline and bare text. Just the essentials.
 palette: {colors: mono, by: single}
+object_scale: {apply_to: box}
 box: {shape: rectangle}
 stroke: {thickness: 1, opacity: 0.9}
 label:

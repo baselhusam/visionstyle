@@ -1,0 +1,40 @@
+schema_version: 1
+name: target
+description: Red lock-on brackets that pulse, a center cross, a short track trail and a dimmed frame. Built for following one subject.
+palette: {colors: ['#ff2e3f'], by: single}
+object_scale: {apply_to: box, strength: 0.3}
+box: {shape: corners, corner_length: 0.26, corner_curve: true, double_line: true, double_gap: 6, double_opacity: 0.45, center_mark: true}
+stroke: {thickness: 3.5}
+line: {animation: pulse, speed: 1.2}
+label:
+  components: [track_id, text, confidence]
+  anchor: top_left
+  placement: outside
+  attached: false
+  offset: 8
+  background: solid
+  radius: 0
+  text_color: '#ffffff'
+  font: mono
+  font_size: 15
+  font_weight: 700
+  uppercase: true
+  padding_x: 8
+  padding_y: 4
+  separator: '  '
+  track_id_format: 'TGT {id}'
+  confidence_format: '92%'
+effects:
+  glow: {enabled: true, radius: 12, intensity: 1.1, apply_to: both}
+  vignette: {enabled: true, strength: 0.4}
+  grade: {enabled: true, saturation: 0.45, contrast: 1.08}
+  dim_outside: 0.6
+trail:
+  enabled: true
+  length: 40
+  line: dotted
+  thickness: 3
+  point_radius: 2.5
+  opacity: 0.9
+  fade_opacity: true
+  fade_thickness: false
