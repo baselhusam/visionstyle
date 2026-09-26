@@ -11,7 +11,7 @@ import numpy.typing as npt
 
 from visionstyle.detections import Detections
 
-DEFAULT_MODEL = "yolo11n.pt"
+DEFAULT_MODEL = "yolo26n.pt"
 
 
 def _require_ultralytics() -> Any:

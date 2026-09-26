@@ -13,7 +13,7 @@ import visionstyle as vs
 src, dst = sys.argv[1], sys.argv[2]
 preset = sys.argv[3] if len(sys.argv) > 3 else "tracking"
 
-model = YOLO("yolo11n.pt")
+model = YOLO("yolo26n.pt")
 style = vs.Style.preset(preset)
 style.trail.enabled = True  # make sure trails are on regardless of the preset
 annotator = vs.Annotator(style)  # one instance per stream: it keeps the trail history

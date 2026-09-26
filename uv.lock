@@ -3102,8 +3102,8 @@ requires-dist = [
     { name = "python-multipart", marker = "extra == 'all'", specifier = ">=0.0.9" },
     { name = "python-multipart", marker = "extra == 'studio'", specifier = ">=0.0.9" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "ultralytics", marker = "extra == 'all'", specifier = ">=8.3" },
-    { name = "ultralytics", marker = "extra == 'yolo'", specifier = ">=8.3" },
+    { name = "ultralytics", marker = "extra == 'all'", specifier = ">=8.4" },
+    { name = "ultralytics", marker = "extra == 'yolo'", specifier = ">=8.4" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'all'", specifier = ">=0.29" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'studio'", specifier = ">=0.29" },
 ]

@@ -1,173 +1,173 @@
 {
  "image": "night.jpg",
- "model": "yolo11n.pt",
+ "model": "yolo26n.pt",
  "detections": [
   {
    "xyxy": [
-    303.84,
-    625.27,
-    444.49,
-    717.64
+    1422.47,
+    614.85,
+    1598.1,
+    738.71
    ],
    "class_id": 2,
    "class_name": "car",
-   "confidence": 0.8904,
+   "confidence": 0.8554,
    "track_id": 1
   },
   {
    "xyxy": [
-    1422.12,
-    615.83,
-    1594.23,
-    739.82
+    303.03,
+    624.29,
+    443.53,
+    716.43
    ],
    "class_id": 2,
    "class_name": "car",
-   "confidence": 0.8654,
+   "confidence": 0.8433,
    "track_id": 2
   },
   {
    "xyxy": [
-    835.1,
-    567.99,
-    886.95,
-    760.6
+    828.74,
+    564.31,
+    887.99,
+    762.62
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.7675,
+   "confidence": 0.8243,
    "track_id": 3
   },
   {
    "xyxy": [
-    1214.84,
-    572.94,
-    1328.46,
-    763.37
+    513.97,
+    575.53,
+    751.84,
+    666.13
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.7559,
+   "class_id": 5,
+   "class_name": "bus",
+   "confidence": 0.7264,
    "track_id": 4
   },
   {
    "xyxy": [
-    1339.84,
-    614.52,
-    1439.14,
-    711.05
+    1273.39,
+    572.44,
+    1356.72,
+    765.05
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.6981,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.6387,
    "track_id": 5
   },
   {
    "xyxy": [
-    1282.91,
-    570.75,
-    1355.67,
-    762.69
+    1338.92,
+    615.37,
+    1438.0,
+    709.27
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.6533,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.5342,
    "track_id": 6
   },
   {
    "xyxy": [
-    970.57,
-    613.54,
-    995.89,
-    665.35
+    1211.76,
+    567.96,
+    1323.65,
+    764.03
    ],
    "class_id": 0,
    "class_name": "person",
-   "confidence": 0.5722,
+   "confidence": 0.5121,
    "track_id": 7
   },
   {
    "xyxy": [
-    762.29,
-    610.87,
-    787.9,
-    664.96
+    769.07,
+    535.22,
+    901.01,
+    573.12
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.5645,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.5111,
    "track_id": 8
   },
   {
    "xyxy": [
-    161.77,
-    605.89,
-    206.8,
-    629.12
+    761.64,
+    609.49,
+    787.08,
+    664.79
    ],
-   "class_id": 25,
-   "class_name": "umbrella",
-   "confidence": 0.5634,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.5021,
    "track_id": 9
   },
   {
    "xyxy": [
-    488.97,
-    575.64,
-    751.57,
-    661.89
+    968.79,
+    616.48,
+    997.56,
+    665.1
    ],
-   "class_id": 5,
-   "class_name": "bus",
-   "confidence": 0.4077,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.4261,
    "track_id": 10
   },
   {
    "xyxy": [
-    920.53,
-    626.58,
-    971.07,
-    652.13
+    210.52,
+    615.22,
+    234.12,
+    661.46
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.3972,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.4181,
    "track_id": 11
   },
   {
    "xyxy": [
-    1141.91,
-    585.22,
-    1266.4,
-    696.48
+    162.15,
+    605.09,
+    205.66,
+    628.18
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.378,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.3774,
    "track_id": 12
   },
   {
    "xyxy": [
-    769.53,
-    535.19,
-    892.64,
-    576.68
+    248.83,
+    612.79,
+    270.61,
+    661.82
    ],
-   "class_id": 25,
-   "class_name": "umbrella",
-   "confidence": 0.3667,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.3631,
    "track_id": 13
   },
   {
    "xyxy": [
-    212.64,
-    614.88,
-    234.08,
-    659.54
+    1137.82,
+    584.28,
+    1267.55,
+    694.69
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.3556,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.3573,
    "track_id": 14
   }
  ]

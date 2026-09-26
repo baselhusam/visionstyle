@@ -1,114 +1,102 @@
 {
  "image": "street.jpg",
- "model": "yolo11n.pt",
+ "model": "yolo26n.pt",
  "detections": [
   {
    "xyxy": [
-    489.17,
-    405.38,
-    581.3,
-    679.47
+    621.65,
+    432.7,
+    858.92,
+    693.84
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.8311,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.8357,
    "track_id": 1
   },
   {
    "xyxy": [
-    623.66,
-    431.22,
-    858.51,
-    683.78
+    487.52,
+    404.64,
+    575.33,
+    682.48
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.8266,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.8086,
    "track_id": 2
   },
   {
    "xyxy": [
-    57.74,
-    397.95,
-    150.11,
-    694.02
+    757.98,
+    419.56,
+    1337.08,
+    950.07
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.821,
+   "class_id": 2,
+   "class_name": "car",
+   "confidence": 0.803,
    "track_id": 3
   },
   {
    "xyxy": [
-    468.03,
-    359.27,
-    627.23,
-    412.49
+    57.4,
+    396.4,
+    150.67,
+    694.22
    ],
-   "class_id": 25,
-   "class_name": "umbrella",
-   "confidence": 0.6186,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.6757,
    "track_id": 4
   },
   {
    "xyxy": [
-    824.22,
-    392.83,
-    924.04,
-    454.94
+    556.63,
+    401.37,
+    612.88,
+    582.84
    ],
-   "class_id": 25,
-   "class_name": "umbrella",
-   "confidence": 0.5815,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.62,
    "track_id": 5
   },
   {
    "xyxy": [
-    557.6,
-    402.0,
-    611.05,
-    584.52
+    469.08,
+    359.76,
+    627.26,
+    411.02
    ],
-   "class_id": 0,
-   "class_name": "person",
-   "confidence": 0.5384,
+   "class_id": 25,
+   "class_name": "umbrella",
+   "confidence": 0.5615,
    "track_id": 6
   },
   {
    "xyxy": [
-    760.41,
-    445.76,
-    1338.82,
-    944.18
+    1067.63,
+    18.54,
+    1163.64,
+    359.83
    ],
-   "class_id": 2,
-   "class_name": "car",
-   "confidence": 0.4616,
+   "class_id": 0,
+   "class_name": "person",
+   "confidence": 0.4852,
    "track_id": 7
   },
   {
    "xyxy": [
-    437.72,
-    520.85,
-    500.46,
-    649.48
+    438.6,
+    521.49,
+    498.36,
+    649.62
    ],
    "class_id": 1,
    "class_name": "bicycle",
-   "confidence": 0.3901,
+   "confidence": 0.4588,
    "track_id": 8
-  },
-  {
-   "xyxy": [
-    757.76,
-    445.72,
-    1338.48,
-    948.31
-   ],
-   "class_id": 7,
-   "class_name": "truck",
-   "confidence": 0.3678,
-   "track_id": 9
   }
  ]
 }

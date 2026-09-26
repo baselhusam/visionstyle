@@ -48,8 +48,8 @@ export function MediaSetup() {
             <span className="setup-icon"><Icon name="model" /></span>
             <strong>Detector</strong>
           </div>
-          <div className="model-lockup" aria-label="Active detector: YOLOv8 Nano with ByteTrack">
-            <strong>YOLOv8 Nano</strong>
+          <div className="model-lockup" aria-label="Active detector: YOLO26 Nano with ByteTrack">
+            <strong>YOLO26 Nano</strong>
             <span>+ ByteTrack · every frame</span>
           </div>
         </div>

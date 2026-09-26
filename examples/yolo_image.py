@@ -9,7 +9,7 @@ import visionstyle as vs
 
 image_path = sys.argv[1] if len(sys.argv) > 1 else "src/visionstyle/assets/samples/street.jpg"
 
-model = YOLO("yolo11n.pt")
+model = YOLO("yolo26n.pt")
 frame = cv2.imread(image_path)
 result = model.predict(frame, conf=0.3, verbose=False)[0]
 

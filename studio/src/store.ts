@@ -183,7 +183,7 @@ export const useStore = create<State>((set, get) => {
     const isVideo = img?.kind === 'video';
     set({
       imageId: id,
-      modelId: isVideo && get().yoloAvailable ? 'yolov8n.pt' : null,
+      modelId: isVideo && get().yoloAvailable ? 'yolo26n.pt' : null,
       detections: [], frames: null, frameIndex: 0, fps: img?.fps ?? 24,
       hidden: new Set(), selected: null, selectedClass: null, playing: false,
       detecting: false, job: null, error: null,
@@ -234,7 +234,7 @@ export const useStore = create<State>((set, get) => {
     const detection = ++detectionGeneration;
     set({ detecting: true, error: null, playing: false });
     try {
-      let job = await api.detectVideo(imageId, modelId ?? 'yolov8n.pt', conf);
+      let job = await api.detectVideo(imageId, modelId ?? 'yolo26n.pt', conf);
       if (!isCurrentDetection(imageId, scene, detection)) return;
       set({ job });
       while (job.status === 'running') {
@@ -305,7 +305,7 @@ export const useStore = create<State>((set, get) => {
       return;
     }
     let model = modelId;
-    if (!model && !img?.has_detections) model = yoloAvailable ? 'yolov8n.pt' : null;
+    if (!model && !img?.has_detections) model = yoloAvailable ? 'yolo26n.pt' : null;
     if (!model && !img?.has_detections) {
       set({ error: 'No detections available: upload a model or install visionstyle[yolo].' });
       return;

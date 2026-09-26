@@ -111,7 +111,7 @@
           <figure class="board board-night hero-board reveal d2" data-hero>
             <div class="board-bar">
               <img class="board-brand" src="images/visionstyle-lockup-dark.png" alt="" width="1774" height="887" aria-hidden="true" />
-              <span class="board-status"><i class="live"></i>live preview · night.jpg · yolo11n.pt</span>
+              <span class="board-status"><i class="live"></i>live preview · night.jpg · yolo26n.pt</span>
               <div class="segment" role="group" aria-label="Hero preset">
                 <button type="button" aria-pressed="true" class="active" data-hero-preset="cinematic">Cinematic</button>
                 <button type="button" aria-pressed="false" data-hero-preset="neon">Neon</button>
@@ -329,7 +329,7 @@ style.save_preset(<span class="s">"my-look"</span>)      <span class="c"># ~/.vi
             <h2>The preview is the hero,<br />not a <em>widget.</em></h2>
             <p class="section-lead">Design a style visually, on your own image and model, and save it as a preset the package loads by name. Nothing is faked: the canvas is rendered by the same Python engine you ship.</p>
             <ul class="studio-points">
-              <li><span class="small-label">Sources</span><p>Upload an image or use the bundled samples; bring a <code>.pt</code> / <code>.onnx</code> model or start with <code>yolo11n.pt</code>.</p></li>
+              <li><span class="small-label">Sources</span><p>Upload an image or use the bundled samples; bring a <code>.pt</code> / <code>.onnx</code> model or start with <code>yolo26n.pt</code>.</p></li>
               <li><span class="small-label">Controls</span><p>Every section of the Style is a live control. Toggle objects, isolate one, play line animations, preview trails on a still.</p></li>
               <li><span class="small-label">Export</span><p>YAML with only changed values or everything, a clean Python snippet, or <b>Save as preset</b> straight into your presets directory.</p></li>
             </ul>
@@ -402,10 +402,10 @@ pip install <span class="s">"visionstyle[all]"</span></code></pre>
               <div class="tab-panel" id="tab-cli" role="tabpanel" aria-labelledby="tabbtn-cli" hidden>
                 <div class="code-panel">
                   <div class="code-bar"><span>shell</span><button class="copy" type="button" data-copy="#code-cli" aria-label="Copy CLI examples"><span>copy</span></button></div>
-<pre class="code" id="code-cli" tabindex="0"><code>visionstyle render photo.jpg -s neon --model yolo11n.pt -o out.jpg
-visionstyle render clip.mp4  -s tracking --model yolo11n.pt --track -o out.mp4
-visionstyle render 0         -s hud --model yolo11n.pt --track -o webcam.mp4
-visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
+<pre class="code" id="code-cli" tabindex="0"><code>visionstyle render photo.jpg -s neon --model yolo26n.pt -o out.jpg
+visionstyle render clip.mp4  -s tracking --model yolo26n.pt --track -o out.mp4
+visionstyle render 0         -s hud --model yolo26n.pt --track -o webcam.mp4
+visionstyle gallery photo.jpg --model yolo26n.pt -o gallery.png</code></pre>
                 </div>
                 <p class="install-note">Render stills, videos or a webcam index; <code>gallery</code> renders every preset at once.</p>
               </div>
@@ -420,7 +420,7 @@ visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png</code></pre>
 <span class="k">from</span> ultralytics <span class="k">import</span> YOLO
 
 frame = cv2.imread(<span class="s">"street.jpg"</span>)
-result = YOLO(<span class="s">"yolo11n.pt"</span>)(frame)[<span class="n">0</span>]
+result = YOLO(<span class="s">"yolo26n.pt"</span>)(frame)[<span class="n">0</span>]
 
 dets = vs.Detections.from_ultralytics(result)
 cv2.imwrite(<span class="s">"out.jpg"</span>, vs.annotate(frame, dets, style=<span class="s">"cinematic"</span>))</code></pre>

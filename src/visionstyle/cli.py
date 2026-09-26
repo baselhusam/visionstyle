@@ -244,7 +244,7 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("source", help="Image/video path, webcam index, or 'sample'.")
     r.add_argument("-s", "--style", default="default", help="Preset name or YAML path.")
     r.add_argument("-o", "--output", help="Output path.")
-    r.add_argument("-m", "--model", help="Ultralytics weights (.pt/.onnx), e.g. yolo11n.pt.")
+    r.add_argument("-m", "--model", help="Ultralytics weights (.pt/.onnx), e.g. yolo26n.pt.")
     r.add_argument("-d", "--detections", help="JSON file with detections instead of a model.")
     r.add_argument("--conf", type=float, default=0.25, help="Confidence threshold for the model.")
     r.add_argument("--track", action="store_true", help="Use the tracker for videos (trails).")

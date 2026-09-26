@@ -31,7 +31,7 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/hero-cinematic.jpg" alt="A rainy Manhattan street at night annotated with the cinematic preset: amber and teal rounded frames with pill labels around pedestrians, a bus and cars" width="100%">
-  <br><sub>YOLO11n detections on a rainy Manhattan crossing, rendered with <code>style="cinematic"</code>.</sub>
+  <br><sub>YOLO26n detections on a rainy Manhattan crossing, rendered with <code>style="cinematic"</code>.</sub>
 </p>
 
 ## Quickstart
@@ -46,7 +46,7 @@ import visionstyle as vs
 from ultralytics import YOLO
 
 frame = cv2.imread("street.jpg")
-result = YOLO("yolo11n.pt")(frame)[0]
+result = YOLO("yolo26n.pt")(frame)[0]
 
 dets = vs.Detections.from_ultralytics(result)
 cv2.imwrite("out.jpg", vs.annotate(frame, dets, style="cinematic"))
@@ -227,11 +227,11 @@ built-ins, then as a file path.
 ## CLI
 
 ```bash
-visionstyle render photo.jpg -s neon --model yolo11n.pt -o out.jpg
-visionstyle render clip.mp4  -s tracking --model yolo11n.pt --track -o out.mp4
-visionstyle render 0         -s hud --model yolo11n.pt --track -o webcam.mp4   # webcam index
+visionstyle render photo.jpg -s neon --model yolo26n.pt -o out.jpg
+visionstyle render clip.mp4  -s tracking --model yolo26n.pt --track -o out.mp4
+visionstyle render 0         -s hud --model yolo26n.pt --track -o webcam.mp4   # webcam index
 visionstyle render photo.jpg -d detections.json -s corners                    # no model needed
-visionstyle gallery photo.jpg --model yolo11n.pt -o gallery.png               # every preset at once
+visionstyle gallery photo.jpg --model yolo26n.pt -o gallery.png               # every preset at once
 visionstyle presets list | show NAME | export NAME -o my.yaml
 visionstyle schema -o style.schema.json
 ```

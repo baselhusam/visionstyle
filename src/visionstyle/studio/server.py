@@ -152,7 +152,7 @@ class _State:
     def model_path(self, model_id: str) -> Path:
         path = self.models.get(model_id)
         if path is None and model_id.endswith(".pt") and "/" not in model_id:
-            path = Path(model_id)  # let ultralytics download e.g. yolo11n.pt
+            path = Path(model_id)  # let ultralytics download e.g. yolo26n.pt
         if path is None:
             raise HTTPException(404, f"Unknown model {model_id!r}")
         return path
@@ -282,7 +282,7 @@ class DetectRequest(BaseModel):
 
 class VideoDetectRequest(BaseModel):
     image_id: str
-    model_id: str = "yolov8n.pt"
+    model_id: str = "yolo26n.pt"
     conf: float = Field(0.25, ge=0.01, le=1)
     imgsz: int = Field(640, ge=160, le=1920)
     stride: int = Field(1, ge=1, le=30)
@@ -570,7 +570,7 @@ def create_app(presets_dir: str | Path | None = None) -> FastAPI:
         return {
             "models": entries,
             "yolo_available": _ultralytics_available(),
-            "default": "yolov8n.pt" if _ultralytics_available() else None,
+            "default": "yolo26n.pt" if _ultralytics_available() else None,
         }
 
     @app.post("/api/models")

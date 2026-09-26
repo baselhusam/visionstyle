@@ -11,7 +11,7 @@ Or skip the code entirely:
 
 ```bash
 visionstyle render sample -s cinematic -o out.jpg
-visionstyle render clip.mp4 -s tracking --model yolo11n.pt --track -o out.mp4
-visionstyle gallery my_photo.jpg --model yolo11n.pt -o gallery.png
+visionstyle render clip.mp4 -s tracking --model yolo26n.pt --track -o out.mp4
+visionstyle gallery my_photo.jpg --model yolo26n.pt -o gallery.png
 visionstyle studio
 ```
