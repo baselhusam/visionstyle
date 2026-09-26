@@ -15,7 +15,7 @@ The site is an application of the **Chroma Press** identity documented in [`docs
 ## Interactions (`script.js`)
 
 - **Hero board** — a before / after slider over the untouched `night.jpg` (rainy Manhattan) and its real `cinematic` / `neon` renders. Drag anywhere on the frame with a mouse, drag horizontally on touch (vertical swipes still scroll the page), or focus it and use the arrow keys. On load the style wipes in over the raw frame and settles at the midpoint.
-- **Preset explorer** — crossfades between `docs/images/presets/<name>.jpg`: one genuine render per preset, produced with `visionstyle render` on the bundled `street.jpg` (Osaka taxi alley) and its shipped detections. The picker shows a thumbnail per preset (`docs/images/presets/thumbs/`); below 980 px it becomes a swipeable film strip. Frames are fetched on demand (current + next). It auto-advances while on screen until the visitor interacts, pauses on hover / when the tab is hidden, and is navigable with the arrows on the frame, a swipe, or the keyboard (arrows, Home, End).
+- **Preset explorer** — crossfades between `docs/images/presets/<name>.jpg`: one genuine render per preset, produced by `docs/presets.py` on the bundled `street.jpg` (Osaka taxi alley) and its shipped detections. The picker shows a thumbnail per preset (`docs/images/presets/thumbs/`) in a column that scrolls inside the board's height; below 980 px it becomes a swipeable film strip. Frames are fetched on demand (current + next). It auto-advances while on screen until the visitor interacts, pauses on hover / when the tab is hidden, and is navigable with the arrows on the frame, a swipe, or the keyboard (arrows, Home, End).
 - **Navigation** — scroll-spy pill nav on desktop, a section sheet behind the menu button below 980 px (closes on Escape, outside tap or navigation), and a reading-progress colour rail under the top bar.
 - **Code** — Python / YAML tabs on the Configure example, install tabs, copy buttons (the hero command copies on click) with an `aria-live` confirmation, and a lightbox for the Studio screenshot.
 - Everything degrades gracefully with `prefers-reduced-motion`.
@@ -24,21 +24,10 @@ The site is an application of the **Chroma Press** identity documented in [`docs
 
 - Edit the page and its interactions in this folder. Keep asset URLs relative (`images/presets/neon.jpg`) so the site works at the project URL and in a local static server.
 - Product imagery lives in `docs/images/`, logos in `assets/brand/chroma-press/`, fonts in `src/visionstyle/assets/fonts/`. The workflow copies exactly the files the site needs.
-- To refresh the preset renders after a preset changes, re-run for each name and re-encode at 1400 px wide (JPEG q80):
+- To refresh the preset renders and picker thumbnails after adding or changing a preset, run the script below. It renders every built-in preset (or just the names you pass) on `street.jpg` with its shipped detections and synthetic trails, like the Studio preview, and writes 1400 px renders plus 288 × 180 thumbnails. A new preset also needs its tab and frame added to the explorer in `index.html`, and the counter's total updated.
 
   ```bash
-  uv run visionstyle render src/visionstyle/assets/samples/street.jpg -s neon -d src/visionstyle/assets/samples/street.detections.json -o /tmp/neon.png
-  ```
-
-- The picker thumbnails are 288 × 180 crops of those renders (the people, umbrellas and taxi). Regenerate them after re-rendering the presets:
-
-  ```bash
-  uv run --with pillow python -c "
-  from PIL import Image; import glob, os
-  for p in glob.glob('docs/images/presets/*.jpg'):
-      im = Image.open(p); s = im.width / 1600
-      im.crop(tuple(round(v * s) for v in (360, 330, 1360, 955))).resize((288, 180), Image.LANCZOS).save(
-          'docs/images/presets/thumbs/' + os.path.basename(p), quality=78, optimize=True, progressive=True)"
+  uv run python docs/presets.py
   ```
 
 - `docs/images/studio.jpg` is a 1.5× screenshot (2400 × 1500) of the Studio at 1600 × 1000: the `city-walkthrough.mp4` sample at frame 91 with the cinematic preset and the Design library open. Still images get synthetic preview trails in the Studio, so the video sample shows real tracks instead.

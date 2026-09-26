@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#faf7f0" />
-    <meta name="description" content="visionstyle — beautiful, fully configurable bounding boxes for object detection. One typed Style, twelve presets, a live Studio, rendered with one call." />
+    <meta name="description" content="visionstyle — beautiful, fully configurable bounding boxes for object detection. One typed Style, twenty-two presets, a live Studio, rendered with one call." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="visionstyle" />
     <meta property="og:title" content="visionstyle — boxes that look authored" />
-    <meta property="og:description" content="Beautiful, fully configurable bounding boxes for object detection. One Style, twelve presets, a live Studio, one call." />
+    <meta property="og:description" content="Beautiful, fully configurable bounding boxes for object detection. One Style, twenty-two presets, a live Studio, one call." />
     <meta property="og:url" content="https://baselhusam.github.io/visionstyle/" />
     <meta property="og:image" content="https://baselhusam.github.io/visionstyle/images/og-banner.png" />
     <meta property="og:image:width" content="2172" />
@@ -189,7 +189,7 @@
         <div class="shell">
           <header class="section-heading reveal-on-scroll">
             <p class="eyebrow">02 / Presets</p>
-            <h2>Twelve starting points. Every one is <em>YAML.</em></h2>
+            <h2>Twenty-two starting points. Every one is <em>YAML.</em></h2>
             <p class="section-lead">Pick a mood, then make it yours. Each preset is a plain file you can copy, edit and load by name — <code>vs.Style.preset("hud")</code>.</p>
           </header>
 
@@ -207,12 +207,22 @@
               <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="rounded"><img src="images/presets/thumbs/rounded.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>rounded</b><span>Rounded corners, gradient tint, pill label</span></span></button>
               <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="spotlight"><img src="images/presets/thumbs/spotlight.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>spotlight</b><span>Dims everything outside the detections</span></span></button>
               <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="tracking"><img src="images/presets/thumbs/tracking.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>tracking</b><span>Bold per-track trails, id-first labels</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="target"><img src="images/presets/thumbs/target.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>target</b><span>Red lock-on brackets, pulse, track trail, dimmed frame</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="redact"><img src="images/presets/thumbs/redact.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>redact</b><span>Blurs inside each box for anonymizing</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="review"><img src="images/presets/thumbs/review.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>review</b><span>Class id, name and score for label audits</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="safety"><img src="images/presets/thumbs/safety.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>safety</b><span>Amber/black hazard-tape outline, alert tag</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="broadcast"><img src="images/presets/thumbs/broadcast.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>broadcast</b><span>TV graphics: player paths and number bubbles</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="cctv"><img src="images/presets/thumbs/cctv.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>cctv</b><span>Grayscale grain, phosphor-green ID tags</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="traffic"><img src="images/presets/thumbs/traffic.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>traffic</b><span>Vehicles amber, people cyan, bikes lime</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="documentary"><img src="images/presets/thumbs/documentary.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>documentary</b><span>Cream brackets, underlined names, warm grade</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="blueprint"><img src="images/presets/thumbs/blueprint.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>blueprint</b><span>Dashed hairlines, center marks, cool grade</span></span></button>
+              <button role="tab" aria-selected="false" aria-controls="preset-window" tabindex="-1" data-preset="high-contrast"><img src="images/presets/thumbs/high-contrast.jpg" alt="" width="288" height="180" loading="lazy" /><span class="preset-text"><b>high-contrast</b><span>Thick yellow outlines, large black-on-yellow tags</span></span></button>
             </div>
 
             <figure class="board board-night preset-board">
               <div class="board-bar">
                 <span class="board-status"><i class="live"></i>preset / <b data-preset-name>cinematic</b></span>
-                <span class="board-meta">street.jpg · <b data-preset-index>01</b> / 12</span>
+                <span class="board-meta">street.jpg · <b data-preset-index>01</b> / 22</span>
                 <button class="autoplay" type="button" data-autoplay aria-pressed="true"><i></i><span>auto-play</span></button>
               </div>
               <div class="board-canvas preset-window" id="preset-window" role="tabpanel" aria-live="polite" data-preset-window>
@@ -228,6 +238,16 @@
                 <img class="preset-frame" data-src="images/presets/rounded.jpg" alt="" width="1400" height="907" data-preset-frame="rounded" />
                 <img class="preset-frame" data-src="images/presets/spotlight.jpg" alt="" width="1400" height="907" data-preset-frame="spotlight" />
                 <img class="preset-frame" data-src="images/presets/tracking.jpg" alt="" width="1400" height="907" data-preset-frame="tracking" />
+                <img class="preset-frame" data-src="images/presets/target.jpg" alt="" width="1400" height="907" data-preset-frame="target" />
+                <img class="preset-frame" data-src="images/presets/redact.jpg" alt="" width="1400" height="907" data-preset-frame="redact" />
+                <img class="preset-frame" data-src="images/presets/review.jpg" alt="" width="1400" height="907" data-preset-frame="review" />
+                <img class="preset-frame" data-src="images/presets/safety.jpg" alt="" width="1400" height="907" data-preset-frame="safety" />
+                <img class="preset-frame" data-src="images/presets/broadcast.jpg" alt="" width="1400" height="907" data-preset-frame="broadcast" />
+                <img class="preset-frame" data-src="images/presets/cctv.jpg" alt="" width="1400" height="907" data-preset-frame="cctv" />
+                <img class="preset-frame" data-src="images/presets/traffic.jpg" alt="" width="1400" height="907" data-preset-frame="traffic" />
+                <img class="preset-frame" data-src="images/presets/documentary.jpg" alt="" width="1400" height="907" data-preset-frame="documentary" />
+                <img class="preset-frame" data-src="images/presets/blueprint.jpg" alt="" width="1400" height="907" data-preset-frame="blueprint" />
+                <img class="preset-frame" data-src="images/presets/high-contrast.jpg" alt="" width="1400" height="907" data-preset-frame="high-contrast" />
                 <i class="corner tl" aria-hidden="true"></i><i class="corner tr" aria-hidden="true"></i><i class="corner bl" aria-hidden="true"></i><i class="corner br" aria-hidden="true"></i>
                 <button class="step-btn prev" type="button" data-step="-1" aria-label="Previous preset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg></button>
                 <button class="step-btn next" type="button" data-step="1" aria-label="Next preset"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg></button>

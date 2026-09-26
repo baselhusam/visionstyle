@@ -174,16 +174,25 @@
     let autoplay = !reducedMotion;
     let inView = false;
 
-    // frames carry data-src so the twelve renders are fetched only as they are needed
+    // frames carry data-src so the preset renders are fetched only as they are needed
     const load = (img) => {
       if (img && img.dataset.src) { img.src = img.dataset.src; delete img.dataset.src; }
     };
 
     // keep the active thumbnail visible in the horizontal strip without scrolling the page
+    // keep the current preset centred in the picker: a column that scrolls on desktop, a film strip below 980 px
     const revealTab = (tab) => {
-      if (!list || list.scrollWidth <= list.clientWidth + 1) return;
-      const left = tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2;
-      list.scrollTo({ left, behavior: reducedMotion ? 'auto' : 'smooth' });
+      if (!list) return;
+      const x = list.scrollWidth > list.clientWidth + 1;
+      const y = list.scrollHeight > list.clientHeight + 1;
+      if (!x && !y) return;
+      const box = list.getBoundingClientRect();
+      const r = tab.getBoundingClientRect();
+      list.scrollTo({
+        left: x ? list.scrollLeft + r.left - box.left - (list.clientWidth - r.width) / 2 : list.scrollLeft,
+        top: y ? list.scrollTop + r.top - box.top - (list.clientHeight - r.height) / 2 : list.scrollTop,
+        behavior: reducedMotion ? 'auto' : 'smooth',
+      });
     };
 
     const restartProgress = () => {

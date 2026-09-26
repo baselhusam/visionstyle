@@ -74,7 +74,7 @@ Python 3.10 – 3.13.
 - **One object describes the look.** A `Style` covers boxes, strokes, fills, line patterns,
   labels, effects and trails. Every option is a typed, validated attribute, and the whole thing
   round-trips to YAML.
-- **Twelve presets to start from.** Use one by name, or copy its YAML and make it yours.
+- **Twenty-two presets to start from.** Use one by name, or copy its YAML and make it yours.
 - **Looks the same at any resolution.** Sizes are in reference pixels and scale with the frame, and
   each object's outline and label scale with its size, so distant objects stay light.
 - **Built for video.** Keep one `Annotator` per stream and you get tracking trails, marching
@@ -93,8 +93,10 @@ if you want to borrow it.
 
 ### Presets
 
-Twelve ready-made looks to start from. Each one is a plain YAML file you can copy and edit
-([see all twelve on the same scene](https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg)).
+Twenty-two ready-made presets to start from. Each one is a plain YAML file you can copy and edit
+([see all of them on the same scene](https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/gallery.jpg)).
+
+Twelve general-purpose looks:
 
 | Preset | Look | Preset | Look |
 |---|---|---|---|
@@ -104,6 +106,24 @@ Twelve ready-made looks to start from. Each one is a plain YAML file you can cop
 | `rounded` | Rounded corners, gradient tint, pill label | `tracking` | Bold per-track trails, id-first labels |
 | `dashed` | Dashed perimeter with marching ants | `spotlight` | Dims everything outside the detections |
 | `glass` | Frosted-glass fill and label | `confidence` | Stroke and tag color follow the confidence score |
+
+Ten built for a job, a field or an audience:
+
+| Preset | For | Look |
+|---|---|---|
+| `target` | Following one subject | Red lock-on brackets that pulse, center cross, track trail, dimmed frame |
+| `redact` | Anonymizing people, faces, plates | Blurs the inside of each box and marks it `REDACTED` |
+| `review` | Auditing labels and model output | Class id, name and score on every box, uniform sizes, tinted fill |
+| `safety` | PPE, intrusion and restricted-zone alerts | Amber/black hazard-tape outline, hatch fill, loud tag |
+| `broadcast` | Sports and TV graphics | No boxes: a glowing path at each player's feet and a number bubble |
+| `cctv` | Security and surveillance | Grayscale grainy frame, phosphor-green boxes and ID tags |
+| `traffic` | Traffic and smart-city monitoring | Vehicles amber, people cyan, two-wheelers lime |
+| `documentary` | Wildlife, nature, editorial video | Thin cream brackets, underlined names, warm film grade |
+| `blueprint` | Robotics and technical write-ups | Cool desaturated frame, fine dashed boxes, center marks, `[class id]` tags |
+| `high-contrast` | Projectors, outdoor screens, low vision | Thick yellow outlines with a dark halo, large black-on-yellow tags |
+
+`target` draws every detection it's given, so pass only the one you're following
+(for example `dets.subset(dets.track_id == 3)`), or hide the others in the Studio's Objects tab.
 
 ```bash
 visionstyle presets list
