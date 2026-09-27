@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 — 2026-09-28
 
 - Default detector is now Ultralytics YOLO26n (`yolo26n.pt`) everywhere: the Studio's video
   tracking, `from_ultralytics` examples, CLI help, README and site. The `[yolo]` extra requires
@@ -25,6 +25,7 @@
 - Studio keeps a video's stored detections parsed in memory instead of re-reading the sidecar for
   every rendered frame, holds the preview while the video is being tracked instead of competing
   with the detector for the CPU, and skips preview frames the browser has already moved past.
+- Studio's Export panel syntax-highlights the Python snippet and the style YAML.
 - `docs/presets.py` renders the site's preset images and thumbnails; the site's preset picker
   scrolls within the board on desktop.
 
