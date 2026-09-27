@@ -21,7 +21,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Assemble static site
         run: |
           set -euo pipefail
@@ -51,9 +51,9 @@ jobs:
           cp -R assets/brand/chroma-press _site/assets/brand/
           cp src/visionstyle/assets/fonts/*.ttf _site/src/visionstyle/assets/fonts/
           cp src/visionstyle/assets/samples/night.jpg _site/src/visionstyle/assets/samples/
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
