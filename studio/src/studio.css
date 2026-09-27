@@ -43,6 +43,16 @@
   --canvas-ink: #f2efe6;
   --canvas-ink-2: #bdc5b9;
   --canvas-ink-3: #778075;
+  /* code syntax */
+  --syn-comment: #6f7a6c;
+  --syn-keyword: #d7a6ff;
+  --syn-string: #b6de7a;
+  --syn-number: #ff9f7f;
+  --syn-function: #7cc3ff;
+  --syn-class: #ffd479;
+  --syn-param: #86d8c9;
+  --syn-key: #7cc3ff;
+  --syn-punct: #98a294;
   /* geometry */
   --r-1: 6px;
   --r-2: 8px;
@@ -912,6 +922,15 @@ output { padding: 1px 6px; color: var(--ink); border-radius: 4px; background: va
 .export-actions { align-items: center; justify-content: space-between; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .code.wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
 .code:focus-visible { outline-offset: -2px; }
+.code .tok-comment { color: var(--syn-comment); font-style: italic; }
+.code .tok-keyword { color: var(--syn-keyword); }
+.code .tok-string { color: var(--syn-string); }
+.code .tok-number, .code .tok-constant { color: var(--syn-number); }
+.code .tok-function { color: var(--syn-function); }
+.code .tok-class { color: var(--syn-class); }
+.code .tok-param { color: var(--syn-param); }
+.code .tok-key { color: var(--syn-key); }
+.code .tok-punct { color: var(--syn-punct); }
 .export-actions .check { grid-column: 1 / -1; min-height: 22px; }
 
 /* Feedback */

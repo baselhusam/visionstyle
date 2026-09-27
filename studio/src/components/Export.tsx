@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { useStore } from '../store';
 import { aiPrompt, pythonSnippet, type ExportSource } from '../exportText';
+import { highlightPython, highlightYaml } from '../highlight';
 import { Icon } from './Icon';
 
 export type ExportTab = 'yaml' | 'python' | 'prompt';
@@ -59,6 +60,8 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
       : tab === 'yaml'
         ? (compact ? source.yaml : fullYaml!)
         : tab === 'python' ? pythonSnippet(source) : aiPrompt(source);
+  // the prompt is Markdown for an AI tool, so it stays plain text
+  const tokens = tab === 'prompt' || !ready || yamlFailed ? null : tab === 'python' ? highlightPython(text) : highlightYaml(text);
   const fileName = activePreset && !dirty ? activePreset : 'my-style';
 
   const download = () => {
@@ -104,7 +107,7 @@ export function Export({ initialTab = 'yaml' }: { initialTab?: ExportTab }) {
         </span>
       </div>
       <pre id="export-code" className={`code mono ${tab === 'prompt' ? 'wrap' : ''}`} role="tabpanel" aria-labelledby={`export-tab-${tab}`} aria-live="polite" tabIndex={0}>
-        {text}
+        {tokens ? tokens.map((token, i) => (token.type === 'plain' ? token.text : <span key={i} className={`tok-${token.type}`}>{token.text}</span>)) : text}
       </pre>
       <div className="export-actions">
         {tab === 'yaml' && (
