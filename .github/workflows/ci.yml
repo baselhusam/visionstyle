@@ -28,6 +28,8 @@ jobs:
       - uses: astral-sh/setup-uv@v10.2.0
         with:
           enable-cache: true
+          # the cache key follows the runner's Python, not the one uv syncs, so split it per matrix leg
+          cache-suffix: py${{ matrix.python }}
       - name: Install (core + studio + dev)
         run: uv sync --python ${{ matrix.python }} --extra studio --group dev
       - name: Lint
