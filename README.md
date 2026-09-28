@@ -34,6 +34,13 @@
   <br><sub>YOLO26n detections on a rainy Manhattan crossing, rendered with <code>style="cinematic"</code>.</sub>
 </p>
 
+<p align="center">
+  <a href="https://baselhusam.github.io/visionstyle/#film">
+    <img src="https://raw.githubusercontent.com/baselhusam/visionstyle/main/docs/images/promo-preview.gif" alt="Preview of the visionstyle promo film: presets like neon and spotlight restyle the same detections, then tracking trails follow pedestrians" width="720">
+  </a>
+  <br><sub>▶ <a href="https://baselhusam.github.io/visionstyle/#film"><b>Watch the 30-second film</b></a>: raw detections, 22 presets, tracking trails, the Studio, one call.</sub>
+</p>
+
 ## Quickstart
 
 ```bash

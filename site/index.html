@@ -37,6 +37,7 @@
           <img src="images/visionstyle-lockup.png" alt="visionstyle" width="1774" height="887" />
         </a>
         <nav class="pill-nav" aria-label="Sections" data-nav>
+          <a href="#film">Film</a>
           <a href="#idea">Idea</a>
           <a href="#presets">Presets</a>
           <a href="#configure">Configure</a>
@@ -54,6 +55,7 @@
       </div>
       <nav class="sheet" id="sheet" aria-label="Sections" data-sheet hidden>
         <div class="sheet-inner">
+          <a href="#film">Film</a>
           <a href="#idea"><span>01</span>Idea</a>
           <a href="#presets"><span>02</span>Presets</a>
           <a href="#configure"><span>03</span>Configure</a>
@@ -114,12 +116,12 @@
               <span class="board-status"><i class="live"></i>live preview · night.jpg · yolo26n.pt</span>
               <div class="segment" role="group" aria-label="Hero preset">
                 <button type="button" aria-pressed="true" class="active" data-hero-preset="cinematic">Cinematic</button>
-                <button type="button" aria-pressed="false" data-hero-preset="neon">Neon</button>
+                <button type="button" aria-pressed="false" data-hero-preset="spotlight">Spotlight</button>
               </div>
             </div>
             <div class="board-canvas compare" data-compare>
               <img class="hero-frame is-on" src="images/hero-cinematic.jpg" alt="A rainy Manhattan street at night annotated with the cinematic preset: rounded amber frames, pill labels and glow around pedestrians, a bus and cars." width="1600" height="1057" data-frame="cinematic" />
-              <img class="hero-frame" src="images/night-neon.jpg" alt="The same scene annotated with the neon preset: glowing cyan and lime outlines." width="1600" height="1057" data-frame="neon" loading="lazy" />
+              <img class="hero-frame" src="images/night-spotlight.jpg" alt="The same scene annotated with the spotlight preset: the street dimmed, thin white frames and pill labels only around the detections." width="1600" height="1057" data-frame="spotlight" loading="lazy" />
               <div class="compare-raw" aria-hidden="true"><img src="images/night-raw.jpg" alt="" width="1600" height="1057" /></div>
               <span class="compare-tag is-raw" aria-hidden="true">raw frame</span>
               <span class="compare-tag is-styled" aria-hidden="true" data-hero-tag>cinematic</span>
@@ -141,6 +143,31 @@
       </section>
 
       <div class="accent-rail" role="presentation"></div>
+
+      <!-- ============================== FILM ============================== -->
+      <section class="section film night" id="film">
+        <div class="shell">
+          <header class="section-heading reveal-on-scroll">
+            <p class="eyebrow">Film / 0:30</p>
+            <h2>Thirty seconds of <em>detection,</em> restyled.</h2>
+            <p class="section-lead">It opens on raw model output and ends on one deliberate call, with presets, tracking trails and the Studio in between. Every box, label and trail in the film is drawn by visionstyle itself.</p>
+          </header>
+
+          <figure class="film-frame reveal-on-scroll" data-film>
+            <div class="film-bar"><i></i><i></i><i></i><span>visionstyle — the promo</span><b>1080p · 30 fps</b></div>
+            <div class="film-stage">
+              <video class="film-video" preload="none" playsinline controls poster="media/visionstyle-ad-poster.jpg" aria-label="visionstyle promo film: raw detections restyled with presets, the Studio and a one-line call" data-film-video>
+                <source src="media/visionstyle-ad.mp4" type="video/mp4" />
+                Your browser can't play this video. <a href="media/visionstyle-ad.mp4">Download the film</a>.
+              </video>
+              <button class="film-play" type="button" aria-label="Play the promo film" data-film-play>
+                <span class="film-play-disc" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6L19.4 12z" /></svg></span>
+                <span class="film-play-label" aria-hidden="true">Play the film</span>
+              </button>
+            </div>
+          </figure>
+        </div>
+      </section>
 
       <!-- ============================== IDEA ============================== -->
       <section class="section idea" id="idea">

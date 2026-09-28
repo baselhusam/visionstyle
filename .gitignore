@@ -24,6 +24,7 @@ runs/
 out/
 *.mp4
 !src/visionstyle/assets/samples/*.mp4
+!site/media/*.mp4
 
 # OS / editors
 .DS_Store

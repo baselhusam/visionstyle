@@ -69,14 +69,14 @@
     document.documentElement.classList.add('no-observer');
   }
 
-  /* ---------- Hero: cinematic ↔ neon, raw ↔ styled ---------- */
+  /* ---------- Hero: cinematic ↔ spotlight, raw ↔ styled ---------- */
   const hero = $('[data-hero]');
   if (hero) {
     const chips = $$('.chip', hero);
     const tag = $('[data-hero-tag]', hero);
     const palette = {
       cinematic: ['#f2b04a', '#8ee0a0', '#f4f1ea'],
-      neon: ['#2ee6ff', '#3aff9a', '#c8ff3a'],
+      spotlight: ['#f5f2ea', '#c9c4b8', '#8f8a7e'],
     };
     const setHero = (name) => {
       $$('[data-hero-preset]', hero).forEach((b) => {
@@ -367,5 +367,23 @@
     lightbox.addEventListener('close', () => opener.focus());
   } else if (opener) {
     opener.addEventListener('click', () => window.open($('img', opener).src, '_blank', 'noopener'));
+  }
+  /* ---------- Promo film: nothing loads until the visitor presses play ---------- */
+  const film = $('[data-film]');
+  const filmVideo = $('[data-film-video]');
+  const filmPlay = $('[data-film-play]');
+  if (film && filmVideo && filmPlay) {
+    const start = () => {
+      filmVideo.dataset.started = '';
+      filmVideo.play().catch(() => {});
+      filmVideo.focus({ preventScroll: true });
+    };
+    filmPlay.addEventListener('click', start);
+    filmVideo.addEventListener('play', () => film.classList.add('is-playing'));
+    filmVideo.addEventListener('ended', () => { film.classList.remove('is-playing'); filmVideo.currentTime = 0; filmVideo.load(); });
+    // leaving the section pauses the film instead of letting it play unseen
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !filmVideo.paused) filmVideo.pause(); }, { threshold: 0.15 }).observe(film);
+    }
   }
 })();
